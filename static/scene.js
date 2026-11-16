@@ -7,13 +7,13 @@ const HTML=`<div class="layer l-glow"></div><div class="layer l-splash"></div>
 <div class="banner"><div class="inner"><div class="kind"></div><div class="names gold"></div><div class="sub"></div><div class="date"></div></div></div>
 <div class="head"><span class="gold"></span></div>
 <div class="greet"><div class="pic"></div><div class="txt"><span class="ribbon"><i class="env-ico"></i> КОНВЕРТ · VIP</span><div class="amount gold"></div><div class="msg"></div><div class="from"></div></div></div>
-<div class="ticker"></div><div class="qr"><canvas></canvas><span>Сканируйте и поздравьте</span></div><div class="progress"></div><canvas class="confetti"></canvas>`;
+<div class="ticker"></div><div class="progress"></div><canvas class="confetti"></canvas>`;
 
 window.TOIScene=function(el,opts){
   opts=opts||{};
   el.classList.add('led');el.innerHTML=HTML;
   const q=s=>el.querySelector(s);
-  let c=null,dustP=[],raf=0,qrText='';
+  let c=null,dustP=[],raf=0;
   function scene(){if(!c)return;T.renderBand(q('.l-band canvas'),c);T.renderRose(q('.l-rose canvas'),c);initDust();}
   function initDust(){const cv=q('.l-dust canvas'),r=cv.getBoundingClientRect(),d=devicePixelRatio||1;cv.width=r.width*d;cv.height=r.height*d;
     dustP=[...Array(opts.lite?30:70)].map(()=>({x:Math.random(),y:Math.random(),r:.5+Math.random()*1.8,v:.0004+Math.random()*.0012,p:Math.random()*6.28}));}
@@ -31,7 +31,6 @@ window.TOIScene=function(el,opts){
     const sp=q('.l-splash');sp.style.backgroundImage=c.splash_url?`url(${c.splash_url})`:'';sp.classList.toggle('on',!!c.splash_url);
     scene();
   }
-  function setQR(text){if(!text||text===qrText)return;qrText=text;T.drawQR(q('.qr canvas'),text,6).catch(()=>{});}
   function idle(){q('.banner').classList.remove('off');q('.greet').classList.remove('on');q('.head').classList.remove('on');bar(0);}
   function show(it,sec){
     q('.banner').classList.add('off');q('.head').classList.add('on');
@@ -53,6 +52,6 @@ window.TOIScene=function(el,opts){
   let rt;new ResizeObserver(()=>{clearTimeout(rt);rt=setTimeout(scene,120);}).observe(el);
   document.addEventListener('fullscreenchange',()=>setTimeout(scene,80));
   dust();
-  return {setCfg,setQR,idle,show,ticker,confetti,get cfg(){return c;}};
+  return {setCfg,idle,show,ticker,confetti,get cfg(){return c;}};
 };
 })();

@@ -398,7 +398,7 @@ clearInterval(liveT);liveT=setInterval(()=>T.api(base+'/state').then(s=>live(s.o
   try{await sync();}
   catch(e){$('fatal').textContent=/неверная/.test(e.message)?'Ссылка на пульт неверная. Попросите новую у Toi Online.':'Не получилось загрузить пульт: '+e.message;$('fatal').hidden=false;return;}
   $('app').hidden=false;
-  scene=TOIScene($('pv'),{lite:true});scene.setCfg(cfg);scene.setQR(T.abs(links.guest));
+  scene=TOIScene($('pv'),{lite:true});scene.setCfg(cfg);
   connect();
 })();
 })();
