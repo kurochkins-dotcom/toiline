@@ -18,7 +18,8 @@ body{background:var(--ui-bg);color:var(--ui-ink);font-family:"Manrope",system-ui
 button,input,textarea,select{font:inherit;color:inherit}
 button{cursor:pointer}
 :focus-visible{outline:2px solid var(--ui-accent);outline-offset:2px}
-.wrap{max-width:1100px;margin:0 auto;padding:12px 16px 60px;display:grid;gap:14px}
+.wrap{max-width:1100px;margin:0 auto;padding:12px 16px 60px;display:grid;gap:14px;min-width:0}
+.wrap>*{min-width:0;max-width:100%}
 header.top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
 header.top h1{margin:0;font-size:18px;font-weight:800}
 header.top h1 small{display:block;font-size:12px;color:var(--ui-muted);font-weight:600}
@@ -69,6 +70,41 @@ details summary{cursor:pointer;color:var(--ui-muted);font-size:13px;font-weight:
 .colors input[type=color]{width:44px;height:38px;border:1px solid var(--ui-line);border-radius:10px;background:var(--ui-bg);padding:3px}
 .preview{border-radius:10px;overflow:hidden;border:4px solid #16161a}
 .saved{font-size:12px;color:var(--ui-muted);font-weight:600}
+/* настройки экрана: ручки слева, живой экран справа */
+#tab-screen{display:grid;grid-template-columns:minmax(0,1fr) minmax(320px,42%);gap:14px;align-items:start}
+#tab-screen .stage{grid-column:2;grid-row:1;position:sticky;top:58px}
+#tab-screen .ctrls{grid-column:1;grid-row:1;display:grid;gap:14px;min-width:0}
+@media (max-width:900px){
+  #tab-screen{grid-template-columns:1fr}
+  #tab-screen .stage{grid-column:1;grid-row:1;top:50px;z-index:4;background:var(--ui-bg)}
+  #tab-screen .ctrls{grid-column:1;grid-row:2}
+}
+.tplgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.tpl{border:2px solid var(--ui-line);border-radius:12px;padding:0;overflow:hidden;background:var(--ui-bg);display:grid;text-align:left}
+.tpl[aria-pressed="true"]{border-color:var(--ui-accent);box-shadow:0 0 0 2px rgba(63,184,169,.22)}
+.tpl .sw{height:46px;display:grid;place-items:center}
+.tpl .nm{font-size:11px;line-height:1.15;padding:5px 6px;color:var(--ui-muted);font-weight:700}
+.tpl[aria-pressed="true"] .nm{color:var(--ui-ink)}
+.fontgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.fnt{border:2px solid var(--ui-line);border-radius:12px;background:var(--ui-bg);padding:8px;display:grid;gap:1px;text-align:left;min-width:0}
+.fnt[aria-pressed="true"]{border-color:var(--ui-accent);box-shadow:0 0 0 2px rgba(63,184,169,.22)}
+.fnt b{font-size:19px;font-weight:600;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fnt span{font-size:11px;color:var(--ui-muted);font-weight:700}
+.palette{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.sw{display:grid;gap:5px;justify-items:center;background:var(--ui-bg);border:1px solid var(--ui-line);border-radius:12px;padding:8px 6px;text-align:center}
+.sw input{width:100%;height:34px;border:none;background:none;padding:0}
+.sw span{font-size:11px;color:var(--ui-muted);font-weight:700;line-height:1.15}
+.seg{display:inline-flex;background:var(--ui-bg);border:1px solid var(--ui-line);border-radius:99px;padding:3px;gap:2px;flex-wrap:wrap}
+.seg button{border:0;background:none;border-radius:99px;padding:6px 12px;font-size:13px;font-weight:700;color:var(--ui-muted)}
+.seg button[aria-pressed="true"]{background:var(--ui-accent);color:#06201d}
+.field input[type=range]{width:100%;accent-color:var(--ui-accent)}
+.splashrow{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.splashthumb{width:120px;height:68px;border-radius:10px;background:var(--ui-bg) center/cover;border:1px dashed var(--ui-line);display:grid;place-items:center;font-size:11px;color:var(--ui-muted);text-align:center;padding:6px;line-height:1.2}
+.splashthumb.has{border-style:solid;border-color:var(--ui-accent)}
+.row2{display:flex;gap:8px;flex-wrap:wrap}
+@media (max-width:640px){.tplgrid{grid-template-columns:repeat(3,1fr)}.fontgrid{grid-template-columns:repeat(2,1fr)}.palette{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:430px){.tplgrid{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:900px){#tab-screen .stage .note{display:none}#tab-screen .stage .card{padding:10px}}
 /* отчёт */
 .tablewrap{overflow-x:auto}
 table{width:100%;border-collapse:collapse;font-size:14px}
@@ -144,44 +180,85 @@ tfoot td{font-weight:700;border-bottom:0;color:var(--gold)}
   </section>
 
   <!-- ЭКРАН -->
-  <section id="tab-screen" class="tab" hidden style="display:grid;gap:14px">
-    <div class="card">
-      <h2>Так сейчас выглядит экран <span class="saved" id="saved"></span></h2>
-      <div class="preview"><div id="pv"></div></div>
-      <div class="row" style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn small" id="pvCard">Пример открытки</button><button class="btn small" id="pvEnv">Пример конверта</button><button class="btn small" id="pvIdle">Заставка</button></div>
-    </div>
-    <div class="card">
-      <h2>Праздник</h2>
-      <div class="settings">
-        <div class="field"><label for="sType">Тип тоя</label><select id="sType"><option value="wedding">Свадьба</option><option value="jubilee">Юбилей</option><option value="uzatu">Қыз ұзату</option><option value="tusau">Тұсаукесер</option></select></div>
-        <div class="field"><label for="sKind">Надпись сверху</label><input type="text" id="sKind" maxlength="40"></div>
-        <div class="field"><label for="sNames">Главная надпись</label><input type="text" id="sNames" maxlength="60"></div>
-        <div class="field"><label for="sSub">Подпись</label><input type="text" id="sSub" maxlength="90"></div>
-        <div class="field"><label for="sDate">Дата</label><input type="text" id="sDate" maxlength="30"></div>
-        <div class="field wide"><label for="sHello">Приветствие для гостей</label><input type="text" id="sHello" maxlength="200"></div>
-        <div class="field wide"><label for="sQuick">Готовые пожелания (каждое с новой строки)</label><textarea id="sQuick"></textarea></div>
+  <section id="tab-screen" class="tab" hidden>
+    <div class="stage">
+      <div class="card">
+        <h2>Экран сейчас <span class="saved" id="saved"></span></h2>
+        <div class="preview"><div id="pv"></div></div>
+        <div class="seg" id="pvSeg" role="group" aria-label="Что показать в превью">
+          <button type="button" data-pv="idle" aria-pressed="true">Заставка</button>
+          <button type="button" data-pv="card" aria-pressed="false">Открытка</button>
+          <button type="button" data-pv="env" aria-pressed="false">Конверт</button>
+        </div>
+        <p class="note">Меняйте что угодно слева — экран здесь и на LED обновляется сразу.</p>
       </div>
     </div>
-    <div class="card">
-      <h2>Оформление</h2>
-      <div class="settings">
-        <div class="field"><label for="sTpl">Шаблон экрана</label><select id="sTpl"></select></div>
-        <div class="field"><span class="lbl">Фон · край · орнамент · надпись</span>
-          <div class="colors"><input type="color" id="sBg1" aria-label="Цвет фона в центре"><input type="color" id="sBg2" aria-label="Цвет фона по краям"><input type="color" id="sC1" aria-label="Цвет орнамента"><input type="color" id="sAcc" aria-label="Цвет золотой надписи"></div></div>
-        <div class="field"><label for="sFont">Шрифт надписи</label><select id="sFont"></select></div>
-        <div class="field"><label for="sSheen">Золотой блик</label><select id="sSheen"><option value="12s">Каждые 12 сек</option><option value="30s">Каждые 30 сек</option><option value="60s">Раз в минуту</option></select></div>
-        <div class="field"><span class="lbl">Картинка-заставка</span>
-          <div class="colors"><label class="btn small" for="sSplash">Загрузить</label><input id="sSplash" type="file" accept="image/*" hidden><button class="btn small" id="sSplashOff">Убрать</button></div></div>
+
+    <div class="ctrls">
+      <div class="card">
+        <h2>Рисунок <small>8 шаблонов</small></h2>
+        <div class="tplgrid" id="tplGrid"></div>
       </div>
-    </div>
-    <div class="card">
-      <h2>Kaspi организатора <small>сюда гости переводят конверты</small></h2>
-      <div class="settings">
-        <div class="field"><label for="sKName">Получатель (как в Kaspi)</label><input type="text" id="sKName" maxlength="60" placeholder="Например, Диас Е."></div>
-        <div class="field"><label for="sKPhone">Телефон Kaspi</label><input type="tel" id="sKPhone" maxlength="20" placeholder="+7 7__ ___ __ __"></div>
-        <div class="field wide"><label for="sKLink">Ссылка на перевод (необязательно)</label><input type="url" id="sKLink" maxlength="300" placeholder="https://…"></div>
+
+      <div class="card">
+        <h2>Цвета</h2>
+        <div class="palette">
+          <label class="sw"><input type="color" id="sBg1" aria-label="Фон в центре"><span>Фон в центре</span></label>
+          <label class="sw"><input type="color" id="sBg2" aria-label="Фон по краям"><span>Фон по краям</span></label>
+          <label class="sw"><input type="color" id="sC1" aria-label="Цвет орнамента"><span>Орнамент</span></label>
+          <label class="sw"><input type="color" id="sAcc" aria-label="Золото и надпись"><span>Золото и надпись</span></label>
+        </div>
+        <div><button class="btn small" type="button" id="tplReset">Вернуть цвета шаблона</button></div>
       </div>
-      <div class="note">Без телефона или ссылки кнопка «Конверт» у гостей не показывается. Деньги идут напрямую организатору, модератор сверяет переводы в его Kaspi.</div>
+
+      <div class="card">
+        <h2>Надпись</h2>
+        <div class="fontgrid" id="fontGrid"></div>
+        <div class="field"><label for="sSize">Размер надписи · <b id="sSizeV">9 cqw</b></label>
+          <input type="range" id="sSize" min="5" max="14" step="0.2"></div>
+        <div class="field"><span class="lbl">Золотой блик по надписи</span>
+          <div class="seg" id="sheenSeg" role="group" aria-label="Золотой блик">
+            <button type="button" data-sheen="12s" aria-pressed="false">12 сек</button>
+            <button type="button" data-sheen="30s" aria-pressed="false">30 сек</button>
+            <button type="button" data-sheen="60s" aria-pressed="false">60 сек</button>
+          </div></div>
+      </div>
+
+      <div class="card">
+        <h2>Заставка</h2>
+        <div class="splashrow">
+          <div class="splashthumb" id="splashThumb"><span>Своя картинка не выбрана</span></div>
+          <div class="row2">
+            <label class="btn small" for="sSplash">Загрузить картинку</label>
+            <input id="sSplash" type="file" accept="image/*" hidden>
+            <button class="btn small" type="button" id="sSplashOff">Убрать</button>
+          </div>
+        </div>
+        <p class="note">Без своей картинки на экране живёт заставка с орнаментом и именами.</p>
+      </div>
+
+      <div class="card">
+        <h2>Праздник</h2>
+        <div class="settings">
+          <div class="field"><label for="sType">Тип тоя</label><select id="sType"><option value="wedding">Свадьба</option><option value="jubilee">Юбилей</option><option value="uzatu">Қыз ұзату</option><option value="tusau">Тұсаукесер</option></select></div>
+          <div class="field"><label for="sKind">Надпись сверху</label><input type="text" id="sKind" maxlength="40"></div>
+          <div class="field"><label for="sNames">Главная надпись</label><input type="text" id="sNames" maxlength="60"></div>
+          <div class="field"><label for="sSub">Подпись</label><input type="text" id="sSub" maxlength="90"></div>
+          <div class="field"><label for="sDate">Дата</label><input type="text" id="sDate" maxlength="30"></div>
+          <div class="field wide"><label for="sHello">Приветствие для гостей</label><input type="text" id="sHello" maxlength="200"></div>
+          <div class="field wide"><label for="sQuick">Готовые пожелания (каждое с новой строки)</label><textarea id="sQuick"></textarea></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Kaspi организатора <small>сюда гости переводят конверты</small></h2>
+        <div class="settings">
+          <div class="field"><label for="sKName">Получатель (как в Kaspi)</label><input type="text" id="sKName" maxlength="60" placeholder="Например, Диас Е."></div>
+          <div class="field"><label for="sKPhone">Телефон Kaspi</label><input type="tel" id="sKPhone" maxlength="20" placeholder="+7 7__ ___ __ __"></div>
+          <div class="field wide"><label for="sKLink">Ссылка на перевод (необязательно)</label><input type="url" id="sKLink" maxlength="300" placeholder="https://…"></div>
+        </div>
+        <div class="note">Без телефона или ссылки кнопка «Конверт» у гостей не показывается. Деньги идут напрямую организатору, модератор сверяет переводы в его Kaspi.</div>
+      </div>
     </div>
   </section>
 
@@ -252,11 +329,15 @@ let cfg=null,cards=new Map(),links={},es=null,scene=null,seen=new Set(),first=tr
 
 function toast(t){const e=$('toast');e.textContent=t;e.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('on'),2200);}
 /* ---------- вкладки ---------- */
+function showTab(name){
+  const b=document.querySelector(`.tabs [data-tab="${name}"]`);if(!b)name='air';
+  document.querySelectorAll('.tabs [data-tab]').forEach(x=>x.setAttribute('aria-selected',String(x.dataset.tab===name)));
+  document.querySelectorAll('.tab').forEach(s=>s.hidden=s.id!=='tab-'+name);
+  if(name==='screen')setTimeout(()=>scene&&scene.setCfg(cfg),30);
+  if(name==='links')drawLinks();
+}
 document.querySelector('.tabs').addEventListener('click',e=>{const b=e.target.closest('[data-tab]');if(!b)return;
-  document.querySelectorAll('.tabs [data-tab]').forEach(x=>x.setAttribute('aria-selected',x===b));
-  document.querySelectorAll('.tab').forEach(s=>s.hidden=s.id!=='tab-'+b.dataset.tab);
-  if(b.dataset.tab==='screen')setTimeout(()=>scene&&scene.setCfg(cfg),30);
-  if(b.dataset.tab==='links')drawLinks();});
+  showTab(b.dataset.tab);try{history.replaceState(null,'','#'+b.dataset.tab);}catch(x){}});
 
 /* ---------- эфир ---------- */
 const byQueue=(a,b)=>(b.amount>0)-(a.amount>0)||(b.amount-a.amount)||((a.approved_at||a.t)-(b.approved_at||b.t));
@@ -321,15 +402,32 @@ $('csv').addEventListener('click',()=>{
 });
 
 /* ---------- настройки экрана ---------- */
-$('sTpl').innerHTML=Object.entries(T.TPL_NAMES).map(([k,v])=>`<option value="${k}">${v}</option>`).join('');
-$('sFont').innerHTML=T.FONTS.map(([k,v])=>`<option value="${esc(k)}">${v}</option>`).join('');
-const F=[['sKind','kind'],['sNames','names'],['sSub','sub'],['sDate','date'],['sHello','hello'],['sBg1','bg1'],['sBg2','bg2'],['sC1','c1'],['sAcc','acc'],['sFont','font'],['sSheen','sheen'],['sKName','kaspi_name'],['sKPhone','kaspi_phone'],['sKLink','kaspi_link']];
+const cqw=v=>{const n=Math.round(v*10)/10;return (n%1?n.toFixed(1):String(n))+'cqw';};
+$('tplGrid').innerHTML=Object.entries(T.TPL_NAMES).map(([k,nm])=>{const t=T.TPL[k];
+  return `<button class="tpl" type="button" data-tpl="${k}" aria-pressed="false">`
+    +`<span class="sw" style="background:linear-gradient(160deg,${t.bg1},${t.bg2})">`
+    +`<i style="width:20px;height:20px;border-radius:50%;background:${t.acc};box-shadow:inset 0 0 0 2px ${t.c1}"></i></span>`
+    +`<span class="nm">${nm}</span></button>`;}).join('');
+$('fontGrid').innerHTML=T.FONTS.map(([f,n],i)=>`<button class="fnt" type="button" data-font="${i}" aria-pressed="false">`
+  +`<b style="font-family:${f}">Диас &amp; Диара</b><span>${n}</span></button>`).join('');
+const F=[['sKind','kind'],['sNames','names'],['sSub','sub'],['sDate','date'],['sHello','hello'],['sBg1','bg1'],['sBg2','bg2'],['sC1','c1'],['sAcc','acc'],['sKName','kaspi_name'],['sKPhone','kaspi_phone'],['sKLink','kaspi_link']];
 function fill(){
   const c=T.full(cfg);
-  $('sType').value=cfg.type;$('sTpl').value=c.tpl;
+  $('sType').value=cfg.type;
   F.forEach(([id,k])=>{if(document.activeElement!==$(id))$(id).value=c[k]??'';});
   if(document.activeElement!==$('sQuick'))$('sQuick').value=(c.quick||[]).join('\n');
   if(document.activeElement!==$('sHello'))$('sHello').value=cfg.hello||T.PRESETS[cfg.type].hello;
+  document.querySelectorAll('#tplGrid .tpl').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.tpl===c.tpl)));
+  const fi=T.FONTS.findIndex(f=>f[0]===c.font);
+  document.querySelectorAll('#fontGrid .fnt').forEach(b=>b.setAttribute('aria-pressed',String(+b.dataset.font===fi)));
+  const sz=parseFloat(c.size)||9;
+  if(document.activeElement!==$('sSize'))$('sSize').value=sz;
+  $('sSizeV').textContent=(sz%1?sz.toFixed(1):sz)+' cqw';
+  document.querySelectorAll('#sheenSeg button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.sheen===c.sheen)));
+  const th=$('splashThumb');
+  th.classList.toggle('has',!!c.splash_url);
+  th.style.backgroundImage=c.splash_url?`url(${c.splash_url})`:'';
+  th.firstElementChild.hidden=!!c.splash_url;
   $('modOn').checked=cfg.moderation!==false;modNote();
   if(document.activeElement!==$('rPct'))$('rPct').value=cfg.pct??10;
   if(document.activeElement!==$('rDep'))$('rDep').value=cfg.deposit??20000;
@@ -346,7 +444,15 @@ function saveCfg(patch,now){
 }
 F.forEach(([id,k])=>$(id).addEventListener('input',()=>saveCfg({[k]:$(id).value})));
 $('sQuick').addEventListener('input',()=>saveCfg({quick:$('sQuick').value.split('\n').map(s=>s.trim()).filter(Boolean)}));
-$('sTpl').addEventListener('change',()=>{const k=$('sTpl').value,t=T.TPL[k];saveCfg({tpl:k,bg1:t.bg1,bg2:t.bg2,c1:t.c1,acc:t.acc},true);fill();});
+$('tplGrid').addEventListener('click',e=>{const b=e.target.closest('[data-tpl]');if(!b)return;
+  const k=b.dataset.tpl,t=T.TPL[k];saveCfg({tpl:k,bg1:t.bg1,bg2:t.bg2,c1:t.c1,acc:t.acc},true);fill();});
+$('tplReset').addEventListener('click',()=>{const t=T.TPL[T.full(cfg).tpl];saveCfg({bg1:t.bg1,bg2:t.bg2,c1:t.c1,acc:t.acc},true);fill();});
+$('fontGrid').addEventListener('click',e=>{const b=e.target.closest('[data-font]');if(!b)return;
+  saveCfg({font:T.FONTS[+b.dataset.font][0]},true);fill();});
+$('sSize').addEventListener('input',()=>{const v=+$('sSize').value;
+  $('sSizeV').textContent=(v%1?v.toFixed(1):v)+' cqw';saveCfg({size:cqw(v)});});
+$('sheenSeg').addEventListener('click',e=>{const b=e.target.closest('[data-sheen]');if(!b)return;
+  saveCfg({sheen:b.dataset.sheen},true);fill();});
 $('sType').addEventListener('change',()=>{const p=T.preset($('sType').value);
   if(!confirm('Поставить надписи, шаблон и пожелания по умолчанию для этого типа тоя? Главная надпись и дата останутся.'))return saveCfg({type:p.type},true);
   delete p.names;saveCfg(p,true);fill();});
@@ -355,9 +461,11 @@ $('sSplash').addEventListener('change',async e=>{const f=e.target.files[0];e.tar
   catch(er){toast(er.message);}});
 $('sSplashOff').addEventListener('click',async()=>{try{const r=await T.api(base+'/cfg',{splash:''});cfg=r.cfg;scene.setCfg(cfg);toast('Картинка убрана');}catch(er){toast(er.message);}});
 const SAMPLE={name:'Ерлан ағай',msg:'Бақытты болыңдар! Шаңырақтарың биік болсын.',table:'7',frame:'orn',amount:0,photo:''};
-$('pvCard').addEventListener('click',()=>scene.show({...SAMPLE,msg:(T.full(cfg).quick||[])[0]||SAMPLE.msg},8));
-$('pvEnv').addEventListener('click',()=>scene.show({...SAMPLE,name:'Жанар',amount:10000},8));
-$('pvIdle').addEventListener('click',()=>scene.idle());
+$('pvSeg').addEventListener('click',e=>{const b=e.target.closest('[data-pv]');if(!b)return;
+  document.querySelectorAll('#pvSeg button').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));
+  if(b.dataset.pv==='idle')scene.idle();
+  else if(b.dataset.pv==='card')scene.show({...SAMPLE,msg:(T.full(cfg).quick||[])[0]||SAMPLE.msg},8);
+  else scene.show({...SAMPLE,name:'Жанар',amount:10000},8);});
 
 /* ---------- ссылки ---------- */
 function drawLinks(){
@@ -399,6 +507,7 @@ clearInterval(liveT);liveT=setInterval(()=>T.api(base+'/state').then(s=>live(s.o
   catch(e){$('fatal').textContent=/неверная/.test(e.message)?'Ссылка на пульт неверная. Попросите новую у Toi Online.':'Не получилось загрузить пульт: '+e.message;$('fatal').hidden=false;return;}
   $('app').hidden=false;
   scene=TOIScene($('pv'),{lite:true});scene.setCfg(cfg);
+  showTab(location.hash.slice(1)||'air');   // ссылку на нужную вкладку можно сохранить в закладки
   connect();
 })();
 })();
