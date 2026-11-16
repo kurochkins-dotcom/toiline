@@ -13,7 +13,7 @@
 ## 2. Где что лежит
 
 - **Репозиторий:** GitHub `kurochkins-dotcom/toiline` (приватный), ветка `main`. Самостоятельный сервис.
-- **Хостинг:** Railway, отдельный сервис из этого репозитория (деплой при пуше в `main`), том `/data`.
+- **Хостинг:** Railway, проект respectful-elegance, сервис toiline (деплой при пуше в `main`), том `/data`, адрес https://toiline-production.up.railway.app
 - **История:** первая версия жила внутри Постика (`postik.link/toionline`, PR Postik#263), 16.11.2026 вынесена сюда.
 - **Прототип одним файлом:** `toi-online-prototype.html` в проекте (дизайн перенесён полностью).
 
@@ -55,8 +55,8 @@
 id — 6 символов из `abcdefghjkmnpqrstuvwxyz23456789`, ключи — 10 таких символов.
 
 **Постоянный демо-той** (создаётся сам при старте, без модерации, конверты без перевода):
-- Гость: <домен>/g/demo
-- Экран: <домен>/s/demo/demo
+- Гость: https://toiline-production.up.railway.app/g/demo
+- Экран: https://toiline-production.up.railway.app/s/demo/demo
 - Пульт демо: ссылка видна в админке `/`.
 
 ## 5. Правила показа (LED)
