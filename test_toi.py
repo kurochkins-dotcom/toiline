@@ -39,6 +39,18 @@ def req(path, body=None, headers=None, raw=False):
             return e.code, b
 
 
+def dev(path="/g/demo"):
+    """Cookie устройства так же, как её получает браузер гостя."""
+    try:
+        with urllib.request.urlopen(urllib.request.Request(BASE + path), timeout=10) as r:
+            for v in r.headers.get_all("Set-Cookie") or []:
+                if v.startswith("toi_dev="):
+                    return v.split(";")[0]
+    except urllib.error.HTTPError:
+        pass
+    return ""
+
+
 class SSE:
     """Слушаем поток в отдельном потоке и копим события."""
     def __init__(self, path):
@@ -100,6 +112,7 @@ def main():
     ok(code == 200 and j["id"], "мероприятие создано")
     eid, L = j["id"], j["links"]
     ok(all(k in L for k in ("guest", "mod", "led", "album")), "у мероприятия три ссылки и альбом")
+    cA, cB, cC = dev(f"/g/{eid}"), dev(f"/g/{eid}"), dev(f"/g/{eid}")
     mod = "/api" + L["mod"]
     led = "/api" + L["led"]
     for p in (L["guest"], L["mod"], L["led"], L["album"], "/static/common.js", "/static/qrcode.js", "/sw.js"):
@@ -123,7 +136,8 @@ def main():
     ok(code == 200 and j["online"]["led"] >= 1, "пульт видит, что экран на связи")
 
     # обычная открытка с фото → ждёт модератора
-    code, g1 = req(f"/api/e/{eid}/card", {"name": "Ерлан ағай", "msg": "Бақытты болыңдар!", "table": "7", "frame": "soft", "photo": PHOTO})
+    code, g1 = req(f"/api/e/{eid}/card", {"name": "Ерлан ағай", "msg": "Бақытты болыңдар!", "table": "7", "frame": "soft", "photo": PHOTO},
+                   {"Cookie": cA})
     ok(code == 200 and g1["status"] == "pending", "открытка гостя ждёт модератора")
     c = s_mod.wait("card", lambda d: d["id"] == g1["id"])
     ok(c["photo"].endswith(".jpg") and c["table"] == "7", "пульт сразу получил открытку с фото")
@@ -139,7 +153,7 @@ def main():
     ok(code == 400, "конверт меньше 500 ₸ не принимается")
     code, j = req(f"/api/e/{eid}/card", {"name": "", "msg": "x"})
     ok(code == 400, "без имени не принимается")
-    code, j = req(f"/api/e/{eid}/card", {"name": "А", "msg": "x", "photo": "data:image/png;base64,AAAA"})
+    code, j = req(f"/api/e/{eid}/card", {"name": "А", "msg": "x", "photo": "data:image/png;base64,AAAA"}, {"Cookie": cB})
     ok(code == 400, "не-JPEG фото не принимается")
 
     # модератор: в эфир
@@ -182,12 +196,23 @@ def main():
     ok(True, "экран получил новые настройки сразу")
     code, j = req(mod + "/cfg", {"splash": PHOTO})
     ok(code == 200 and j["cfg"]["splash_url"].endswith(".jpg"), "заставка загружена")
-    code, g3 = req(f"/api/e/{eid}/card", {"name": "Сауле", "msg": "Любви!"})
+    code, g3 = req(f"/api/e/{eid}/card", {"name": "Сауле", "msg": "Любви!"}, {"Cookie": cC})
     ok(g3["status"] == "approved", "без проверки открытка сразу идёт на экран")
     s_led.wait("card", lambda d: d["id"] == g3["id"])
 
     code, j = req(mod + "/state")
     ok(code == 200 and len(j["cards"]) == 3 and j["links"]["led"] == L["led"], "пульт видит все открытки и ссылки")
+
+    # бесплатное поздравление — одно с устройства в полчаса, конверты без ограничений (проверяем на демо-тое)
+    d1, d2 = dev("/g/demo"), dev("/g/demo")
+    code, j = req("/api/e/demo/card", {"name": "Айгуль", "msg": "Бақытты болсын!"}, {"Cookie": d1})
+    ok(code == 200, "с нового устройства бесплатное проходит")
+    code, j = req("/api/e/demo/card", {"name": "Айгуль", "msg": "Ещё раз!"}, {"Cookie": d1})
+    ok(code == 429 and j.get("retry", 0) > 1700, "второе бесплатное с того же устройства отклоняется")
+    code, j = req("/api/e/demo/card", {"name": "Айгуль", "msg": "Конверт!", "amount": 5000}, {"Cookie": d1})
+    ok(code == 200, "конверт с того же устройства проходит сразу")
+    code, j = req("/api/e/demo/card", {"name": "Ерлан", "msg": "Құтты болсын!"}, {"Cookie": d2})
+    ok(code == 200, "другое устройство не заблокировано")
 
     code, j = req("/api/admin/events", headers={"X-Toi-Admin": KEY})
     ok(any(e["id"] == eid and e["sum"] == 10000 for e in j["events"]), "в списке мероприятий видна сумма конвертов")

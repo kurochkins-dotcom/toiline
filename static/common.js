@@ -186,7 +186,7 @@ async function drawQR(cv,text,k,fg,bg){
 async function api(url,body,headers){
   const o=body===undefined?{headers:headers||{}}:{method:'POST',headers:{'Content-Type':'application/json',...(headers||{})},body:JSON.stringify(body)};
   const r=await fetch(url,o);let j={};try{j=await r.json();}catch(e){}
-  if(!r.ok)throw new Error(j.error||('Ошибка '+r.status));
+  if(!r.ok){const e=new Error(j.error||('Ошибка '+r.status));e.retry=j.retry||0;throw e;}
   return j;
 }
 const abs=p=>location.origin+p;

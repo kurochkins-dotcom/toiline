@@ -121,6 +121,7 @@ button{cursor:pointer}
       <span class="tag">от 1 000 ₸</span>
     </button>
     <p class="fine" id="fine">Перевод в конверте уходит напрямую организатору тоя. Перед показом поздравления проверяет модератор.</p>
+    <p class="err" id="homeErr" hidden></p>
   </section>
 
   <section class="view" id="vForm" hidden>
@@ -181,10 +182,25 @@ const eid=location.pathname.split('/')[2];
 const table=(new URLSearchParams(location.search).get('t')||'').replace(/[^0-9a-zA-Zа-яА-Я-]/g,'').slice(0,6);
 let c=null,mode='free',frame='orn',photo=null,sending=false,poll=0;
 
+/* Бесплатное поздравление — одно с устройства в полчаса (то же правило проверяет сервер).
+   Здесь только показываем обратный отсчёт, чтобы гость не заполнял форму впустую. */
+const FREE_EVERY=30*60*1000,freeKey='toi-free-'+eid;
+function freeLeft(){try{const t=+localStorage.getItem(freeKey)||0;return Math.max(0,t+FREE_EVERY-Date.now());}catch(x){return 0;}}
+function blockFree(at){try{localStorage.setItem(freeKey,String(at||Date.now()));}catch(x){}}
+function freeNote(){
+  const left=freeLeft(),small=document.querySelector('#vHome .action:not(.env) small');
+  if(small)small.textContent=left?`Бесплатно через ${Math.ceil(left/60000)} мин · пока можно отправить конверт`:'Селфи и пожелание выйдут на большой экран';
+  if(!left)$('homeErr').hidden=true;
+}
+
 function go(v){
   ['vLoad','vHome','vForm','vPay','vDone'].forEach(id=>$(id).hidden=true);
-  if(v==='home')$('vHome').hidden=false;
-  else if(v==='free'||v==='env'){mode=v;$('vForm').hidden=false;
+  if(v==='home'){$('vHome').hidden=false;freeNote();}
+  else if(v==='free'||v==='env'){
+    const left=freeLeft();
+    if(v==='free'&&left){$('vHome').hidden=false;freeNote();
+      return err('homeErr',`Бесплатное поздравление — раз в 30 минут. Следующее через ${Math.ceil(left/60000)} мин, а конверт можно отправить прямо сейчас.`);}
+    mode=v;$('vForm').hidden=false;
     $('fTitle').textContent=v==='env'?'Конверт · VIP':'Поздравление';
     $('envSum').hidden=v!=='env';$('frameField').hidden=v==='env';
     $('send').classList.toggle('env',v==='env');$('send').textContent=v==='env'?'Дальше: перевод через Kaspi':'Отправить на экран';
@@ -246,8 +262,12 @@ async function submit(amount,btn,errId){
   try{
     const r=await T.api(`/api/e/${eid}/card`,{name:$('gName').value.trim(),msg:$('gMsg').value.trim(),frame,table:tbl(),amount,photo:photo||''});
     photo=null;$('thumb').style.backgroundImage='';$('shot').classList.remove('has');$('shotTx').innerHTML='Сделать селфи<small>Можно без фото</small>';
+    if(!amount){blockFree();freeNote();}
     done(amount,r.status,r.pos);watch(r.id,r.token,amount);
-  }catch(e){err(errId,e.message||'Не получилось отправить. Проверьте интернет и попробуйте ещё раз.');}
+  }catch(e){
+    if(e.retry){blockFree(Date.now()-(FREE_EVERY-e.retry*1000));freeNote();}
+    err(errId,e.message||'Не получилось отправить. Проверьте интернет и попробуйте ещё раз.');
+  }
   finally{sending=false;b.disabled=false;b.textContent=t;}
 }
 function done(vip,status,pos){

@@ -37,7 +37,9 @@ PHOTO_MAX = 3 * 1024 * 1024       # селфи после сжатия в бра
 SPLASH_MAX = 6 * 1024 * 1024
 MIN_ENV = 500                     # минимальный конверт, ₸
 MAX_ENV = 5_000_000
-GUEST_LIMIT = (12, 600)           # не больше 12 открыток с одного адреса за 10 минут
+GUEST_LIMIT = (60, 600)           # против ботов: 60 открыток с одного адреса за 10 минут (гостя сдерживает FREE_EVERY)
+FREE_EVERY = 30 * 60              # бесплатное поздравление с одного устройства — раз в 30 минут
+DEV_COOKIE = "toi_dev"            # cookie устройства: по ней считаем бесплатные поздравления, а не по IP (в зале один Wi-Fi)
 SSE_LIFETIME = 270                # поток живёт ~4.5 минуты, браузер сам переподключается (прокси не любят вечные ответы)
 SSE_PING = 15                     # Cloudflare рвёт тихое соединение через 100 сек
 
@@ -76,6 +78,8 @@ def db():
             paid INTEGER NOT NULL DEFAULT 0, approved_at INTEGER, shown_at INTEGER,
             gtoken TEXT NOT NULL, ip TEXT NOT NULL DEFAULT '');
         CREATE INDEX IF NOT EXISTS cards_eid ON cards(eid, status);
+        CREATE TABLE IF NOT EXISTS free_pass(
+            dev TEXT NOT NULL, eid TEXT NOT NULL, last INTEGER NOT NULL, PRIMARY KEY(dev, eid));
         """)
         _db = c
         ensure_demo()
@@ -267,7 +271,48 @@ def rate_ok(ip):
     return True
 
 
-def add_card(e, j, ip):
+def device(h):
+    """Кто отправляет: cookie устройства, а если её нет — адрес. Для первого визита отдаём Set-Cookie."""
+    m = re.search(r"(?:^|;\s*)" + DEV_COOKIE + r"=([0-9a-f]{32})", h.headers.get("Cookie") or "")
+    if m:
+        return m.group(1), None
+    v = secrets.token_hex(16)
+    return h.ip(), {"Set-Cookie": f"{DEV_COOKIE}={v}; Path=/; Max-Age=31536000; HttpOnly; SameSite=Lax"}
+
+
+def free_wait(eid, dev):
+    """Сколько секунд осталось до следующего бесплатного поздравления с этого устройства (0 — можно)."""
+    if not dev:
+        return 0
+    r = q("SELECT last FROM free_pass WHERE dev=? AND eid=?", (dev, eid), one=True)
+    if not r:
+        return 0
+    return max(0, (r["last"] + FREE_EVERY * 1000 - now_ms() + 999) // 1000)
+
+
+def mark_free(eid, dev):
+    """Запомнить, когда с устройства было бесплатное поздравление. Старое подчищаем: лишнего о гостях не держим."""
+    if not dev:
+        return
+    ex("INSERT OR REPLACE INTO free_pass(dev,eid,last) VALUES(?,?,?)", (dev, eid, now_ms()))
+    if secrets.randbelow(20) == 0:
+        ex("DELETE FROM free_pass WHERE last < ?", (now_ms() - 7 * 86400000,))
+
+
+def free_text(sec):
+    m = (sec + 59) // 60
+    return "меньше минуты" if m <= 1 else f"{m} мин"
+
+
+class FreeLimit(Exception):
+    """Бесплатное поздравление с этого устройства уже было в последние полчаса."""
+
+    def __init__(self, left):
+        super().__init__("free limit")
+        self.left = left
+
+
+def add_card(e, j, ip, dev=""):
     name = clean_str(j.get("name"), 30)
     msg = clean_str(j.get("msg"), 140)
     if not name:
@@ -279,6 +324,11 @@ def add_card(e, j, ip):
         raise ValueError(f"Сумма конверта от {MIN_ENV} ₸")
     frame = j.get("frame") if j.get("frame") in FRAMES else "orn"
     tbl = clean_str(str(j.get("table") or ""), 6)
+    # Бесплатное поздравление — одно с устройства в полчаса. Конверт (платный) отправляется сколько угодно.
+    if not amount:
+        left = free_wait(e["id"], dev)
+        if left:
+            raise FreeLimit(left)
     photo = save_jpeg(e["id"], j["photo"], PHOTO_MAX) if j.get("photo") else ""
     # Конверт всегда ждёт модератора: он сверяет перевод в Kaspi. Обычная открытка — если включена проверка.
     demo = bool(e["cfg"].get("demo"))
@@ -290,6 +340,8 @@ def add_card(e, j, ip):
              (e["id"], t, name, msg, frame, tbl, amount, photo, status, t if status == "approved" else None, token, ip))
     if demo and amount:
         ex("UPDATE cards SET paid=1 WHERE id=?", (cid,))
+    if not amount:
+        mark_free(e["id"], dev)
     r = q("SELECT * FROM cards WHERE id=?", (cid,), one=True)
     publish(e["id"], "card", card_out(r, True), roles=("mod",))
     if status == "approved":
@@ -399,11 +451,11 @@ CTYPES = {"js": "application/javascript; charset=utf-8", "css": "text/css; chars
           "png": "image/png", "json": "application/json; charset=utf-8", "webmanifest": "application/manifest+json"}
 
 
-def _file(h, path, ctype, cache="no-cache"):
+def _file(h, path, ctype, cache="no-cache", extra=None):
     if not os.path.isfile(path):
         return h.err(404, "Не найдено")
     with open(path, "rb") as f:
-        h.send_bytes(200, f.read(), ctype, {"Cache-Control": cache})
+        h.send_bytes(200, f.read(), ctype, {"Cache-Control": cache, **(extra or {})})
 
 
 def _keyed(eid, key, field):
@@ -437,7 +489,10 @@ def handle_get(h, path):
         # страницы
         if not parts:
             return _file(h, os.path.join(STATIC, "admin.html"), "text/html; charset=utf-8")
-        if parts[0] in ("g", "a") and len(parts) == 2 or parts[0] in ("m", "s") and len(parts) == 3:
+        if parts[0] == "g" and len(parts) == 2:      # странице гостя сразу выдаём cookie устройства
+            _, cookie = device(h)
+            return _file(h, os.path.join(STATIC, PAGES["g"]), "text/html; charset=utf-8", extra=cookie)
+        if parts[0] in ("a",) and len(parts) == 2 or parts[0] in ("m", "s") and len(parts) == 3:
             return _file(h, os.path.join(STATIC, PAGES[parts[0]]), "text/html; charset=utf-8")
         if parts == ["sw.js"]:  # сервис-воркер в корне управляет всеми страницами
             return _file(h, os.path.join(STATIC, "sw.js"), CTYPES["js"])
@@ -535,11 +590,17 @@ def handle_post(h, path):
                 return h.err(404, "Мероприятие не найдено")
             if not rate_ok(e["id"] + "|" + h.ip()):
                 return h.err(429, "Слишком много открыток подряд. Подождите пару минут.")
+            dev, cookie = device(h)
             try:
-                r = add_card(e, j, h.ip())
+                r = add_card(e, j, h.ip(), dev)
+            except FreeLimit as fl:
+                return h.send_json(429, {"error": "Бесплатное поздравление можно отправить раз в 30 минут. "
+                                                  f"Следующее — через {free_text(fl.left)}, а конверт можно отправить в любое время.",
+                                         "retry": fl.left}, headers=cookie)
             except ValueError as v:
                 return h.err(400, str(v))
-            return h.send_json(200, {"id": r["id"], "token": r["gtoken"], "status": r["status"], "pos": queue_pos(e["id"], r)})
+            return h.send_json(200, {"id": r["id"], "token": r["gtoken"], "status": r["status"], "pos": queue_pos(e["id"], r)},
+                               headers=cookie)
         if kind == "m" and len(parts) == 5:
             e = _keyed(parts[2], parts[3], "mod_key")
             if not e:
