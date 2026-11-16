@@ -12,6 +12,8 @@
 .l-rose canvas{width:64cqw;height:64cqw;animation:spin 300s linear infinite}
 .l-sweep{inset:0;background:linear-gradient(100deg,transparent 38%,rgba(255,248,225,.28) 50%,transparent 62%);background-size:320% 100%;background-position:100% 0;mix-blend-mode:screen;animation:sheen var(--sheen,30s) ease-in-out infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
+.l-pat{inset:0;opacity:.9}
+.l-pat canvas{width:100%;height:100%;display:block}
 .l-dust{inset:0}
 .l-dust canvas,.l-band canvas{width:100%;height:100%;display:block}
 .l-band{inset:-2%;animation:bandA 18s ease-in-out infinite alternate}

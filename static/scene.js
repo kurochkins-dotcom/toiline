@@ -2,6 +2,7 @@
 (function(){
 const T=window.TOI;
 const HTML=`<div class="layer l-glow"></div><div class="layer l-splash"></div>
+<div class="layer l-pat"><canvas></canvas></div>
 <div class="layer l-rose"><canvas width="900" height="900"></canvas></div>
 <div class="layer l-dust"><canvas></canvas></div><div class="layer l-band"><canvas></canvas></div><div class="layer l-sweep"></div>
 <div class="banner"><div class="inner"><div class="kind"></div><div class="names gold"></div><div class="sub"></div><div class="date"></div></div></div>
@@ -14,7 +15,7 @@ window.TOIScene=function(el,opts){
   el.classList.add('led');el.innerHTML=HTML;
   const q=s=>el.querySelector(s);
   let c=null,dustP=[],raf=0;
-  function scene(){if(!c)return;T.renderBand(q('.l-band canvas'),c);T.renderRose(q('.l-rose canvas'),c);initDust();}
+  function scene(){if(!c)return;T.renderPattern(q('.l-pat canvas'),c);T.renderBand(q('.l-band canvas'),c);T.renderRose(q('.l-rose canvas'),c);initDust();}
   function initDust(){const cv=q('.l-dust canvas'),r=cv.getBoundingClientRect(),d=devicePixelRatio||1;cv.width=r.width*d;cv.height=r.height*d;
     dustP=[...Array(opts.lite?30:70)].map(()=>({x:Math.random(),y:Math.random(),r:.5+Math.random()*1.8,v:.0004+Math.random()*.0012,p:Math.random()*6.28}));}
   function dust(){

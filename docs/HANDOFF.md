@@ -22,7 +22,7 @@
 | `server.py` | HTTP-сервер (stdlib): чтение тела, ответы, адрес посетителя, `/health`, редирект старых `/toionline/...` |
 | `toi.py` | Вся логика: база SQLite, API, потоки реального времени (SSE), фото, демо-той |
 | `static/common.js` | 8 шаблонов экрана, 4 пресета тоя, орнамент кодом, тема (CSS-переменные), сжатие фото, аватар, QR, `api()` |
-| `static/scene.js`, `static/led.css` | Сцена LED: заставка, открытка, конверт, салют, бегущая строка |
+| `static/scene.js`, `static/led.css` | Сцена LED: заставка, открытка, конверт, салют, бегущая строка, фоновый узор |
 | `static/led.html` | LED-экран: очередь, правила показа, SSE, офлайн, полный экран, wake lock |
 | `static/guest.html` | Экран гостя: поздравление, конверт, шаг перевода Kaspi, статус открытки |
 | `static/mod.html` | Пульт: Эфир / Экран / Отчёт / Ссылки и QR |
@@ -96,7 +96,8 @@ cards(id INTEGER PK, eid TEXT, created INTEGER ms, name, msg, frame ('orn'|'soft
 ```
 
 `cfg` (проверяется в `clean_cfg`): `type` (wedding|jubilee|uzatu|tusau), `kind`, `names`, `sub`, `date`, `hello`, `quick` (список пожеланий),
-`tpl` (pink|gold|bluemed|turq|green|royal|circle|sky), `bg1`,`bg2`,`c1`,`acc` (#hex), `font`, `size` (напр. `9cqw`), `sheen` (12s|30s|60s),
+`tpl` (pink|gold|bluemed|turq|green|royal|circle|sky), `bgpat` (none|spiral|medallion|ring|heart|lattice|stripe|damask|mandala —
+фоновый узор, рисуется кодом в `renderPattern`), `bg1`,`bg2`,`c1`,`acc` (#hex), `font`, `size` (напр. `9cqw`), `sheen` (12s|30s|60s),
 `splash` (имя файла), `moderation`, `kaspi_name`, `kaspi_phone`, `kaspi_link` (только https), `pct` (комиссия %), `deposit` (₸), `demo`.
 
 ## 8. API

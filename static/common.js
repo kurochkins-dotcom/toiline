@@ -123,6 +123,74 @@ function renderBand(cv,c){
   else {const S=H*.34;cornerG(col,0,0,S,0);cornerG(col,W,0,S,Math.PI/2);cornerG(col,W,H,S,Math.PI);cornerG(col,0,H,S,-Math.PI/2);}
   paint(x,col,c,W,H);
 }
+/* ---------- фоновые узоры: кодом, на широкий экран, в цветах праздника ---------- */
+const PAT_NAMES={none:'Чистый фон',spiral:'Спирали',medallion:'Медальоны',ring:'Кольца',heart:'Сердечки',lattice:'Ромбы',stripe:'Полосы',damask:'Дамаск',mandala:'Мандала'};
+const PAT_LINE={medallion:.24,heart:.34,lattice:.22,stripe:.3,mandala:.26};
+const coil=(col,cx,cy,R,sign,turns,w)=>spiralG(col,(a,b)=>[a,b],cx+R,cy,cx,cy,sign,turns,w);
+function patShapes(kind,col,W,H,cell){
+  const c2=cell/2;
+  if(kind==='spiral'){
+    for(let y=-c2;y<H+cell;y+=cell)for(let xx=-c2;xx<W+cell;xx+=cell){
+      coil(col,xx+c2,y+c2,cell*.34,1,1.4,cell*.026);
+      coil(col,xx+cell,y+cell*.16,cell*.19,-1,1.2,cell*.02);
+    }
+  } else if(kind==='medallion'){
+    tileG(col,W,H,cell);
+  } else if(kind==='ring'){
+    for(let y=-c2;y<H+cell;y+=cell)for(let xx=-c2;xx<W+cell;xx+=cell){
+      [.42,.3,.18].forEach(k=>{const p=new Path2D();p.arc(xx+c2,y+c2,cell*k,0,TAU);col.S.push({p,w:cell*.022});});
+      dotG(col,xx+c2,y+c2,cell*.045);
+    }
+  } else if(kind==='heart'){
+    // «сердечко» из двух рогов қошқар мүйіз и капли — как на текемете
+    for(let y=0;y<H+cell;y+=cell)for(let xx=0;xx<W+cell;xx+=cell){
+      const off=((y/cell)|0)%2?c2:0,cx=xx+off+c2,cy=y+cell*.62;
+      hornG(col,cx,cy,cell*.42,.62,{tip:false});
+      hornG(col,cx,cy,cell*.42,-.62,{tip:false});
+      dropG(col,cx,cy+cell*.1,cell*.16,0);
+    }
+  } else if(kind==='lattice'){
+    for(let y=-cell;y<H+cell*2;y+=cell)for(let xx=-cell;xx<W+cell*2;xx+=cell){
+      const p=new Path2D();p.moveTo(xx,y);p.lineTo(xx+c2,y+c2);p.lineTo(xx,y+cell);p.lineTo(xx-c2,y+c2);p.closePath();col.S.push({p,w:cell*.014});
+      dotG(col,xx,y+c2,cell*.035);
+    }
+  } else if(kind==='stripe'){
+    // вертикальные полосы с завитками и каплями
+    for(let xx=cell*.35;xx<W+cell;xx+=cell*.62){
+      const line=new Path2D();line.moveTo(xx,-cell);line.lineTo(xx,H+cell);col.S.push({p:line,w:cell*.016});
+      for(let y=-cell*.5;y<H+cell;y+=cell*.52){
+        const side=((Math.round((y+cell)/(cell*.52)))|0)%2?1:-1;
+        coil(col,xx+side*cell*.16,y+cell*.26,cell*.1,-side,1.3,cell*.019);
+        dropG(col,xx+side*cell*.1,y+cell*.26,cell*.09,side*Math.PI/2);
+      }
+    }
+  } else if(kind==='damask'){
+    const cl=cell*1.5;
+    for(let y=-cl;y<H+cl;y+=cl)for(let xx=-cl;xx<W+cl;xx+=cl){
+      const off=((y/cl)|0)%2?cl/2:0;
+      hornG(col,xx+off+cl/4,y+cl/3,cl*.52,0);
+      hornG(col,xx+off+cl*.75,y+cl*.8,cl*.52,Math.PI);
+      dropG(col,xx+off+cl*.5,y+cl*.55,cl*.16,0);
+      dropG(col,xx+off,y+cl*.15,cl*.13,Math.PI);
+    }
+  } else if(kind==='mandala'){
+    medallionG(col,W/2,H/2,H*.44,8);
+    ringG(col,W/2,H/2,H*.46);
+    const R=H*.5;
+    for(let y=-R;y<H+R;y+=H*.5)for(let xx=-R;xx<W+R;xx+=H*.5){
+      if(Math.hypot(xx-W/2,y-H/2)<H*.62)continue;
+      crossG(col,xx,y,H*.16);
+    }
+  }
+}
+function renderPattern(cv,c){
+  if(!cv)return;const fp=fitCanvas(cv);if(!fp)return;const [x,W,H]=fp;
+  const kind=c.bgpat||'none';x.clearRect(0,0,W,H);
+  if(kind==='none'||!PAT_NAMES[kind])return;
+  const col=Col();patShapes(kind,col,W,H,c.patCell||Math.max(64,H/4.6));
+  const embossed=kind==='spiral'||kind==='ring'||kind==='damask';
+  paint(x,col,{mode:embossed?'emboss':'outline',c1:mix(c.bg1,c.c1,.55),c2:mix(c.bg1,'#ffffff',.55),a1:PAT_LINE[kind]||.3},W,H);
+}
 /* Центральный медальон (вращается) */
 function renderRose(rc,c){
   if(!rc)return;const rx=rc.getContext('2d');rx.setTransform(1,0,0,1,0,0);rx.clearRect(0,0,900,900);
@@ -192,6 +260,6 @@ async function api(url,body,headers){
 const abs=p=>location.origin+p;
 const tm=t=>new Date(t).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit',timeZone:'Asia/Almaty'});
 
-window.TOI={$,fmt,esc,reduce,TPL,TPL_NAMES,FONTS,PRESETS,full,preset,mix,rgba,lum,Col,medallionG,paint,renderBand,renderRose,renderHeadOrn,theme,
+window.TOI={$,fmt,esc,reduce,TPL,TPL_NAMES,FONTS,PRESETS,PAT_NAMES,full,preset,mix,rgba,lum,Col,medallionG,paint,renderBand,renderRose,renderPattern,renderHeadOrn,theme,
   readImg,avatar,photoOf,durOf,drawQR,api,abs,tm,fitCanvas};
 })();

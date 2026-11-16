@@ -46,6 +46,7 @@ SSE_PING = 15                     # Cloudflare рвёт тихое соедин�
 ID_ABC = "abcdefghjkmnpqrstuvwxyz23456789"  # без 0/o, 1/l/i: ссылку диктуют по телефону
 HEX = re.compile(r"#[0-9a-fA-F]{6}")
 TPLS = {"pink", "gold", "bluemed", "turq", "green", "royal", "circle", "sky"}
+PATS = {"none", "spiral", "medallion", "ring", "heart", "lattice", "stripe", "damask", "mandala"}  # фоновый узор
 TYPES = {"wedding", "jubilee", "uzatu", "tusau"}
 FONTS = {"'Great Vibes', cursive", "'Cormorant Garamond', serif", "'Playfair Display', serif", "'Forum', serif",
          "'Lobster', cursive", "'Comfortaa', sans-serif"}
@@ -148,6 +149,8 @@ def clean_cfg(j, old=None):
         c["type"] = j["type"]
     if j.get("tpl") in TPLS:
         c["tpl"] = j["tpl"]
+    if j.get("bgpat") in PATS:
+        c["bgpat"] = j["bgpat"]
     for k in ("bg1", "bg2", "c1", "acc"):
         if isinstance(j.get(k), str) and HEX.fullmatch(j[k]):
             c[k] = j[k].lower()
@@ -169,6 +172,7 @@ def clean_cfg(j, old=None):
     c.setdefault("tpl", "pink")
     c.setdefault("moderation", True)
     c.setdefault("sheen", "30s")
+    c.setdefault("bgpat", "none")
     c.setdefault("splash", "")
     c.setdefault("pct", 10)
     c.setdefault("deposit", 20000)
