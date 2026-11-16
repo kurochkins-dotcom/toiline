@@ -61,10 +61,14 @@ button{cursor:pointer}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
 .chips button{border:1px solid #e0d8c7;background:#fff;border-radius:99px;padding:7px 12px;font-size:13px;font-weight:600;color:#3d3746}
 .chips button[aria-pressed="true"]{border-color:#c9963a;background:#fff4da;color:#6b4708}
-.pv{display:grid;grid-template-columns:54px 1fr;gap:10px;align-items:center;padding:10px;border-radius:14px;background:#221c2c;color:#fff}
-.pv i{width:54px;height:72px;border-radius:8px;background:center/cover #444;outline:2px solid var(--ev-acc);outline-offset:2px}
-.pv.f-soft i{outline-color:#f1c9d6;border-radius:27px 27px 8px 8px}
-.pv.f-classic i{outline-color:#fff;border-radius:2px;outline-offset:0}
+.pv{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:center;padding:10px;border-radius:14px;background:#221c2c;color:#fff}
+.mini{display:grid;justify-items:center;background:#fffcf5;padding:4px 4px 0;border-radius:3px;transform:rotate(-2deg);box-shadow:0 2px 6px rgba(0,0,0,.35)}
+.mini b{font-family:var(--ev-font);font-size:10px;font-weight:400;color:#2a2018;padding:3px 0 4px;max-width:86px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pv i{width:54px;height:66px;border-radius:1px;background:center/cover #444}
+.pv.f-soft i{border-radius:12px 12px 1px 1px}
+.pv.f-orn .mini{border:1.5px solid var(--ev-acc)}
+.pv.f-soft .mini{background:#fff7f9}
+
 .pv p{margin:0;font-family:var(--ev-font);font-size:16px;line-height:1.25;overflow-wrap:anywhere}
 .pv small{font-size:11px;opacity:.75;font-weight:700}
 .pv em{display:none;font-style:normal;font-weight:800;font-size:17px;color:#f5d98b}
@@ -147,7 +151,7 @@ button{cursor:pointer}
     <div class="fld" id="frameField"><span class="lbl">Рамка</span>
       <div class="chips" id="frames"><button data-f="orn" aria-pressed="true">Золотая</button><button data-f="soft" aria-pressed="false">Арка</button><button data-f="classic" aria-pressed="false">Полароид</button></div></div>
     <div class="fld"><span class="lbl">Так это будет на экране</span>
-      <div class="pv" id="pv"><i id="pvPic"></i><div><em id="pvAmt"></em><p id="pvMsg"></p><small id="pvFrom"></small></div></div></div>
+      <div class="pv" id="pv"><div class="mini"><i id="pvPic"></i><b id="pvWho"></b></div><div><em id="pvAmt"></em><p id="pvMsg"></p><small id="pvFrom"></small></div></div></div>
     <button class="go" id="send">Отправить на экран</button>
     <p class="err" id="err" hidden></p>
   </section>
@@ -222,6 +226,7 @@ function updPv(){
   $('pvAmt').textContent=v?'Конверт · '+T.fmt(v):'';
   $('pvMsg').textContent='«'+($('gMsg').value.trim()||'…')+'»';
   $('pvFrom').textContent=who()+(tbl()?' · стол №'+tbl():'');
+  const wh=$('pvWho');if(wh)wh.textContent=who();
 }
 ['gName','gMsg','gTbl'].forEach(id=>$(id).addEventListener('input',updPv));
 $('gSum').addEventListener('input',updHint);

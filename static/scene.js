@@ -7,7 +7,7 @@ const HTML=`<div class="layer l-glow"></div><div class="layer l-splash"></div>
 <div class="layer l-dust"><canvas></canvas></div><div class="layer l-band"><canvas></canvas></div><div class="layer l-sweep"></div>
 <div class="banner"><div class="inner"><div class="kind"></div><div class="names gold"></div><div class="sub"></div><div class="date"></div></div></div>
 <div class="head"><span class="gold"></span></div>
-<div class="greet"><div class="pic"></div><div class="txt"><span class="ribbon"><i class="env-ico"></i> КОНВЕРТ · VIP</span><div class="amount gold"></div><div class="msg"></div><div class="from"></div></div></div>
+<div class="greet"><div class="polaroid"><div class="pic"></div><div class="cap"><div class="who"></div><div class="meta"></div></div></div><div class="txt"><span class="ribbon"><i class="env-ico"></i> КОНВЕРТ · VIP</span><div class="amount gold"></div><div class="msg"></div></div></div>
 <div class="ticker"></div><div class="progress"></div><canvas class="confetti"></canvas>`;
 
 window.TOIScene=function(el,opts){
@@ -37,7 +37,9 @@ window.TOIScene=function(el,opts){
     q('.banner').classList.add('off');q('.head').classList.add('on');
     const g=q('.greet');g.className='greet';void g.offsetWidth;g.className='greet on '+(it.amount?'vip':'f-'+(it.frame||'orn'));
     q('.greet .pic').style.backgroundImage=`url("${T.photoOf(it)}")`;
-    q('.greet .msg').textContent='«'+it.msg+'»';q('.greet .from').textContent=it.name+(it.table?' · стол №'+it.table:'');
+    q('.greet .msg').textContent='«'+it.msg+'»';
+    q('.greet .who').textContent=it.name||'';
+    q('.greet .meta').textContent=it.table?'стол №'+it.table:'';
     q('.greet .amount').textContent=it.amount?T.fmt(it.amount):'';
     if(it.amount>=10000)confetti();
     if(sec)bar(sec,!!it.amount);

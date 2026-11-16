@@ -44,19 +44,25 @@
 .head.on{opacity:1}
 .head .gold{font-family:var(--ev-font);font-size:3.2cqw;line-height:1.1;filter:drop-shadow(0 .2cqw .3cqw rgba(0,0,0,.35))}
 
-.greet{position:absolute;inset:8.5cqw 14cqw 6.5cqw 6cqw;display:grid;grid-template-columns:auto 1fr;grid-template-rows:100%;gap:3.5cqw;align-items:center;padding:3cqw;border-radius:2cqw;background:rgba(12,10,20,.58);backdrop-filter:blur(6px);box-shadow:0 2cqw 5cqw rgba(0,0,0,.35);opacity:0;transform:translateY(2cqw) scale(.98);transition:opacity .6s,transform .6s;z-index:3;overflow:hidden;color:#fff}
+/* Карточка гостя — полароид: фото в белой рамке и поле для подписи снизу */
+.greet{position:absolute;inset:6.8cqw 9cqw 4.6cqw 5cqw;display:flex;align-items:center;gap:3.6cqw;padding:2.2cqw;border-radius:2cqw;background:rgba(12,10,20,.5);backdrop-filter:blur(6px);box-shadow:0 2cqw 5cqw rgba(0,0,0,.35);opacity:0;transform:translateY(2cqw) scale(.98);transition:opacity .6s,transform .6s;z-index:3;overflow:hidden;color:#fff}
 .greet.on{opacity:1;transform:none}
-.greet .pic{aspect-ratio:3/4;height:100%;width:auto;background:center/cover #222;border-radius:1.2cqw}
-.greet.f-orn .pic{outline:.45cqw solid var(--ev-acc);outline-offset:.7cqw}
-.greet.f-soft .pic{outline:.45cqw solid #f1c9d6;outline-offset:.7cqw;border-radius:50% 50% 1.2cqw 1.2cqw}
-.greet.f-classic .pic{outline:.35cqw solid #fff;outline-offset:0;border-radius:.3cqw}
-.greet .txt{display:grid;gap:1.4cqw;min-width:0}
+.polaroid{flex:none;display:grid;align-self:center;background:#fffcf5;padding:1.15cqw 1.15cqw 0;border-radius:.45cqw;transform:rotate(-1.6deg);box-shadow:0 1.1cqw 2.6cqw rgba(0,0,0,.42),0 .2cqw .5cqw rgba(0,0,0,.25)}
+.polaroid .pic{aspect-ratio:3/4;height:32.5cqw;width:auto;background:center/cover #222;border-radius:.15cqw}
+.polaroid .cap{padding:1.05cqw .5cqw 1.25cqw;text-align:center;line-height:1.1}
+.polaroid .who{font-family:var(--ev-font);font-size:2.85cqw;color:#2a2018;overflow-wrap:anywhere}
+.polaroid .meta{font-size:1.1cqw;letter-spacing:.16em;text-transform:uppercase;font-weight:700;color:#8d7c68;margin-top:.45cqw}
+.polaroid .meta:empty{display:none}
+.greet.f-orn .polaroid{border:.22cqw solid var(--ev-acc)}
+.greet.f-soft .polaroid{border-radius:1.6cqw 1.6cqw .45cqw .45cqw;background:#fff7f9}
+.greet.f-soft .polaroid .pic{border-radius:.9cqw .9cqw .1cqw .1cqw}
+.greet .txt{display:grid;gap:1.4cqw;min-width:0;align-content:center}
 .greet .msg{font-family:var(--ev-font);font-size:3.4cqw;line-height:1.25;text-wrap:balance;overflow-wrap:anywhere}
 .greet .from{font-size:1.9cqw;font-weight:700;opacity:.85}
 .greet .ribbon{display:none}
 .greet .amount{display:none}
 .greet.vip{background:linear-gradient(160deg,rgba(40,26,4,.82),rgba(14,10,2,.82));border:.35cqw solid var(--ev-acc);box-shadow:0 0 6cqw color-mix(in srgb,var(--ev-acc) 45%,transparent),0 2cqw 5cqw rgba(0,0,0,.45)}
-.greet.vip .pic{outline:.55cqw solid var(--ev-acc);outline-offset:.8cqw;box-shadow:0 0 4cqw color-mix(in srgb,var(--ev-acc) 60%,transparent)}
+.greet.vip .polaroid{background:linear-gradient(170deg,#fff8e6,#f3e2bd);border:.22cqw solid var(--ev-acc);box-shadow:0 0 4cqw color-mix(in srgb,var(--ev-acc) 55%,transparent),0 1.1cqw 2.6cqw rgba(0,0,0,.45)}
 .greet.vip .ribbon{display:inline-flex;align-items:center;gap:.8cqw;justify-self:start;font-size:1.6cqw;font-weight:800;letter-spacing:.18em;color:#2e1d00;background:linear-gradient(180deg,color-mix(in srgb,var(--ev-acc) 50%,#fff),var(--ev-acc));padding:.5cqw 1.6cqw;border-radius:99px}
 .greet.vip .amount{display:block;font-weight:800;font-size:5.4cqw;line-height:1;font-variant-numeric:tabular-nums;--sheen:6s}
 .greet.vip .msg{color:color-mix(in srgb,var(--ev-acc) 35%,#fff)}
