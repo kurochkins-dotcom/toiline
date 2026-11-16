@@ -63,9 +63,6 @@
 .env-ico{width:2.4cqw;height:1.7cqw;display:inline-block;border:.25cqw solid currentColor;border-radius:.3cqw;position:relative}
 .env-ico::after{content:"";position:absolute;left:.1cqw;right:.1cqw;top:-.1cqw;height:1cqw;border-bottom:.25cqw solid currentColor;clip-path:polygon(0 0,50% 100%,100% 0)}
 
-.qr{position:absolute;right:2.2cqw;bottom:2.2cqw;display:grid;gap:.5cqw;justify-items:center;z-index:4}
-.qr canvas{width:9.5cqw;height:9.5cqw;background:#fff;border-radius:.6cqw;image-rendering:pixelated}
-.qr span{font-size:1.15cqw;font-weight:700;text-align:center;max-width:12cqw;line-height:1.2;color:var(--ev-ink)}
 .progress{position:absolute;left:0;bottom:0;height:.45cqw;width:0;background:color-mix(in srgb,var(--ev-ink) 60%,transparent);z-index:4}
 .progress.vip{background:var(--ev-acc)}
 .ticker{position:absolute;left:2.4cqw;bottom:2.4cqw;font-size:1.35cqw;font-weight:700;z-index:4;max-width:60cqw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--ev-ink)}

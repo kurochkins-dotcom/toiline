@@ -81,7 +81,7 @@ async function sync(){
     $('err').hidden=true;save();flush();kick();
   }catch(e){if(/неверная/.test(e.message)){$('err').textContent='Ссылка на экран неверная. Возьмите новую в пульте модератора.';$('err').hidden=false;}}
 }
-function applyCfg(c){cfg=c;scene.setCfg(c);T.theme(document.body,T.full(c));scene.setQR(T.abs('/g/'+eid));document.title=(c.names||'Toi Online')+' · экран';}
+function applyCfg(c){cfg=c;scene.setCfg(c);T.theme(document.body,T.full(c));document.title=(c.names||'Toi Online')+' · экран';}
 function onCard(c,quiet){
   if(c.status==='hidden'||c.status==='pending'){cards.delete(c.id);if(current&&current.id===c.id)next();}
   else{
@@ -113,7 +113,7 @@ document.addEventListener('click',()=>{try{const p=document.documentElement.requ
 setTimeout(()=>$('hint').classList.add('off'),15000);
 let mt;document.addEventListener('mousemove',()=>{document.body.classList.add('cursor');clearTimeout(mt);mt=setTimeout(()=>document.body.classList.remove('cursor'),2500);});
 if('serviceWorker' in navigator)navigator.serviceWorker.register('/sw.js',{scope:'/'}).catch(()=>{});
-keep([location.pathname,'/static/common.js','/static/scene.js','/static/led.css','/static/qrcode.js']);
+keep([location.pathname,'/static/common.js','/static/scene.js','/static/led.css']);
 
 restore();
 if(cfg)applyCfg(cfg);
