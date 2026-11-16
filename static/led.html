@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Toi Online · экран</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Great+Vibes&family=Lobster&family=Comfortaa:wght@600;700&family=Forum&family=Playfair+Display:wght@600;700&family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/led.css">
+<style>
+[hidden]{display:none!important}
+html,body{margin:0;height:100%;overflow:hidden}
+body{background:var(--ev-grad,#111);display:grid;place-items:center;cursor:none}
+body.cursor{cursor:default}
+#led{width:min(100vw,177.78vh)}
+.net{position:fixed;left:10px;top:10px;z-index:20;display:none;align-items:center;gap:6px;font:600 12px/1 Manrope,sans-serif;color:#fff;background:rgba(0,0,0,.55);padding:6px 10px;border-radius:99px}
+.net i{width:8px;height:8px;border-radius:50%;background:#e5484d}
+body.offline .net{display:flex}
+.hint{position:fixed;inset:auto 0 16px;margin:auto;width:max-content;max-width:90vw;z-index:20;font:600 14px/1.3 Manrope,sans-serif;color:#fff;background:rgba(0,0,0,.65);padding:10px 16px;border-radius:12px;transition:opacity .5s}
+.hint.off{opacity:0;pointer-events:none}
+.err{position:fixed;inset:0;display:grid;place-items:center;color:#fff;font:600 18px Manrope,sans-serif;background:#111;z-index:30;text-align:center;padding:20px}
+</style>
+</head>
+<body>
+<div id="led"></div>
+<div class="net" aria-live="polite"><i></i>Нет интернета, крутим загруженные открытки</div>
+<div class="hint" id="hint">Нажмите в любом месте, чтобы открыть на весь экран (или F11)</div>
+<div class="err" id="err" hidden></div>
+<script src="/static/common.js"></script>
+<script src="/static/scene.js"></script>
+<script>
+(function(){
+const T=TOI,$=T.$;
+const [, , eid, key]=location.pathname.split('/');
+const base=`/api/s/${eid}/${key}`,LS='toi-led-'+eid;
+const scene=TOIScene($('led'));
+let cfg=null,cards=new Map(),shownLocal=new Set(),outbox=[],current=null,timer=0,es=null;
+const imgs={};
+
+/* ---------- снимок в браузере: экран переживает перезагрузку без интернета ---------- */
+function save(){try{localStorage.setItem(LS,JSON.stringify({cfg,cards:[...cards.values()],shown:[...shownLocal],outbox}));}catch(e){}}
+function restore(){try{const s=JSON.parse(localStorage.getItem(LS)||'null');if(!s)return;
+  cfg=s.cfg;(s.cards||[]).forEach(upsert);shownLocal=new Set(s.shown||[]);outbox=s.outbox||[];}catch(e){}}
+function preload(u){if(u&&!imgs[u]){const i=new Image();i.src=u;imgs[u]=i;keep([u]);}}
+/* Кладём страницу, скрипты и фото в кэш сами: сервис-воркер начинает перехватывать запросы только со второй загрузки */
+function keep(urls){try{if(window.caches)caches.open('toi-v1').then(c=>urls.forEach(u=>c.match(u).then(h=>h||c.add(u)).catch(()=>{}))).catch(()=>{});}catch(e){}}
+function upsert(c){cards.set(c.id,c);preload(c.photo);}
+
+/* ---------- очередь: конверты вне очереди, крупные раньше; остальные по времени одобрения ---------- */
+function queue(){
+  return [...cards.values()].filter(c=>c.status==='approved'&&!shownLocal.has(c.id))
+    .sort((a,b)=>(b.amount>0)-(a.amount>0)||(b.amount-a.amount)||((a.approved_at||a.t)-(b.approved_at||b.t)));
+}
+function next(){
+  clearTimeout(timer);
+  const list=queue();
+  if(!list.length){current=null;scene.idle();ticker();return;}
+  current=list[0];shownLocal.add(current.id);outbox.push(current.id);save();flush();
+  const sec=T.durOf(current.amount);scene.show(current,sec);ticker();
+  timer=setTimeout(next,sec*1000);
+}
+function kick(){if(!current)next();}
+function ticker(){
+  const v=[...cards.values()].filter(c=>c.amount&&(c.status==='shown'||shownLocal.has(c.id))).sort((a,b)=>(b.shown_at||b.t)-(a.shown_at||a.t));
+  scene.ticker(v.length?`★ ${v[0].name} подарил(а) конверт ${T.fmt(v[0].amount)}`:'');
+}
+
+/* ---------- связь ---------- */
+async function flush(){
+  if(!outbox.length)return;const ids=outbox.slice();
+  try{await T.api(base+'/shown',{ids});outbox=outbox.filter(x=>!ids.includes(x));save();}catch(e){}
+}
+async function sync(){
+  try{
+    const s=await T.api(base+'/state');
+    applyCfg(s.cfg);
+    const ids=new Set(s.cards.map(c=>c.id));
+    for(const id of [...cards.keys()])if(!ids.has(id))cards.delete(id);
+    s.cards.forEach(c=>onCard(c,true));
+    $('err').hidden=true;save();flush();kick();
+  }catch(e){if(/неверная/.test(e.message)){$('err').textContent='Ссылка на экран неверная. Возьмите новую в пульте модератора.';$('err').hidden=false;}}
+}
+function applyCfg(c){cfg=c;scene.setCfg(c);T.theme(document.body,T.full(c));scene.setQR(T.abs('/g/'+eid));document.title=(c.names||'Toi Online')+' · экран';}
+function onCard(c,quiet){
+  if(c.status==='hidden'||c.status==='pending'){cards.delete(c.id);if(current&&current.id===c.id)next();}
+  else{
+    // «Показать ещё раз»: сервер вернул в очередь открытку, которую экран уже отметил показанной
+    if(c.status==='approved'&&shownLocal.has(c.id)&&!outbox.includes(c.id)&&!(current&&current.id===c.id))shownLocal.delete(c.id);
+    upsert(c);
+  }
+  if(!quiet){save();kick();ticker();}
+}
+function online(v){document.body.classList.toggle('offline',!v);}
+function connect(){
+  if(es)es.close();
+  es=new EventSource(base+'/stream');
+  es.addEventListener('hello',()=>{online(true);sync();});
+  es.addEventListener('card',e=>onCard(JSON.parse(e.data)));
+  es.addEventListener('config',e=>{applyCfg(JSON.parse(e.data));save();});
+  es.onerror=()=>{online(navigator.onLine&&es.readyState===1);if(es.readyState===2)setTimeout(connect,5000);};
+}
+addEventListener('online',()=>{online(true);connect();});
+addEventListener('offline',()=>online(false));
+setInterval(flush,10000);
+setInterval(()=>{if(!es||es.readyState===2)connect();},30000);
+
+/* ---------- экран: полный экран, не засыпать, курсор прячется ---------- */
+let wl=null;
+async function wake(){try{if('wakeLock' in navigator&&document.visibilityState==='visible')wl=await navigator.wakeLock.request('screen');}catch(e){}}
+document.addEventListener('visibilitychange',wake);
+document.addEventListener('click',()=>{try{const p=document.documentElement.requestFullscreen();if(p&&p.catch)p.catch(()=>{});}catch(e){}$('hint').classList.add('off');wake();});
+setTimeout(()=>$('hint').classList.add('off'),15000);
+let mt;document.addEventListener('mousemove',()=>{document.body.classList.add('cursor');clearTimeout(mt);mt=setTimeout(()=>document.body.classList.remove('cursor'),2500);});
+if('serviceWorker' in navigator)navigator.serviceWorker.register('/sw.js',{scope:'/'}).catch(()=>{});
+keep([location.pathname,'/static/common.js','/static/scene.js','/static/led.css','/static/qrcode.js']);
+
+restore();
+if(cfg)applyCfg(cfg);
+online(navigator.onLine);
+setTimeout(kick,cfg?3000:0);   // сначала несколько секунд видна заставка
+connect();wake();
+})();
+</script>
+</body>
+</html>

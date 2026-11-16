@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#101218">
+<title>Пульт · Toi Online</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Great+Vibes&family=Lobster&family=Comfortaa:wght@600;700&family=Forum&family=Playfair+Display:wght@600;700&family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/led.css">
+<style>
+:root{--ui-bg:#101218;--ui-panel:#181b24;--ui-line:#2b3040;--ui-ink:#eceef4;--ui-muted:#959cb0;--ui-accent:#3fb8a9;--gold:#f3d58a;color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0}
+body{background:var(--ui-bg);color:var(--ui-ink);font-family:"Manrope",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:15px;line-height:1.45}
+button,input,textarea,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--ui-accent);outline-offset:2px}
+.wrap{max-width:1100px;margin:0 auto;padding:12px 16px 60px;display:grid;gap:14px}
+header.top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+header.top h1{margin:0;font-size:18px;font-weight:800}
+header.top h1 small{display:block;font-size:12px;color:var(--ui-muted);font-weight:600}
+.live{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--ui-muted);background:var(--ui-panel);border:1px solid var(--ui-line);border-radius:99px;padding:5px 10px}
+.live i{width:8px;height:8px;border-radius:50%;background:#6b7080}
+.live.on i{background:#3fcf8e;box-shadow:0 0 0 3px rgba(63,207,142,.2)}
+.tabs{display:flex;gap:6px;position:sticky;top:0;z-index:5;background:var(--ui-bg);padding:6px 0;overflow-x:auto}
+.tabs button{border:1px solid var(--ui-line);background:var(--ui-panel);border-radius:99px;padding:8px 14px;font-weight:700;font-size:14px;white-space:nowrap}
+.tabs button[aria-selected="true"]{background:var(--ui-accent);border-color:var(--ui-accent);color:#06201d}
+.tabs b{display:inline-grid;place-items:center;min-width:20px;height:20px;border-radius:99px;background:#e5484d;color:#fff;font-size:11px;margin-left:4px;padding:0 5px}
+.card{background:var(--ui-panel);border:1px solid var(--ui-line);border-radius:16px;padding:14px;display:grid;gap:12px}
+.card h2{margin:0;font-size:16px;display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap}
+.card h2 small{color:var(--ui-muted);font-weight:600;font-size:12px}
+.note{font-size:12.5px;color:var(--ui-muted)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stat{background:var(--ui-panel);border:1px solid var(--ui-line);border-radius:14px;padding:10px 12px}
+.stat span{display:block;font-size:12px;color:var(--ui-muted);font-weight:600}
+.stat b{font-size:20px;font-variant-numeric:tabular-nums}
+.stat.g b{color:var(--gold)}
+.switch{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--ui-muted)}
+.switch input{width:20px;height:20px;accent-color:var(--ui-accent)}
+.list{display:grid;gap:8px}
+.pend{display:grid;grid-template-columns:56px 1fr;gap:10px;align-items:start;background:var(--ui-bg);border:1px solid var(--ui-line);border-radius:12px;padding:8px}
+.pend.vip{border-color:#7a5d1e;background:linear-gradient(160deg,#211a0b,#14110a)}
+.pend i{width:56px;height:74px;border-radius:8px;background:center/cover #222;display:block}
+.pend .who{font-weight:700;font-size:14px}
+.pend .who small{color:var(--ui-muted);font-weight:600;margin-left:6px}
+.pend .amt{color:var(--gold);font-weight:800;font-size:15px}
+.pend .what{font-size:13.5px;color:#c9cdd8;overflow-wrap:anywhere}
+.pend .acts{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.pend .warn{font-size:12px;color:var(--gold);margin-top:4px}
+.btn{border:1px solid var(--ui-line);background:var(--ui-bg);border-radius:10px;padding:9px 12px;font-weight:700;text-align:center;text-decoration:none;display:inline-block;color:inherit}
+.btn:hover{border-color:var(--ui-muted)}
+.btn.small{padding:7px 11px;font-size:13px}
+.btn.primary{background:var(--ui-accent);border-color:var(--ui-accent);color:#06201d}
+.btn.goldb{background:linear-gradient(180deg,#f5d98b,#c9963a);border-color:#c9963a;color:#2e1d00}
+.btn:disabled{opacity:.5}
+.empty{color:var(--ui-muted);font-size:13px}
+details summary{cursor:pointer;color:var(--ui-muted);font-size:13px;font-weight:700}
+/* настройки */
+.settings{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;align-items:end}
+.field{display:grid;gap:4px;min-width:0}
+.field label,.field .lbl{font-size:12px;color:var(--ui-muted);font-weight:600}
+.field input[type=text],.field input[type=number],.field input[type=tel],.field input[type=url],.field select,.field textarea{background:var(--ui-bg);border:1px solid var(--ui-line);border-radius:10px;padding:9px 11px;width:100%}
+.field textarea{resize:vertical;min-height:84px}
+.field.wide{grid-column:1/-1}
+.colors{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.colors input[type=color]{width:44px;height:38px;border:1px solid var(--ui-line);border-radius:10px;background:var(--ui-bg);padding:3px}
+.preview{border-radius:10px;overflow:hidden;border:4px solid #16161a}
+.saved{font-size:12px;color:var(--ui-muted);font-weight:600}
+/* отчёт */
+.tablewrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--ui-line);vertical-align:top}
+th{color:var(--ui-muted);font-size:12px;font-weight:600}
+td.msg{color:var(--ui-muted);max-width:360px}
+.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+tfoot td{font-weight:700;border-bottom:0;color:var(--gold)}
+.rgrid{display:grid;grid-template-columns:1fr 280px;gap:16px;align-items:start}
+@media (max-width:820px){.rgrid{grid-template-columns:1fr}}
+.calc{display:grid;gap:10px;background:var(--ui-bg);border:1px solid var(--ui-line);border-radius:14px;padding:14px}
+.calc .line{display:flex;justify-content:space-between;font-variant-numeric:tabular-nums}
+.calc .result{border-radius:10px;padding:10px 12px;font-weight:700}
+.calc .result.back{background:#0f2b28;border:1px solid #1f5c55;color:#bfeee7}
+.calc .result.more{background:#2a2410;border:1px solid #6b5520;color:var(--gold)}
+/* ссылки */
+.link{display:grid;gap:6px;background:var(--ui-bg);border:1px solid var(--ui-line);border-radius:12px;padding:12px}
+.link b{font-size:14px}
+.link code{font-size:13px;word-break:break-all;color:#c9cdd8}
+.link .row{display:flex;gap:6px;flex-wrap:wrap}
+.qrbox{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.qrbox canvas{width:180px;height:180px;background:#fff;border-radius:10px;image-rendering:pixelated}
+#print{display:none}
+@media print{
+  body{background:#fff;color:#000}
+  .wrap{display:none}
+  #print{display:grid!important;grid-template-columns:1fr 1fr;gap:10mm;padding:5mm}
+  .tc{border:1px dashed #999;border-radius:6mm;padding:8mm;text-align:center;display:grid;gap:3mm;justify-items:center;break-inside:avoid;font-family:Manrope,sans-serif}
+  .tc .n{font-family:var(--ev-font,serif);font-size:26pt}
+  .tc canvas{width:45mm;height:45mm;image-rendering:pixelated}
+  .tc .t{font-size:16pt;font-weight:800}
+  .tc .s{font-size:10pt}
+}
+.toast{position:fixed;left:50%;bottom:20px;translate:-50% 0;background:#2b3040;color:#fff;padding:10px 16px;border-radius:12px;font-weight:600;font-size:14px;z-index:50;opacity:0;transition:opacity .3s;pointer-events:none}
+.toast.on{opacity:1}
+.fatal{padding:80px 20px;text-align:center;color:var(--ui-muted)}
+</style>
+</head>
+<body>
+<div class="wrap" id="app" hidden>
+  <header class="top">
+    <h1 id="title">Пульт<small id="subtitle"></small></h1>
+    <span class="live" id="live"><i></i><span id="liveTx">Экран не подключён</span></span>
+  </header>
+  <nav class="tabs" role="tablist">
+    <button role="tab" data-tab="air" aria-selected="true">Эфир<b id="pendBadge" hidden>0</b></button>
+    <button role="tab" data-tab="screen" aria-selected="false">Экран</button>
+    <button role="tab" data-tab="report" aria-selected="false">Отчёт</button>
+    <button role="tab" data-tab="links" aria-selected="false">Ссылки и QR</button>
+  </nav>
+
+  <!-- ЭФИР -->
+  <section id="tab-air" class="tab" style="display:grid;gap:14px">
+    <div class="stats">
+      <div class="stat"><span>В очереди</span><b id="sQueue">0</b></div>
+      <div class="stat"><span>Показано</span><b id="sShown">0</b></div>
+      <div class="stat g"><span>В конвертах</span><b id="sSum">0 ₸</b></div>
+    </div>
+    <div class="card">
+      <h2>Ждут проверки <label class="switch"><input type="checkbox" id="modOn"> проверять перед показом</label></h2>
+      <div class="note" id="modNote"></div>
+      <div class="list" id="pending"></div>
+    </div>
+    <div class="card">
+      <h2>Очередь на экране <small>конверты идут первыми</small></h2>
+      <div class="list" id="queue"></div>
+    </div>
+    <div class="card">
+      <h2>Уже показано <small><a href="#" id="albumLink" target="_blank" class="note">альбом</a></small></h2>
+      <div class="list" id="shown"></div>
+      <details id="hiddenBox"><summary>Скрытые (<span id="hCount">0</span>)</summary><div class="list" id="hidden" style="margin-top:8px"></div></details>
+    </div>
+  </section>
+
+  <!-- ЭКРАН -->
+  <section id="tab-screen" class="tab" hidden style="display:grid;gap:14px">
+    <div class="card">
+      <h2>Так сейчас выглядит экран <span class="saved" id="saved"></span></h2>
+      <div class="preview"><div id="pv"></div></div>
+      <div class="row" style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn small" id="pvCard">Пример открытки</button><button class="btn small" id="pvEnv">Пример конверта</button><button class="btn small" id="pvIdle">Заставка</button></div>
+    </div>
+    <div class="card">
+      <h2>Праздник</h2>
+      <div class="settings">
+        <div class="field"><label for="sType">Тип тоя</label><select id="sType"><option value="wedding">Свадьба</option><option value="jubilee">Юбилей</option><option value="uzatu">Қыз ұзату</option><option value="tusau">Тұсаукесер</option></select></div>
+        <div class="field"><label for="sKind">Надпись сверху</label><input type="text" id="sKind" maxlength="40"></div>
+        <div class="field"><label for="sNames">Главная надпись</label><input type="text" id="sNames" maxlength="60"></div>
+        <div class="field"><label for="sSub">Подпись</label><input type="text" id="sSub" maxlength="90"></div>
+        <div class="field"><label for="sDate">Дата</label><input type="text" id="sDate" maxlength="30"></div>
+        <div class="field wide"><label for="sHello">Приветствие для гостей</label><input type="text" id="sHello" maxlength="200"></div>
+        <div class="field wide"><label for="sQuick">Готовые пожелания (каждое с новой строки)</label><textarea id="sQuick"></textarea></div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Оформление</h2>
+      <div class="settings">
+        <div class="field"><label for="sTpl">Шаблон экрана</label><select id="sTpl"></select></div>
+        <div class="field"><span class="lbl">Фон · край · орнамент · надпись</span>
+          <div class="colors"><input type="color" id="sBg1" aria-label="Цвет фона в центре"><input type="color" id="sBg2" aria-label="Цвет фона по краям"><input type="color" id="sC1" aria-label="Цвет орнамента"><input type="color" id="sAcc" aria-label="Цвет золотой надписи"></div></div>
+        <div class="field"><label for="sFont">Шрифт надписи</label><select id="sFont"></select></div>
+        <div class="field"><label for="sSheen">Золотой блик</label><select id="sSheen"><option value="12s">Каждые 12 сек</option><option value="30s">Каждые 30 сек</option><option value="60s">Раз в минуту</option></select></div>
+        <div class="field"><span class="lbl">Картинка-заставка</span>
+          <div class="colors"><label class="btn small" for="sSplash">Загрузить</label><input id="sSplash" type="file" accept="image/*" hidden><button class="btn small" id="sSplashOff">Убрать</button></div></div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Kaspi организатора <small>сюда гости переводят конверты</small></h2>
+      <div class="settings">
+        <div class="field"><label for="sKName">Получатель (как в Kaspi)</label><input type="text" id="sKName" maxlength="60" placeholder="Например, Диас Е."></div>
+        <div class="field"><label for="sKPhone">Телефон Kaspi</label><input type="tel" id="sKPhone" maxlength="20" placeholder="+7 7__ ___ __ __"></div>
+        <div class="field wide"><label for="sKLink">Ссылка на перевод (необязательно)</label><input type="url" id="sKLink" maxlength="300" placeholder="https://…"></div>
+      </div>
+      <div class="note">Без телефона или ссылки кнопка «Конверт» у гостей не показывается. Деньги идут напрямую организатору, модератор сверяет переводы в его Kaspi.</div>
+    </div>
+  </section>
+
+  <!-- ОТЧЁТ -->
+  <section id="tab-report" class="tab" hidden>
+    <div class="card">
+      <h2>Отчёт организатору <small>сверка с Kaspi организатора</small></h2>
+      <div class="rgrid">
+        <div class="tablewrap"><table>
+          <thead><tr><th>Время</th><th>Гость</th><th>Поздравление</th><th class="num">Сумма</th></tr></thead>
+          <tbody id="rRows"></tbody>
+          <tfoot><tr><td colspan="3">Итого в конвертах на Kaspi организатора</td><td class="num" id="rTotal">0 ₸</td></tr></tfoot>
+        </table></div>
+        <div class="calc">
+          <div class="field"><label for="rPct">Комиссия Toi Online, %</label><input type="number" id="rPct" min="0" max="50"></div>
+          <div class="field"><label for="rDep">Депозит (аванс комиссии), ₸</label><input type="number" id="rDep" min="0" step="1000"></div>
+          <div class="line"><span>Комиссия</span><b id="rCom">0 ₸</b></div>
+          <div class="line"><span>Внесён депозит</span><b id="rDepV">0 ₸</b></div>
+          <div class="result" id="rRes"></div>
+          <div class="note">Пакет услуги оплачивается отдельно. В отчёт идут конверты, которые модератор подтвердил.</div>
+          <button class="btn small" id="csv">Скачать таблицу (CSV)</button>
+        </div>
+      </div>
+      <div class="note" id="rAll"></div>
+    </div>
+  </section>
+
+  <!-- ССЫЛКИ -->
+  <section id="tab-links" class="tab" hidden style="display:grid;gap:14px">
+    <div class="card">
+      <h2>Для гостей</h2>
+      <div class="qrbox"><canvas id="qrGuest"></canvas>
+        <div class="link" style="flex:1;min-width:220px"><b>Ссылка для гостей</b><code id="lGuest"></code>
+          <div class="row"><button class="btn small" data-copy="lGuest">Скопировать</button><button class="btn small" id="qrDl">Скачать QR</button></div>
+          <span class="note">Этот же QR всегда виден в углу LED-экрана.</span></div></div>
+      <div class="field" style="max-width:320px"><label for="tables">Карточки с QR на столы</label>
+        <div class="colors"><input type="number" id="tables" min="1" max="80" value="20" style="width:90px;background:var(--ui-bg);border:1px solid var(--ui-line);border-radius:10px;padding:9px 11px"><button class="btn small primary" id="printBtn">Распечатать</button></div>
+        <span class="note">На каждой карточке свой номер стола, он подставится в поздравление.</span></div>
+    </div>
+    <div class="card">
+      <h2>Для оператора LED-экрана</h2>
+      <div class="link"><b>Ссылка на экран</b><code id="lLed"></code>
+        <div class="row"><button class="btn small" data-copy="lLed">Скопировать</button><a class="btn small" id="lLedOpen" target="_blank">Открыть</a></div>
+        <span class="note">Открыть в Chrome на ноутбуке у экрана, нажать в любом месте или F11. Если пропадёт интернет, экран продолжит крутить загруженные открытки.</span></div>
+    </div>
+    <div class="card">
+      <h2>Пульт и альбом</h2>
+      <div class="link"><b>Этот пульт</b><code id="lMod"></code>
+        <div class="row"><button class="btn small" data-copy="lMod">Скопировать</button></div>
+        <span class="note">Только для тамады и организатора, гостям не отправлять.</span></div>
+      <div class="link"><b>Альбом поздравлений</b><code id="lAlbum"></code>
+        <div class="row"><button class="btn small" data-copy="lAlbum">Скопировать</button><a class="btn small" id="lAlbumOpen" target="_blank">Открыть</a></div>
+        <span class="note">После тоя отправьте гостям: там все показанные открытки.</span></div>
+    </div>
+  </section>
+</div>
+<div id="print"></div>
+<div class="fatal" id="fatal" hidden></div>
+<div class="toast" id="toast"></div>
+<script src="/static/common.js"></script>
+<script src="/static/scene.js"></script>
+<script>
+(function(){
+const T=TOI,$=T.$,esc=T.esc,fmt=T.fmt;
+const [, , eid, key]=location.pathname.split('/');
+const base=`/api/m/${eid}/${key}`;
+let cfg=null,cards=new Map(),links={},es=null,scene=null,seen=new Set(),first=true;
+
+function toast(t){const e=$('toast');e.textContent=t;e.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('on'),2200);}
+/* ---------- вкладки ---------- */
+document.querySelector('.tabs').addEventListener('click',e=>{const b=e.target.closest('[data-tab]');if(!b)return;
+  document.querySelectorAll('.tabs [data-tab]').forEach(x=>x.setAttribute('aria-selected',x===b));
+  document.querySelectorAll('.tab').forEach(s=>s.hidden=s.id!=='tab-'+b.dataset.tab);
+  if(b.dataset.tab==='screen')setTimeout(()=>scene&&scene.setCfg(cfg),30);
+  if(b.dataset.tab==='links')drawLinks();});
+
+/* ---------- эфир ---------- */
+const byQueue=(a,b)=>(b.amount>0)-(a.amount>0)||(b.amount-a.amount)||((a.approved_at||a.t)-(b.approved_at||b.t));
+function pic(c){return `<i style="background-image:url('${esc(T.photoOf(c))}')"></i>`;}
+function row(c,acts,extra){
+  return `<div class="pend${c.amount?' vip':''}">${pic(c)}<div><div class="who">${esc(c.name)}<small>${c.table?'стол №'+esc(c.table)+' · ':''}${T.tm(c.t)}</small></div>
+  ${c.amount?`<div class="amt">Конверт ${fmt(c.amount)}</div>`:''}<div class="what">${esc(c.msg)}</div>${extra||''}<div class="acts">${acts}</div></div></div>`;
+}
+function render(){
+  const all=[...cards.values()];
+  const pend=all.filter(c=>c.status==='pending').sort((a,b)=>(b.amount>0)-(a.amount>0)||a.t-b.t);
+  const que=all.filter(c=>c.status==='approved').sort(byQueue);
+  const shown=all.filter(c=>c.status==='shown').sort((a,b)=>b.shown_at-a.shown_at);
+  const hid=all.filter(c=>c.status==='hidden').sort((a,b)=>b.t-a.t);
+  const paid=all.filter(c=>c.amount&&c.paid&&c.status!=='hidden');
+  $('sQueue').textContent=que.length;$('sShown').textContent=shown.length;$('sSum').textContent=fmt(paid.reduce((s,c)=>s+c.amount,0));
+  $('pendBadge').textContent=pend.length;$('pendBadge').hidden=!pend.length;
+  document.title=(pend.length?`(${pend.length}) `:'')+'Пульт · '+(cfg.names||'Toi Online');
+  $('pending').innerHTML=pend.map(c=>c.amount
+    ?row(c,`<button class="btn small goldb" data-act="approve" data-id="${c.id}">Деньги пришли · в эфир</button><button class="btn small" data-act="hide" data-id="${c.id}">Скрыть</button>`,
+        `<div class="warn">Проверьте в Kaspi организатора перевод ${fmt(c.amount)}${c.table?', стол №'+esc(c.table):''}</div>`)
+    :row(c,`<button class="btn small primary" data-act="approve" data-id="${c.id}">В эфир</button><button class="btn small" data-act="hide" data-id="${c.id}">Скрыть</button>`)).join('')
+    ||'<div class="empty">Новых открыток нет.</div>';
+  $('queue').innerHTML=que.map(c=>row(c,`<button class="btn small" data-act="hide" data-id="${c.id}">Убрать с экрана</button>`)).join('')||'<div class="empty">Очередь пуста, на экране заставка праздника.</div>';
+  $('shown').innerHTML=shown.slice(0,30).map(c=>row(c,`<button class="btn small" data-act="requeue" data-id="${c.id}">Показать ещё раз</button><button class="btn small" data-act="hide" data-id="${c.id}">Скрыть из альбома</button>`)).join('')||'<div class="empty">Пока ничего не показано.</div>';
+  $('hCount').textContent=hid.length;$('hiddenBox').hidden=!hid.length;
+  $('hidden').innerHTML=hid.map(c=>row(c,`<button class="btn small" data-act="approve" data-id="${c.id}">Вернуть в эфир</button>`,c.amount&&c.paid?'<div class="warn">Конверт был подтверждён: организатор возвращает перевод гостю</div>':'')).join('');
+  report();
+  // новая открытка ждёт проверки: короткая вибрация на телефоне тамады
+  const fresh=pend.filter(c=>!seen.has(c.id));pend.forEach(c=>seen.add(c.id));
+  if(fresh.length&&!first){try{navigator.vibrate&&navigator.vibrate(fresh.some(c=>c.amount)?[120,60,120]:80);}catch(e){}}
+  first=false;
+}
+document.addEventListener('click',async e=>{
+  const b=e.target.closest('[data-act]');if(!b)return;
+  if(b.dataset.act==='hide'){const c=cards.get(+b.dataset.id);if(c&&c.amount&&c.paid&&!confirm('Скрыть подтверждённый конверт? Тогда организатор вернёт перевод гостю.'))return;}
+  b.disabled=true;
+  try{const r=await T.api(base+'/act',{id:+b.dataset.id,action:b.dataset.act});cards.set(r.card.id,r.card);render();}
+  catch(er){toast(er.message);b.disabled=false;}
+});
+$('modOn').addEventListener('change',()=>saveCfg({moderation:$('modOn').checked},true));
+function modNote(){$('modNote').textContent=cfg.moderation!==false?'Тамада или родственник одобряет каждую открытку. Конверты стоят первыми: сверьте перевод в Kaspi и нажмите «Деньги пришли».':'Обычные открытки сразу идут на экран. Конверты всё равно ждут подтверждения перевода.';}
+
+/* ---------- отчёт ---------- */
+function paidList(){return [...cards.values()].filter(c=>c.amount&&c.paid&&c.status!=='hidden').sort((a,b)=>a.t-b.t);}
+function report(){
+  const paid=paidList(),total=paid.reduce((s,c)=>s+c.amount,0);
+  $('rRows').innerHTML=paid.map(p=>`<tr><td class="num">${T.tm(p.t)}</td><td>${esc(p.name)}${p.table?`<br><span class="note">стол №${esc(p.table)}</span>`:''}</td><td class="msg">${esc(p.msg)}</td><td class="num">${fmt(p.amount)}</td></tr>`).join('')||'<tr><td colspan="4" class="note">Подтверждённых конвертов пока нет.</td></tr>';
+  $('rTotal').textContent=fmt(total);
+  const pct=Math.max(0,+$('rPct').value||0),dep=Math.max(0,+$('rDep').value||0),com=Math.round(total*pct/100);
+  $('rCom').textContent=fmt(com);$('rDepV').textContent=fmt(dep);
+  const r=$('rRes');if(dep>=com){r.className='result back';r.textContent='Вернуть организатору: '+fmt(dep-com);}else{r.className='result more';r.textContent='Организатор доплачивает: '+fmt(com-dep);}
+  const all=[...cards.values()];
+  $('rAll').textContent=`Всего открыток: ${all.length}, показано: ${all.filter(c=>c.status==='shown').length}, скрыто: ${all.filter(c=>c.status==='hidden').length}.`;
+}
+['rPct','rDep'].forEach(id=>$(id).addEventListener('input',()=>{report();saveCfg({pct:+$('rPct').value||0,deposit:+$('rDep').value||0});}));
+$('csv').addEventListener('click',()=>{
+  const q=s=>'"'+String(s??'').replace(/"/g,'""')+'"';
+  const rows=[['Время','Гость','Стол','Поздравление','Сумма, ₸']].concat(paidList().map(p=>[T.tm(p.t),p.name,p.table,p.msg,p.amount]));
+  const blob=new Blob(['﻿'+rows.map(r=>r.map(q).join(';')).join('\r\n')],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`toi-${eid}-otchet.csv`;a.click();
+});
+
+/* ---------- настройки экрана ---------- */
+$('sTpl').innerHTML=Object.entries(T.TPL_NAMES).map(([k,v])=>`<option value="${k}">${v}</option>`).join('');
+$('sFont').innerHTML=T.FONTS.map(([k,v])=>`<option value="${esc(k)}">${v}</option>`).join('');
+const F=[['sKind','kind'],['sNames','names'],['sSub','sub'],['sDate','date'],['sHello','hello'],['sBg1','bg1'],['sBg2','bg2'],['sC1','c1'],['sAcc','acc'],['sFont','font'],['sSheen','sheen'],['sKName','kaspi_name'],['sKPhone','kaspi_phone'],['sKLink','kaspi_link']];
+function fill(){
+  const c=T.full(cfg);
+  $('sType').value=cfg.type;$('sTpl').value=c.tpl;
+  F.forEach(([id,k])=>{if(document.activeElement!==$(id))$(id).value=c[k]??'';});
+  if(document.activeElement!==$('sQuick'))$('sQuick').value=(c.quick||[]).join('\n');
+  if(document.activeElement!==$('sHello'))$('sHello').value=cfg.hello||T.PRESETS[cfg.type].hello;
+  $('modOn').checked=cfg.moderation!==false;modNote();
+  if(document.activeElement!==$('rPct'))$('rPct').value=cfg.pct??10;
+  if(document.activeElement!==$('rDep'))$('rDep').value=cfg.deposit??20000;
+  $('subtitle').textContent=[c.kind,c.names,c.date].filter(Boolean).join(' · ');
+}
+let st=0,pendingPatch={};
+function saveCfg(patch,now){
+  Object.assign(cfg,patch);Object.assign(pendingPatch,patch);
+  if(scene&&!$('tab-screen').hidden)scene.setCfg(cfg);
+  $('saved').textContent='Сохраняем…';clearTimeout(st);
+  st=setTimeout(async()=>{const p=pendingPatch;pendingPatch={};
+    try{const r=await T.api(base+'/cfg',p);cfg=r.cfg;$('saved').textContent='Сохранено, экран обновился';fill();modNote();}
+    catch(e){$('saved').textContent='Не сохранилось: '+e.message;}},now?0:600);
+}
+F.forEach(([id,k])=>$(id).addEventListener('input',()=>saveCfg({[k]:$(id).value})));
+$('sQuick').addEventListener('input',()=>saveCfg({quick:$('sQuick').value.split('\n').map(s=>s.trim()).filter(Boolean)}));
+$('sTpl').addEventListener('change',()=>{const k=$('sTpl').value,t=T.TPL[k];saveCfg({tpl:k,bg1:t.bg1,bg2:t.bg2,c1:t.c1,acc:t.acc},true);fill();});
+$('sType').addEventListener('change',()=>{const p=T.preset($('sType').value);
+  if(!confirm('Поставить надписи, шаблон и пожелания по умолчанию для этого типа тоя? Главная надпись и дата останутся.'))return saveCfg({type:p.type},true);
+  delete p.names;saveCfg(p,true);fill();});
+$('sSplash').addEventListener('change',async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;
+  try{const u=await T.readImg(f,1600,.85);$('saved').textContent='Загружаем картинку…';const r=await T.api(base+'/cfg',{splash:u});cfg=r.cfg;scene.setCfg(cfg);$('saved').textContent='Картинка на экране';}
+  catch(er){toast(er.message);}});
+$('sSplashOff').addEventListener('click',async()=>{try{const r=await T.api(base+'/cfg',{splash:''});cfg=r.cfg;scene.setCfg(cfg);toast('Картинка убрана');}catch(er){toast(er.message);}});
+const SAMPLE={name:'Ерлан ағай',msg:'Бақытты болыңдар! Шаңырақтарың биік болсын.',table:'7',frame:'orn',amount:0,photo:''};
+$('pvCard').addEventListener('click',()=>scene.show({...SAMPLE,msg:(T.full(cfg).quick||[])[0]||SAMPLE.msg},8));
+$('pvEnv').addEventListener('click',()=>scene.show({...SAMPLE,name:'Жанар',amount:10000},8));
+$('pvIdle').addEventListener('click',()=>scene.idle());
+
+/* ---------- ссылки ---------- */
+function drawLinks(){
+  $('lGuest').textContent=T.abs(links.guest);$('lLed').textContent=T.abs(links.led);$('lMod').textContent=T.abs(links.mod);$('lAlbum').textContent=T.abs(links.album);
+  $('lLedOpen').href=links.led;$('lAlbumOpen').href=links.album;$('albumLink').href=links.album;
+  T.drawQR($('qrGuest'),T.abs(links.guest),8);
+}
+document.addEventListener('click',async e=>{const b=e.target.closest('[data-copy]');if(!b)return;
+  try{await navigator.clipboard.writeText($(b.dataset.copy).textContent);toast('Скопировано');}catch(er){toast('Не получилось скопировать');}});
+$('qrDl').addEventListener('click',()=>{const a=document.createElement('a');a.href=$('qrGuest').toDataURL('image/png');a.download=`toi-${eid}-qr.png`;a.click();});
+$('printBtn').addEventListener('click',async()=>{
+  const n=Math.max(1,Math.min(80,+$('tables').value||1)),c=T.full(cfg),box=$('print');
+  T.theme(box,c);
+  box.innerHTML=[...Array(n)].map((_,i)=>`<div class="tc"><div class="n">${esc(c.names||'')}</div><canvas></canvas><div class="t">Стол №${i+1}</div><div class="s">Наведите камеру на QR и поздравьте ${esc(c.who==='молодые'?'молодых':'виновника торжества')} на большом экране</div></div>`).join('');
+  const cvs=box.querySelectorAll('canvas');
+  for(let i=0;i<n;i++)await T.drawQR(cvs[i],T.abs(links.guest)+'?t='+(i+1),6);
+  window.print();
+});
+
+/* ---------- связь ---------- */
+async function sync(){
+  const s=await T.api(base+'/state');
+  cfg=s.cfg;links=s.links;cards=new Map(s.cards.map(c=>[c.id,c]));
+  live(s.online.led);fill();render();$('albumLink').href=links.album;
+}
+function live(n){$('live').classList.toggle('on',n>0);$('liveTx').textContent=n>0?'Экран на связи':'Экран не подключён';}
+let liveT=0;
+function connect(){
+  if(es)es.close();es=new EventSource(base+'/stream');
+  es.addEventListener('hello',()=>sync().catch(()=>{}));
+  es.addEventListener('card',e=>{const c=JSON.parse(e.data);cards.set(c.id,c);render();});
+  es.addEventListener('config',e=>{cfg=JSON.parse(e.data);fill();if(scene&&!$('tab-screen').hidden&&!Object.keys(pendingPatch).length)scene.setCfg(cfg);});
+  es.onerror=()=>{if(es.readyState===2)setTimeout(connect,5000);};
+}
+clearInterval(liveT);liveT=setInterval(()=>T.api(base+'/state').then(s=>live(s.online.led)).catch(()=>{}),30000);
+
+(async()=>{
+  try{await sync();}
+  catch(e){$('fatal').textContent=/неверная/.test(e.message)?'Ссылка на пульт неверная. Попросите новую у Toi Online.':'Не получилось загрузить пульт: '+e.message;$('fatal').hidden=false;return;}
+  $('app').hidden=false;
+  scene=TOIScene($('pv'),{lite:true});scene.setCfg(cfg);scene.setQR(T.abs(links.guest));
+  connect();
+})();
+})();
+</script>
+</body>
+</html>

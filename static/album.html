@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Альбом поздравлений · Toi Online</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Great+Vibes&family=Lobster&family=Comfortaa:wght@600;700&family=Forum&family=Playfair+Display:wght@600;700&family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:#f6f1e7;color:#2b2a33;font-family:"Manrope",system-ui,sans-serif;font-size:15px;line-height:1.45}
+.hero{position:relative;color:var(--ev-ink);padding:48px 18px 40px;text-align:center;overflow:hidden;background:var(--ev-grad,#ccc)}
+.hero canvas{position:absolute;inset:0;width:100%;height:100%;opacity:.5}
+.hero::after{content:"";position:absolute;inset:0;background:radial-gradient(closest-side,var(--ev-halo) 30%,transparent 100%);opacity:.85}
+.hero .in{position:relative;z-index:1;display:grid;gap:8px;justify-items:center}
+.kind{font-size:12px;font-weight:800;letter-spacing:.22em;text-transform:uppercase}
+.nm{font-family:var(--ev-font);font-size:clamp(40px,8vw,72px);line-height:1.1;text-wrap:balance}
+.dt{font-size:13px;font-weight:600;opacity:.85}
+.wrap{max-width:1100px;margin:0 auto;padding:24px 16px 60px;display:grid;gap:18px}
+.totals{text-align:center;color:#6b6676;font-weight:600}
+.album{columns:4 220px;column-gap:16px}
+.pc{break-inside:avoid;margin:0 0 16px;background:#fffdf8;border-radius:12px;padding:10px 10px 14px;display:grid;gap:8px;box-shadow:0 6px 18px rgba(60,40,10,.12)}
+.pc img{width:100%;border-radius:8px;display:block;background:#ddd}
+.pc .m{font-family:var(--ev-font);font-size:18px;line-height:1.3;overflow-wrap:anywhere}
+.pc .f{font-size:12px;color:#6b6676;font-weight:700}
+.pc.vip{background:linear-gradient(180deg,#fff6dc,#f3e0aa);outline:2px solid #c99a3d}
+.pc.vip .f{color:#8a5f12}
+.empty{text-align:center;color:#8a8392;padding:40px}
+footer{text-align:center;font-size:12px;color:#8a8392}
+</style>
+</head>
+<body>
+<header class="hero" id="hero"><canvas id="orn"></canvas><div class="in"><div class="kind" id="kind"></div><div class="nm" id="names">Альбом поздравлений</div><div class="dt" id="date"></div></div></header>
+<main class="wrap">
+  <div class="totals" id="totals"></div>
+  <div class="album" id="album"></div>
+  <footer>Toi Online · живой экран для тоя</footer>
+</main>
+<script src="/static/common.js"></script>
+<script>
+(async function(){
+const T=TOI,$=T.$,esc=T.esc;
+const eid=location.pathname.split('/')[2];
+try{
+  const r=await T.api(`/api/a/${eid}`),c=T.full(r.cfg);
+  const th=T.theme($('hero'),c);$('hero').style.background=th.bg;T.theme(document.body,c);
+  $('kind').textContent=c.kind||'';$('names').textContent=c.names||'';$('date').textContent=[c.date,'альбом поздравлений'].filter(Boolean).join(' · ');
+  document.title='Альбом · '+(c.names||'Toi Online');
+  requestAnimationFrame(()=>T.renderHeadOrn($('orn'),c));
+  $('totals').textContent=r.cards.length?`${r.cards.length} поздравлений от гостей`:'';
+  $('album').innerHTML=r.cards.map(a=>`<div class="pc${a.amount?' vip':''}"><img loading="lazy" alt="" src="${esc(T.photoOf(a))}"><div class="m">${esc(a.msg)}</div><div class="f">${esc(a.name)}${a.amount?' · конверт '+T.fmt(a.amount):''}</div></div>`).join('')||'<div class="empty">Здесь соберутся поздравления, показанные на экране.</div>';
+}catch(e){$('album').innerHTML='<div class="empty">Альбом не найден.</div>';}
+})();
+</script>
+</body>
+</html>
