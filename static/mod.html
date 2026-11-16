@@ -200,6 +200,12 @@ tfoot td{font-weight:700;border-bottom:0;color:var(--gold)}
       <div class="card">
         <h2>Рисунок <small>8 шаблонов</small></h2>
         <div class="tplgrid" id="tplGrid"></div>
+        <div class="field"><span class="lbl">Карточка гостя на экране</span>
+          <div class="seg" id="cardSeg" role="group" aria-label="Формат карточки">
+            <button type="button" data-card="auto" aria-pressed="false">Авто по фото</button>
+            <button type="button" data-card="portrait" aria-pressed="false">Вертикально</button>
+            <button type="button" data-card="landscape" aria-pressed="false">Горизонтально</button>
+          </div></div>
       </div>
 
       <div class="card">
@@ -444,6 +450,7 @@ function fill(){
   $('sSizeV').textContent=(sz%1?sz.toFixed(1):sz)+' cqw';
   document.querySelectorAll('#sheenSeg button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.sheen===c.sheen)));
   document.querySelectorAll('#patGrid .tpl').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.pat===(c.bgpat||'none'))));
+  document.querySelectorAll('#cardSeg button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.card===(c.card||'auto'))));
   drawPatTiles();
   const th=$('splashThumb');
   th.classList.toggle('has',!!c.splash_url);
@@ -476,6 +483,8 @@ $('sheenSeg').addEventListener('click',e=>{const b=e.target.closest('[data-sheen
   saveCfg({sheen:b.dataset.sheen},true);fill();});
 $('patGrid').addEventListener('click',e=>{const b=e.target.closest('[data-pat]');if(!b)return;
   saveCfg({bgpat:b.dataset.pat},true);fill();});
+$('cardSeg').addEventListener('click',e=>{const b=e.target.closest('[data-card]');if(!b)return;
+  saveCfg({card:b.dataset.card},true);fill();});
 $('sType').addEventListener('change',()=>{const p=T.preset($('sType').value);
   if(!confirm('Поставить надписи, шаблон и пожелания по умолчанию для этого типа тоя? Главная надпись и дата останутся.'))return saveCfg({type:p.type},true);
   delete p.names;saveCfg(p,true);fill();});

@@ -47,6 +47,7 @@ ID_ABC = "abcdefghjkmnpqrstuvwxyz23456789"  # без 0/o, 1/l/i: ссылку д
 HEX = re.compile(r"#[0-9a-fA-F]{6}")
 TPLS = {"pink", "gold", "bluemed", "turq", "green", "royal", "circle", "sky"}
 PATS = {"none", "spiral", "medallion", "ring", "heart", "lattice", "stripe", "damask", "mandala"}  # фоновый узор
+CARDS = {"auto", "portrait", "landscape"}  # формат карточки-полароида на экране
 TYPES = {"wedding", "jubilee", "uzatu", "tusau"}
 FONTS = {"'Great Vibes', cursive", "'Cormorant Garamond', serif", "'Playfair Display', serif", "'Forum', serif",
          "'Lobster', cursive", "'Comfortaa', sans-serif"}
@@ -151,6 +152,8 @@ def clean_cfg(j, old=None):
         c["tpl"] = j["tpl"]
     if j.get("bgpat") in PATS:
         c["bgpat"] = j["bgpat"]
+    if j.get("card") in CARDS:
+        c["card"] = j["card"]
     for k in ("bg1", "bg2", "c1", "acc"):
         if isinstance(j.get(k), str) and HEX.fullmatch(j[k]):
             c[k] = j[k].lower()
@@ -173,6 +176,7 @@ def clean_cfg(j, old=None):
     c.setdefault("moderation", True)
     c.setdefault("sheen", "30s")
     c.setdefault("bgpat", "none")
+    c.setdefault("card", "auto")
     c.setdefault("splash", "")
     c.setdefault("pct", 10)
     c.setdefault("deposit", 20000)

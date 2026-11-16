@@ -38,6 +38,10 @@ window.TOIScene=function(el,opts){
     const g=q('.greet');g.className='greet';void g.offsetWidth;g.className='greet on '+(it.amount?'vip':'f-'+(it.frame||'orn'));
     q('.greet .pic').style.backgroundImage=`url("${T.photoOf(it)}")`;
     q('.greet .msg').textContent='«'+it.msg+'»';
+    // Полароид: вертикальный или горизонтальный. Авто — по ориентации самого фото.
+    const mode=(c&&c.card)||'auto',land=v=>g.classList.toggle('land',v);
+    if(mode==='landscape')land(true);else if(mode==='portrait')land(false);
+    else{const im=new Image();im.onload=()=>{if(g.classList.contains('on'))land(im.naturalWidth>im.naturalHeight*1.06);};im.onerror=()=>land(false);im.src=T.photoOf(it);}
     q('.greet .who').textContent=it.name||'';
     q('.greet .meta').textContent=it.table?'стол №'+it.table:'';
     q('.greet .amount').textContent=it.amount?T.fmt(it.amount):'';

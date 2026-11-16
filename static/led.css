@@ -49,6 +49,9 @@
 .greet.on{opacity:1;transform:none}
 .polaroid{flex:none;display:grid;align-self:center;background:#fffcf5;padding:1.15cqw 1.15cqw 0;border-radius:.45cqw;transform:rotate(-1.6deg);box-shadow:0 1.1cqw 2.6cqw rgba(0,0,0,.42),0 .2cqw .5cqw rgba(0,0,0,.25)}
 .polaroid .pic{aspect-ratio:3/4;height:32.5cqw;width:auto;background:center/cover #222;border-radius:.15cqw}
+/* горизонтальный полароид: фото 4:3 и та же подпись снизу */
+.greet.land .polaroid .pic{aspect-ratio:4/3;height:auto;width:37cqw}
+.greet.land .polaroid .who{font-size:2.6cqw}
 .polaroid .cap{padding:1.05cqw .5cqw 1.25cqw;text-align:center;line-height:1.1}
 .polaroid .who{font-family:var(--ev-font);font-size:2.85cqw;color:#2a2018;overflow-wrap:anywhere}
 .polaroid .meta{font-size:1.1cqw;letter-spacing:.16em;text-transform:uppercase;font-weight:700;color:#8d7c68;margin-top:.45cqw}

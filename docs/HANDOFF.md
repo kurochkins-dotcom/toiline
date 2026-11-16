@@ -97,7 +97,7 @@ cards(id INTEGER PK, eid TEXT, created INTEGER ms, name, msg, frame ('orn'|'soft
 ```
 
 `cfg` (проверяется в `clean_cfg`): `type` (wedding|jubilee|uzatu|tusau), `kind`, `names`, `sub`, `date`, `hello`, `quick` (список пожеланий),
-`tpl` (pink|gold|bluemed|turq|green|royal|circle|sky), `bgpat` (none|spiral|medallion|ring|heart|lattice|stripe|damask|mandala —
+`tpl` (pink|gold|bluemed|turq|green|royal|circle|sky), `card` (auto|portrait|landscape — формат карточки), `bgpat` (none|spiral|medallion|ring|heart|lattice|stripe|damask|mandala —
 фоновый узор, рисуется кодом в `renderPattern`), `bg1`,`bg2`,`c1`,`acc` (#hex), `font`, `size` (напр. `9cqw`), `sheen` (12s|30s|60s),
 `splash` (имя файла), `moderation`, `kaspi_name`, `kaspi_phone`, `kaspi_link` (только https), `pct` (комиссия %), `deposit` (₸), `demo`.
 
