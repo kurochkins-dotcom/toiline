@@ -45,14 +45,14 @@ SSE_PING = 15                     # Cloudflare рвёт тихое соедин�
 
 ID_ABC = "abcdefghjkmnpqrstuvwxyz23456789"  # без 0/o, 1/l/i: ссылку диктуют по телефону
 HEX = re.compile(r"#[0-9a-fA-F]{6}")
-TPLS = {"pink", "gold", "bluemed", "turq", "green", "royal", "circle", "sky"}
-PATS = {"none", "spiral", "medallion", "ring", "heart", "lattice", "stripe", "damask", "mandala"}  # фоновый узор
+# Оформление (ТЗ 0.2, 0.10): шаблон-приглашение + общая палитра и шрифт имён на весь сервис
+TPLS = {"mag", "arch", "iris", "frame", "clean", "typo", "oval", "kraft", "photo"}
+PALETTES = {"ivory", "powder", "sage", "bordeaux", "night"}
+NFONTS = {"corm", "play", "noto", "prata", "pinyon"}
+FILMS = {"warm", "vhs", "none"}             # фильтр на фото гостей: тёплая плёнка, VHS, без
 CARDS = {"auto", "portrait", "landscape"}  # формат карточки-полароида на экране
 TYPES = {"wedding", "jubilee", "uzatu", "tusau"}
-FONTS = {"'Great Vibes', cursive", "'Cormorant Garamond', serif", "'Playfair Display', serif", "'Forum', serif",
-         "'Lobster', cursive", "'Comfortaa', sans-serif"}
-SHEENS = {"12s", "30s", "60s"}
-FRAMES = {"orn", "soft", "classic"}
+FRAMES = {"altyn", "kara", "kumis"}        # рамки Premium: Алтын, Қара-алтын, Күміс
 
 _db_lock = threading.Lock()
 _db = None
@@ -93,12 +93,17 @@ DEMO = {"id": "demo", "led": "demo"}   # Антон 16.11: показать хо
 
 def ensure_demo():
     """Демо-той: открытки и конверты сразу на экране, без модератора и без перевода."""
-    if _db.execute("SELECT 1 FROM events WHERE id=?", (DEMO["id"],)).fetchone():
+    r = _db.execute("SELECT cfg FROM events WHERE id=?", (DEMO["id"],)).fetchone()
+    if r:
+        cfg = json.loads(r["cfg"])
+        if cfg.get("tpl") not in TPLS:   # демо со старым оформлением (до 18.11) переводим на новые шаблоны
+            cfg.update({"tpl": "arch", "palette": "ivory", "nfont": "corm"})
+            _db.execute("UPDATE events SET cfg=? WHERE id=?", (json.dumps(clean_cfg({}, cfg), ensure_ascii=False), DEMO["id"]))
+            _db.commit()
         return
-    cfg = clean_cfg({"type": "wedding", "tpl": "pink", "kind": "Үйлену тойы", "names": "Диас & Диара",
-                     "sub": "Шаңырақтарың биік болсын!", "date": "Toi Line · демо", "font": "'Great Vibes', cursive",
-                     "size": "9cqw", "bg1": "#ee4fd8", "bg2": "#a4116f", "c1": "#b8122f", "acc": "#ffd979",
-                     "moderation": False, "kaspi_name": "Демо", "kaspi_phone": "+7 700 000 00 00", "sheen": "12s"})
+    cfg = clean_cfg({"type": "wedding", "tpl": "arch", "palette": "ivory", "nfont": "corm", "kind": "Үйлену тойы",
+                     "names": "Диас & Диара", "sub": "Шаңырақтарың биік болсын!", "date": "Toi Line · демо",
+                     "moderation": False, "kaspi_name": "Демо", "kaspi_phone": "+7 700 000 00 00"})
     cfg["demo"] = True
     _db.execute("INSERT INTO events(id,mod_key,led_key,created,cfg) VALUES(?,?,?,?,?)",
                 (DEMO["id"], new_id(10), DEMO["led"], now_ms(), json.dumps(cfg, ensure_ascii=False)))
@@ -150,19 +155,17 @@ def clean_cfg(j, old=None):
         c["type"] = j["type"]
     if j.get("tpl") in TPLS:
         c["tpl"] = j["tpl"]
-    if j.get("bgpat") in PATS:
-        c["bgpat"] = j["bgpat"]
+    if j.get("palette") in PALETTES:
+        c["palette"] = j["palette"]
+    if j.get("nfont") in NFONTS:
+        c["nfont"] = j["nfont"]
+    if j.get("film") in FILMS:
+        c["film"] = j["film"]
     if j.get("card") in CARDS:
         c["card"] = j["card"]
-    for k in ("bg1", "bg2", "c1", "acc"):
-        if isinstance(j.get(k), str) and HEX.fullmatch(j[k]):
-            c[k] = j[k].lower()
-    if j.get("font") in FONTS:
-        c["font"] = j["font"]
-    if isinstance(j.get("size"), str) and re.fullmatch(r"\d{1,2}(\.\d)?cqw", j["size"]):
-        c["size"] = j["size"]
-    if j.get("sheen") in SHEENS:
-        c["sheen"] = j["sheen"]
+    for k in ("fx_sheen", "fx_sparkle"):
+        if k in j:
+            c[k] = bool(j[k])
     if "quick" in j and isinstance(j["quick"], list):
         c["quick"] = [s for s in (clean_str(x, 80) for x in j["quick"][:8]) if s]
     if "moderation" in j:
@@ -172,12 +175,19 @@ def clean_cfg(j, old=None):
     if "deposit" in j:
         c["deposit"] = max(0, min(10_000_000, int(num(j["deposit"]))))
     c.setdefault("type", "wedding")
-    c.setdefault("tpl", "pink")
+    if c.get("tpl") not in TPLS:
+        c["tpl"] = "mag"
+    for k in ("bgpat", "bg1", "bg2", "c1", "acc", "font", "size", "sheen"):   # поля старого оформления
+        c.pop(k, None)
+    c.setdefault("palette", "ivory")
+    c.setdefault("nfont", "corm")
+    c.setdefault("film", "warm")
+    c.setdefault("fx_sheen", True)
+    c.setdefault("fx_sparkle", True)
     c.setdefault("moderation", True)
-    c.setdefault("sheen", "30s")
-    c.setdefault("bgpat", "none")
     c.setdefault("card", "auto")
     c.setdefault("splash", "")
+    c.setdefault("couple", "")
     c.setdefault("pct", 10)
     c.setdefault("deposit", 20000)
     return c
@@ -204,8 +214,9 @@ def get_event(eid):
 def public_cfg(e):
     c = dict(e["cfg"])
     c["id"] = e["id"]
-    c["splash_url"] = f"/p/{e['id']}/{c['splash']}.jpg" if c.get("splash") else ""
-    c.pop("splash", None)
+    for k in ("splash", "couple"):   # своя заставка-фон и фото пары
+        c[k + "_url"] = f"/p/{e['id']}/{c[k]}.jpg" if c.get(k) else ""
+        c.pop(k, None)
     return c
 
 
@@ -325,12 +336,12 @@ def add_card(e, j, ip, dev=""):
     msg = clean_str(j.get("msg"), 140)
     if not name:
         raise ValueError("Напишите своё имя")
-    if not msg:
-        raise ValueError("Напишите пожелание")
+    if not msg and not j.get("photo"):
+        raise ValueError("Добавьте фото или пожелание")
     amount = int(num(j.get("amount")))
     if amount and not MIN_ENV <= amount <= MAX_ENV:
         raise ValueError(f"Сумма конверта от {MIN_ENV} ₸")
-    frame = j.get("frame") if j.get("frame") in FRAMES else "orn"
+    frame = j.get("frame") if j.get("frame") in FRAMES else "altyn"
     tbl = clean_str(str(j.get("table") or ""), 6)
     # Бесплатное поздравление — одно с устройства в полчаса. Конверт (платный) отправляется сколько угодно.
     if not amount:
@@ -456,7 +467,7 @@ def online(eid):
 # ---------------------------------------------------------------- HTTP
 PAGES = {"": "admin.html", "g": "guest.html", "m": "mod.html", "s": "led.html", "a": "album.html"}
 CTYPES = {"js": "application/javascript; charset=utf-8", "css": "text/css; charset=utf-8", "svg": "image/svg+xml",
-          "png": "image/png", "json": "application/json; charset=utf-8", "webmanifest": "application/manifest+json"}
+          "png": "image/png", "jpg": "image/jpeg", "ttf": "font/ttf", "json": "application/json; charset=utf-8", "webmanifest": "application/manifest+json"}
 
 
 def _file(h, path, ctype, cache="no-cache", extra=None):
@@ -511,6 +522,11 @@ def handle_get(h, path):
             if parts[1] == "qrcode.js":
                 return _file(h, os.path.join(STATIC, "qrcode.js"), CTYPES["js"], "public, max-age=86400")
             return _file(h, os.path.join(STATIC, parts[1]), CTYPES[m.group(2)])
+        if len(parts) == 3 and parts[0] == "static" and parts[1] in ("img", "fonts"):   # рамки, гравюры, шрифты
+            m = re.fullmatch(r"([a-z0-9_-]+)\.(png|jpg|ttf)", parts[2])
+            if not m:
+                return h.err(404, "Не найдено")
+            return _file(h, os.path.join(STATIC, parts[1], parts[2]), CTYPES[m.group(2)], "public, max-age=604800")
         if len(parts) == 3 and parts[0] == "p":   # фото: имя случайное, поэтому кэшируем надолго
             m = re.fullmatch(r"([0-9a-f]{24})\.jpg", parts[2])
             if not m or not get_event(parts[1]):
@@ -538,7 +554,8 @@ def api_get(h, parts):
             n = q("SELECT COUNT(*) n, COALESCE(SUM(CASE WHEN amount>0 AND status IN ('approved','shown') THEN amount END),0) s "
                   "FROM cards WHERE eid=?", (e["id"],), one=True)
             out.append({"id": e["id"], "created": e["created"], "names": e["cfg"].get("names", ""),
-                        "date": e["cfg"].get("date", ""), "kind": e["cfg"].get("kind", ""), "cards": n["n"],
+                        "date": e["cfg"].get("date", ""), "kind": e["cfg"].get("kind", ""), "type": e["cfg"].get("type", ""),
+                        "tpl": e["cfg"].get("tpl", ""), "palette": e["cfg"].get("palette", ""), "cards": n["n"],
                         "sum": n["s"], "links": links(e)})
         return h.send_json(200, {"events": out})
     if kind == "e" and len(parts) == 2:          # гость: настройки праздника
@@ -620,14 +637,15 @@ def handle_post(h, path):
                     return h.err(400, str(v))
             if parts[4] == "cfg":
                 cfg = clean_cfg(j, e["cfg"])
-                if "splash" in j:   # своя картинка-заставка: data:URL или пусто, чтобы убрать
-                    if j["splash"]:
-                        try:
-                            cfg["splash"] = save_jpeg(e["id"], j["splash"], SPLASH_MAX)
-                        except ValueError as v:
-                            return h.err(400, str(v))
-                    else:
-                        cfg["splash"] = ""
+                for k in ("splash", "couple"):   # свой фон и фото пары: data:URL или пусто, чтобы убрать
+                    if k in j:
+                        if j[k]:
+                            try:
+                                cfg[k] = save_jpeg(e["id"], j[k], SPLASH_MAX)
+                            except ValueError as v:
+                                return h.err(400, str(v))
+                        else:
+                            cfg[k] = ""
                 save_cfg(e, cfg)
                 return h.send_json(200, {"cfg": public_cfg(e)})
         if kind == "s" and len(parts) == 5 and parts[4] == "shown":

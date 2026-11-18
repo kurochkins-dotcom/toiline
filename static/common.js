@@ -1,219 +1,171 @@
-/* Toi Line: общее для гостя, экрана, пульта и альбома. Шаблоны, орнамент кодом (шырдак/текемет), тема, утилиты. */
+/* Toi Line: общее для гостя, экрана, кабинета и альбома.
+   Оформление по эскизам 18.11: шаблоны-приглашения, 5 палитр и 5 шрифтов имён на весь сервис (ТЗ 0.10),
+   рукописные подписи по кругу (ТЗ 0.7), полароид с плёнкой и рамки Premium (ТЗ 0.3–0.5). */
 (function(){
-const TAU=Math.PI*2;
 const $=id=>document.getElementById(id);
 const fmt=n=>Math.round(n||0).toLocaleString('ru-RU').replace(/[   ,]/g,' ')+' ₸';
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const FONTS_URL='https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Playfair+Display:ital@0;1&family=Noto+Serif+Display:wght@200;300&family=Prata&family=Pinyon+Script&family=Montserrat:wght@300;400;500;600&display=swap';
 
-/* ---------- шаблоны экрана ---------- */
-const TPL={
-  pink:   {layout:'medallion',grad:'radial',bg1:'#ee4fd8',bg2:'#a4116f',mode:'outline',c1:'#b8122f',a1:1,c2:'#fff1f7',acc:'#ffd979',n:8},
-  gold:   {layout:'corners',  grad:'radial',bg1:'#fffaf0',bg2:'#f1e0c2',mode:'gold',   c1:'#d6ad55',a1:1,acc:'#b8862c'},
-  bluemed:{layout:'medallion',grad:'linear',bg1:'#f4f9ff',bg2:'#2a7cc2',mode:'flat',   c1:'#5aa0dc',a1:.55,acc:'#c99331',n:8},
-  turq:   {layout:'tile',     grad:'radial',bg1:'#63cfca',bg2:'#1c8088',mode:'emboss', c1:'#55c0bc',a1:1,acc:'#fff0c4'},
-  green:  {layout:'medallion',grad:'radial',bg1:'#17a356',bg2:'#0b6533',mode:'outline',c1:'#0e3b29',a1:1,c2:'#d8c9a5',acc:'#f6dc96',n:4},
-  royal:  {layout:'tile',     grad:'radial',bg1:'#2470e0',bg2:'#0c3a96',mode:'flat',   c1:'#6cbcf5',a1:.8,acc:'#ffe28f'},
-  circle: {layout:'circle',   grad:'radial',bg1:'#ffffff',bg2:'#f2e8d6',mode:'gold',   c1:'#c9994a',a1:1,acc:'#b07f2a'},
-  sky:    {layout:'tile',     grad:'radial',bg1:'#d8eafa',bg2:'#a8c9ea',mode:'flat',   c1:'#ffffff',a1:.6,acc:'#c08a2a'},
+/* ---------- палитры и шрифты имён (эскиз «Минимал», ТЗ 0.10) ---------- */
+const PAL={
+  ivory:   {name:'Слоновая кость',bg:'#F7F3EC',ink:'#2A2622',muted:'#6E665C',accent:'#8A6A35'},
+  powder:  {name:'Пудра',bg:'#F3E3DE',ink:'#4A2F2C',muted:'#7A5A55',accent:'#A2665A'},
+  sage:    {name:'Шалфей',bg:'#E5EADF',ink:'#2F3A2E',muted:'#56614F',accent:'#6F7F5E'},
+  bordeaux:{name:'Бордо',bg:'#EFE6D6',ink:'#5A1A24',muted:'#74454B',accent:'#7A1F2B'},
+  night:   {name:'Тёмный вечер',bg:'#1F1C1A',ink:'#F3EBDD',muted:'#C9BBA4',accent:'#C9A766',dark:true},
 };
-const TPL_NAMES={pink:'Розовый медальон',gold:'Золотые углы',bluemed:'Голубой медальон',turq:'Бирюзовый шырдак',green:'Зелёный текемет',royal:'Синий узор',circle:'Золотой круг',sky:'Нежно-голубой'};
-const FONTS=[["'Great Vibes', cursive",'Каллиграфия'],["'Cormorant Garamond', serif",'Классика'],["'Playfair Display', serif",'Торжественный'],["'Forum', serif",'Старинный'],["'Lobster', cursive",'Яркий'],["'Comfortaa', sans-serif",'Детский']];
+/* У латинского Pinyon нет кириллицы: браузер сам берёт недостающие буквы из Toi Great Vibes */
+const NFONT={
+  corm:  {name:'Cormorant',fam:"'Cormorant Garamond',serif",w:400,it:'normal',caps:true,ls:'.14em',k:1},
+  play:  {name:'Playfair курсив',fam:"'Playfair Display',serif",w:400,it:'italic',caps:false,ls:'.01em',k:1.05},
+  noto:  {name:'Noto тонкий',fam:"'Noto Serif Display',serif",w:200,it:'normal',caps:true,ls:'.1em',k:1},
+  prata: {name:'Prata',fam:"'Prata',serif",w:400,it:'normal',caps:true,ls:'.1em',k:.88},
+  pinyon:{name:'Pinyon (латиница)',fam:"'Pinyon Script','Toi Great Vibes',cursive",w:400,it:'normal',caps:false,ls:'0',k:1.4,latin:true},
+};
+const SCRIPT="'Pinyon Script','Toi Great Vibes',cursive";
+/* Подписи под фото: 4 рукописных шрифта по кругу, у каждого свой коэффициент размера (ТЗ 0.7) */
+const CAPF=[
+  {fam:"'Toi Great Vibes',cursive",it:'normal',k:1.2},
+  {fam:"'Toi Comforter',cursive",it:'normal',k:1.35},
+  {fam:"'Toi Comforter Brush',cursive",it:'normal',k:1.3},
+  {fam:"'Cormorant Garamond',serif",it:'italic',k:1.05},
+];
+const capFont=card=>CAPF[Math.abs(+(card&&card.id)||0)%CAPF.length];
+const capStyle=(card,size)=>{const f=capFont(card);return `font-family:${f.fam};font-style:${f.it};font-size:${Math.round(size*f.k)}px`;};
+
+/* ---------- шаблоны главного экрана (эскиз «Кабинет», экран 2) ---------- */
+const TPLS=[
+  {id:'mag',  name:'Магнолия',own:false},
+  {id:'arch', name:'Арка в розах',own:false},
+  {id:'iris', name:'Ирисы',own:false},
+  {id:'frame',name:'Бордовая рамка',own:false},
+  {id:'clean',name:'Чистый центр',own:true},
+  {id:'typo', name:'Типографика',own:true},
+  {id:'oval', name:'Рельефный овал',own:true},
+  {id:'kraft',name:'Розы на крафте',own:false},
+  {id:'photo',name:'С фото пары',own:true},
+];
+const TPL_BY=Object.fromEntries(TPLS.map(t=>[t.id,t]));
+/* Цвета у шаблонов с гравюрами свои — для экрана гостя и альбома берём близкую палитру */
+const TPL_PAL={mag:'ivory',arch:'ivory',iris:'ivory',frame:'bordeaux',kraft:'ivory'};
+
 const PRESETS={
-  wedding:{title:'Свадьба',tpl:'pink',kind:'Үйлену тойы',names:'Диас & Диара',sub:'Шаңырақтарың биік болсын!',font:"'Great Vibes', cursive",size:'9cqw',
+  wedding:{title:'Свадьба',kind:'Үйлену тойы',names:'Әділхан & Гүлбаршын',sub:'Шаңырақтарың биік болсын!',
     quick:['Құтты болсын!','Бақытты болыңдар!','Шаңырақтарың биік болсын!','Махаббат пен бақыт тілеймін!'],
-    hello:'Поздравьте молодых! Ваше поздравление появится на большом экране в зале.',who:'молодые'},
-  jubilee:{title:'Юбилей',tpl:'green',kind:'Мерейтой',names:'Серік ата · 60',sub:'Мерейтойыңыз құтты болсын!',font:"'Cormorant Garamond', serif",size:'8.4cqw',
+    hello:'Тілегіңізді жазып, суретіңізді үлкен экранға шығарыңыз',who:'молодые'},
+  jubilee:{title:'Юбилей',kind:'Мерейтой',names:'Серік ата · 60',sub:'Мерейтойыңыз құтты болсын!',
     quick:['Мерейтойыңыз құтты болсын!','Зор денсаулық тілеймін!','Ұзақ ғұмыр, бақуат өмір!'],
-    hello:'Поздравьте юбиляра! Ваше поздравление появится на большом экране в зале.',who:'юбиляр'},
-  uzatu:{title:'Қыз ұзату',tpl:'circle',kind:'Қыз ұзату',names:'Аружан',sub:'Ақ жол, қарындасым!',font:"'Forum', serif",size:'9.5cqw',
+    hello:'Тілегіңізді жазып, суретіңізді үлкен экранға шығарыңыз',who:'юбиляр'},
+  uzatu:{title:'Қыз ұзату',kind:'Қыз ұзату',names:'Аружан',sub:'Ақ жол, қарындасым!',
     quick:['Ақ жол!','Бақытты бол, қарағым!','Жолың ашық болсын!'],
-    hello:'Пожелайте невесте ақ жол! Ваше поздравление появится на большом экране.',who:'невеста'},
-  tusau:{title:'Тұсаукесер',tpl:'sky',kind:'Тұсаукесер',names:'Алихан · 1 жас',sub:'Қадамың құтты болсын!',font:"'Comfortaa', sans-serif",size:'7.6cqw',
+    hello:'Тілегіңізді жазып, суретіңізді үлкен экранға шығарыңыз',who:'невеста'},
+  tusau:{title:'Тұсаукесер',kind:'Тұсаукесер',names:'Алихан · 1 жас',sub:'Қадамың құтты болсын!',
     quick:['Қадамың құтты болсын!','Өсіп-өн, балапан!','Денсаулық тілейміз!'],
-    hello:'Поздравьте малыша с первыми шагами! Поздравление появится на большом экране.',who:'родители'},
+    hello:'Тілегіңізді жазып, суретіңізді үлкен экранға шығарыңыз',who:'родители'},
 };
-/* Настройки мероприятия с сервера + геометрия шаблона. Цвета, выбранные организатором, важнее цветов шаблона. */
 function full(cfg){
-  const p=PRESETS[cfg.type]||PRESETS.wedding,t=TPL[cfg.tpl]||TPL[p.tpl];
-  const c={...p,...t};
+  const p=PRESETS[cfg.type]||PRESETS.wedding,c={...p,tpl:'mag',palette:'ivory',nfont:'corm',film:'warm',fx_sheen:true,fx_sparkle:true};
   for(const k in cfg)if(cfg[k]!==undefined&&cfg[k]!==null&&cfg[k]!=='')c[k]=cfg[k];
+  if(!TPL_BY[c.tpl])c.tpl='mag';if(!PAL[c.palette])c.palette='ivory';if(!NFONT[c.nfont])c.nfont='corm';
   if(!Array.isArray(c.quick)||!c.quick.length)c.quick=p.quick;
   return c;
 }
-function preset(type){const p=PRESETS[type]||PRESETS.wedding,t=TPL[p.tpl];
-  return {type,tpl:p.tpl,kind:p.kind,names:p.names,sub:p.sub,font:p.font,size:p.size,quick:p.quick.slice(),hello:p.hello,bg1:t.bg1,bg2:t.bg2,c1:t.c1,acc:t.acc};}
-
-/* ---------- цвета ---------- */
-const hex2=h=>{const n=parseInt(h.slice(1),16);return [n>>16&255,n>>8&255,n&255];};
-const mix=(a,b,t)=>{const A=hex2(a),B=hex2(b);return '#'+A.map((v,i)=>Math.round(v+(B[i]-v)*t).toString(16).padStart(2,'0')).join('');};
-const rgba=(h,a)=>{const [r,g,b]=hex2(h);return `rgba(${r},${g},${b},${a})`;};
-function lum(h){const f=c=>(c/=255)<=.03928?c/12.92:((c+.055)/1.055)**2.4;const [r,g,b]=hex2(h);return .2126*f(r)+.7152*f(g)+.0722*f(b);}
-
-/* ---------- орнамент: геометрия ---------- */
-const Col=()=>({S:[],F:[]});
-function mk(cx,cy,rot,sc){const c=Math.cos(rot),s=Math.sin(rot);return (x,y)=>[cx+(x*c-y*s)*sc,cy+(x*s+y*c)*sc];}
-function hornG(col,cx,cy,size,rot,o={}){ // «қошқар мүйіз»: ножка и два рога-спирали
-  const P=mk(cx,cy,rot,size),T=(o.turns||1.15)*TAU,p=new Path2D();
-  p.moveTo(...P(0,o.stem??.12));p.lineTo(...P(0,-.5));
-  for(const sg of [1,-1]){p.moveTo(...P(0,-.5));for(let t=.06;t<=T;t+=.06){const a=sg>0?Math.PI+t:-t,R=.36*(1-.8*t/T);p.lineTo(...P(sg*.36+R*Math.cos(a),-.5+R*Math.sin(a)));}}
-  col.S.push({p,w:size*(o.w||.12)});
-  if(o.tip!==false){const f=new Path2D();f.moveTo(...P(0,-1));f.quadraticCurveTo(...P(.17,-.76),...P(0,-.57));f.quadraticCurveTo(...P(-.17,-.76),...P(0,-1));col.F.push(f);}
-}
-function dropG(col,cx,cy,len,rot){const P=mk(cx,cy,rot,len),f=new Path2D();f.moveTo(...P(0,-1));f.quadraticCurveTo(...P(.34,-.42),...P(0,0));f.quadraticCurveTo(...P(-.34,-.42),...P(0,-1));col.F.push(f);}
-function dotG(col,cx,cy,r){const f=new Path2D();f.arc(cx,cy,r,0,TAU);col.F.push(f);}
-function spiralG(col,P,sx,sy,cx,cy,sign,turns,w){
-  const R0=Math.hypot(sx-cx,sy-cy),a0=Math.atan2(sy-cy,sx-cx),T=turns*TAU,p=new Path2D();p.moveTo(...P(sx,sy));
-  for(let t=.06;t<=T;t+=.06){const a=a0+sign*t,R=R0*(1-.8*t/T);p.lineTo(...P(cx+R*Math.cos(a),cy+R*Math.sin(a)));}
-  col.S.push({p,w});
-}
-function medallionG(col,cx,cy,r,n){
-  const hs=r*(n>=8?.4:.55);
-  for(let i=0;i<n;i++){const a=i*TAU/n;hornG(col,cx+Math.sin(a)*r*.42,cy-Math.cos(a)*r*.42,hs,a);}
-  for(let i=0;i<n;i++){const a=(i+.5)*TAU/n;dropG(col,cx+Math.sin(a)*r*.6,cy-Math.cos(a)*r*.6,r*.22,a);}
-  for(let i=0;i<4;i++){const a=i*Math.PI/2+Math.PI/4;dropG(col,cx+Math.sin(a)*r*.06,cy-Math.cos(a)*r*.06,r*.2,a);}
-  dotG(col,cx,cy,r*.05);
-}
-function crossG(col,cx,cy,s){for(let i=0;i<4;i++){const a=i*Math.PI/2;hornG(col,cx+Math.sin(a)*s*.25,cy-Math.cos(a)*s*.25,s*.6,a,{tip:false,turns:.9});}dotG(col,cx,cy,s*.1);}
-function tileG(col,W,H,cell){
-  for(let y=-cell;y<H+cell;y+=cell)for(let x=-cell;x<W+cell;x+=cell){medallionG(col,x,y,cell*.47,4);crossG(col,x+cell/2,y+cell/2,cell*.3);}
-}
-function cornerG(col,cx,cy,S,rot){
-  const P0=mk(cx,cy,rot,S);
-  for(const sw of [false,true]){
-    const P=sw?(a,b)=>P0(b,a):P0,w=S*.04;
-    const v=new Path2D();v.moveTo(...P(.14,.05));v.bezierCurveTo(...P(.4,.01),...P(.7,.09),...P(1.02,.035));col.S.push({p:v,w});
-    [[.42,.12,1],[.66,.09,1],[.88,.065,1]].forEach(([x,R,sg])=>spiralG(col,P,x,.045,x,.045+R,sw?-sg:sg,1.15,w));
-    const f=new Path2D();f.moveTo(...P(1.14,.03));f.quadraticCurveTo(...P(1.06,.07),...P(1.0,.035));f.quadraticCurveTo(...P(1.06,0),...P(1.14,.03));col.F.push(f);
-    const d=new Path2D();d.moveTo(...P(.55,-.0));d.quadraticCurveTo(...P(.58,.1),...P(.53,.17));d.quadraticCurveTo(...P(.49,.1),...P(.55,-.0));col.F.push(d);
-  }
-  hornG(col,...P0(.27,.27),S*.44,rot-Math.PI/4,{w:.1});
-  dropG(col,...P0(.5,.5),S*.16,rot+3*Math.PI/4);
-}
-function ringG(col,cx,cy,R){
-  [1,.84].forEach(k=>{const p=new Path2D();p.arc(cx,cy,R*k,0,TAU);col.S.push({p,w:R*.02});});
-  const P=(x,y)=>[x,y],n=30;
-  for(let k=0;k<n;k++){const t=k*TAU/n,c=Math.cos(t),s=Math.sin(t);spiralG(col,P,cx+c*R*.985,cy+s*R*.985,cx+c*R*.92,cy+s*R*.92,1,1.05,R*.018);}
-  medallionG(col,cx,cy,R*.78,8);
+function preset(type){const p=PRESETS[type]||PRESETS.wedding;return {type,kind:p.kind,names:p.names,sub:p.sub,quick:p.quick.slice(),hello:p.hello};}
+/* Палитра для страниц вокруг экрана: у «своих» шаблонов — выбранная, у гравюр — родная шаблону */
+function palOf(c){c=full(c);return PAL[TPL_BY[c.tpl].own?c.palette:(TPL_PAL[c.tpl]||c.palette)];}
+function vars(el,cfg){
+  const p=palOf(cfg),f=NFONT[full(cfg).nfont],s=el.style;
+  s.setProperty('--bg',p.bg);s.setProperty('--ink',p.ink);s.setProperty('--muted',p.muted);s.setProperty('--accent',p.accent);
+  s.setProperty('--name-font',f.fam);el.classList.toggle('dark',!!p.dark);return p;
 }
 
-/* ---------- орнамент: покраска ---------- */
-function paint(x,col,t,W,H){
-  x.lineCap='round';x.lineJoin='round';
-  const aw=col.S.length?col.S.reduce((s,a)=>s+a.w,0)/col.S.length:4;
-  const draw=(style,k,dx,dy)=>{x.save();x.translate(dx||0,dy||0);x.strokeStyle=x.fillStyle=style;
-    for(const s of col.S){x.lineWidth=s.w*(1+k);x.stroke(s.p);}
-    for(const f of col.F){x.fill(f);if(k){x.lineWidth=aw*k;x.stroke(f);}}x.restore();};
-  const c1=rgba(t.c1,t.a1??1);
-  if(t.mode==='outline'){draw(t.c2||'#ffffff',.85);draw(c1,0);}
-  else if(t.mode==='emboss'){const o=Math.max(1,aw*.16);draw('rgba(0,0,0,.2)',0,o,o);draw('rgba(255,255,255,.45)',0,-o,-o);draw(c1,0);}
-  else if(t.mode==='gold'){
-    const g=x.createLinearGradient(0,0,W,H),d=mix(t.c1,'#3a2400',.35),l=mix(t.c1,'#ffffff',.5);
-    [[0,d],[.25,l],[.45,t.c1],[.6,l],[.8,t.c1],[1,d]].forEach(([o,c])=>g.addColorStop(o,c));
-    x.save();x.shadowColor='rgba(70,40,0,.3)';x.shadowBlur=aw*.8;x.shadowOffsetY=aw*.25;draw(g,0);x.restore();
-  } else draw(c1,0);
+/* ---------- тексты ---------- */
+function splitNames(s){
+  s=String(s||'').trim();const m=s.split(/\s*(?:&|\+|\s(?:и|мен|және|and)\s)\s*/i).filter(Boolean);
+  return m.length>=2?[m[0],m.slice(1).join(' ')]:[s,''];
 }
-function fitCanvas(cv){if(!cv)return null;const r=cv.getBoundingClientRect(),d=devicePixelRatio||1;if(!r.width)return null;cv.width=Math.round(r.width*d);cv.height=Math.round(r.height*d);const x=cv.getContext('2d');x.setTransform(d,0,0,d,0,0);return [x,r.width,r.height];}
-/* Боковые узоры LED-экрана */
-function renderBand(cv,c){
-  const fb=fitCanvas(cv);if(!fb)return;const [x,W,H]=fb,col=Col();
-  if(c.layout==='medallion'){medallionG(col,0,H/2,H*.6,c.n||8);medallionG(col,W,H/2,H*.6,c.n||8);[[0,0],[W,0],[0,H],[W,H]].forEach(([a,b])=>medallionG(col,a,b,H*.28,4));}
-  else if(c.layout==='corners'){const S=H*.52;cornerG(col,0,0,S,0);cornerG(col,W,0,S,Math.PI/2);cornerG(col,W,H,S,Math.PI);cornerG(col,0,H,S,-Math.PI/2);}
-  else if(c.layout==='tile')tileG(col,W,H,H/3.1);
-  else {const S=H*.34;cornerG(col,0,0,S,0);cornerG(col,W,0,S,Math.PI/2);cornerG(col,W,H,S,Math.PI);cornerG(col,0,H,S,-Math.PI/2);}
-  paint(x,col,c,W,H);
+function niceDate(d){const m=String(d||'').trim().match(/^(\d{1,2})[.\/\- ·]+(\d{1,2})[.\/\- ·]+(\d{2,4})$/);
+  return m?`${m[1].padStart(2,'0')} · ${m[2].padStart(2,'0')} · ${m[3].length===2?'20'+m[3]:m[3]}`:String(d||'').trim();}
+const up=s=>String(s||'').toLocaleUpperCase('kk');
+const initials=s=>{const [a,b]=splitNames(s);return [a,b].filter(Boolean).map(x=>x.trim()[0]||'').join(' & ');};
+/* Длинные имена влезают: размер подбираем под самое длинное (ТЗ 0.8, пример «Әділхан & Гүлбаршын») */
+function fitSize(base,texts,width,em){const n=Math.max(1,...texts.map(t=>[...String(t||'')].length));return Math.round(Math.min(base,width/(n*em)));}
+
+/* ---------- шаблон: HTML в коробке 928×522 ---------- */
+function tplHTML(cfg){
+  const c=full(cfg),t=c.tpl,p=PAL[c.palette],f=NFONT[c.nfont];
+  let [n1,n2]=splitNames(c.names);const kind=esc(c.kind||''),date=esc(niceDate(c.date));
+  const one=!n2;
+  const nm=(size,width)=>{const caps=f.caps,a=caps?up(n1):n1,b=caps?up(n2):n2,em=(caps?.72:.5)+parseFloat(f.ls)*(f.ls.endsWith('em')?1:0);
+    const fs=fitSize(Math.round(size*f.k),[a,b],width,em);
+    const st=`font-family:${f.fam};font-weight:${f.w};font-style:${f.it};letter-spacing:${f.ls};font-size:${fs}px`;
+    return {a:`<div class="nm" style="${st}">${esc(a)}</div>`,b:b?`<div class="nm" style="${st}">${esc(b)}</div>`:'',fs};};
+  const fixed=(style,size,width,em,caps)=>{const a=caps?up(n1):n1,b=caps?up(n2):n2,fs=fitSize(size,[a,b],width,em);
+    return {a:`<div class="nm" style="${style};font-size:${fs}px">${esc(a)}</div>`,b:b?`<div class="nm" style="${style};font-size:${fs}px">${esc(b)}</div>`:'',fs};};
+  const amp=(size,color)=>one?'':`<div style="font-family:${SCRIPT};font-size:${size}px;color:${color};line-height:.8">&amp;</div>`;
+  const I=n=>'/static/img/'+n+'.png';
+  const own=TPL_BY[t].own,bg=own&&c.splash_url&&t!=='photo'?`<div class="bgimg" style="background-image:url('${esc(c.splash_url)}')"></div>`:'';
+  if(t==='mag'){const n=fixed(`font-family:${SCRIPT}`,72,420,.5,false);
+    return `<div class="tl" style="background:#FBF9F5;color:#4A4640"><img src="${I('magnolia')}" alt="" style="left:-150px;top:-70px;width:560px;transform:rotate(-4deg);-webkit-mask-image:linear-gradient(to bottom,#000 72%,transparent 98%);mask-image:linear-gradient(to bottom,#000 72%,transparent 98%)">
+<div class="c" style="left:440px;top:0;bottom:0;width:440px;gap:10px"><div style="font-style:italic;font-size:22px;letter-spacing:.06em;color:#6E665C">${kind}</div>${n.a}${one?'':'<div style="font-style:italic;font-size:22px;color:#6E665C">және</div>'}${n.b}<div style="font-size:30px;letter-spacing:.2em;color:#8A6A35;margin-top:14px">${date}</div></div></div>`;}
+  if(t==='arch'){const n=fixed('letter-spacing:.14em',40,330,.8,true);
+    return `<div class="tl" style="background:#EFE9E1;color:#2A2622"><img src="${I('rose-pink')}" alt="" style="left:-40px;top:-60px;width:300px;transform:rotate(-18deg)"><img src="${I('rose-yellow')}" alt="" style="right:-40px;top:-40px;width:300px;transform:rotate(22deg)"><img src="${I('rose-pink')}" alt="" style="right:-20px;bottom:-110px;width:300px;transform:rotate(160deg)"><img src="${I('rose-yellow')}" alt="" style="left:-50px;bottom:-90px;width:300px;transform:rotate(200deg)">
+<div class="c" style="left:274px;top:36px;width:380px;height:450px;border-radius:190px 190px 18px 18px;background:#FBF9F5;gap:12px;--accent:#8A6A35"><div style="font:400 13px Montserrat,sans-serif;letter-spacing:.4em;color:#6E665C">${up(kind)}</div><div style="height:8px"></div>${n.a}${amp(36,'#8A6A35')}${n.b}<div style="font-size:18px;letter-spacing:.32em;margin-top:14px">${date}</div></div></div>`;}
+  if(t==='iris'){const n=fixed(`font-family:${SCRIPT};color:#3E4A5C`,80,700,.5,false);
+    return `<div class="tl" style="background:#F7F5F0;color:#2A2622"><img src="${I('iris')}" alt="" style="left:-90px;top:-110px;width:280px;transform:rotate(150deg)"><img src="${I('iris')}" alt="" style="right:-80px;bottom:-140px;width:280px;transform:rotate(-12deg)">
+<div class="c" style="inset:0;gap:8px"><div style="font-style:italic;font-size:22px;color:#6E665C">${kind}</div>${n.a}${amp(44,'#8A6A35')}${n.b}<div style="width:60px;height:1px;background:#8A6A35;margin:12px 0 6px"></div><div style="font-size:20px;letter-spacing:.32em">${date}</div></div></div>`;}
+  if(t==='frame'){const n=fixed('letter-spacing:.1em',64,700,.78,true);
+    const k='<path d="M26 26 h50 M26 26 v50 M34 34 h30 a10 10 0 0 1 0 20 a6 6 0 0 1 0-12 M34 34 v30 a10 10 0 0 0 20 0 a6 6 0 0 0 -12 0"/>';
+    return `<div class="tl" style="background:#EFE6D6;color:#2A2622;--accent:#7A1F2B"><svg aria-hidden="true" width="928" height="522" viewBox="0 0 928 522" style="position:absolute;inset:0" fill="none" stroke="#7A1F2B" stroke-width="1.6" stroke-linecap="round"><path d="M90 26 H838 M90 496 H838"/>${k}<g transform="translate(928,0) scale(-1,1)">${k}</g><g transform="translate(0,522) scale(1,-1)">${k}</g><g transform="translate(928,522) scale(-1,-1)">${k}</g></svg>
+<div class="c" style="inset:0;gap:14px">${n.a}${one?'':'<div style="font:400 15px Montserrat,sans-serif;letter-spacing:.45em;color:#7A1F2B">ЖӘНЕ</div>'}${n.b}<div style="font-size:22px;letter-spacing:.1em;margin-top:16px">${date}</div><div style="font-family:${SCRIPT};font-size:32px;color:#7A1F2B">${kind}</div></div></div>`;}
+  if(t==='kraft'){const fs=Math.min(fitSize(88,[n1],500,.5),fitSize(88,['& '+n2],480,.5)),n={fs,a:`<div class="nm" style="font-family:${SCRIPT};font-size:${fs}px">${esc(n1)}</div>`};
+    return `<div class="tl" style="background:#E6D8BE;color:#4A2E22;--accent:#8A6A35"><div style="position:absolute;inset:0;background:radial-gradient(ellipse at 30% 20%,rgba(255,255,255,.35),transparent 60%),radial-gradient(ellipse at 80% 90%,rgba(120,90,50,.12),transparent 60%)"></div><img src="${I('rose-pink')}" alt="" style="right:-60px;top:-90px;width:340px;transform:rotate(-20deg)"><img src="${I('rose-yellow')}" alt="" style="left:-90px;bottom:-130px;width:340px;transform:rotate(15deg)">
+<div style="position:absolute;left:200px;top:110px;width:540px;display:flex;flex-direction:column;gap:6px"><div style="font-style:italic;font-size:22px">${kind}</div><div style="margin-top:10px">${n.a}</div>${one?'':`<div style="padding-left:60px"><div class="nm" style="font-family:${SCRIPT};font-size:${n.fs}px">&amp; ${esc(n2)}</div></div>`}<div style="align-self:flex-end;margin-top:18px;font-style:italic;font-size:22px">${date}</div></div></div>`;}
+  const base=`background:${p.bg};color:${p.ink}`;
+  if(t==='clean'){const n=nm(60,820);
+    return `<div class="tl" style="${base}">${bg}<div class="c" style="inset:0;gap:12px"><div style="font-style:italic;font-size:24px;color:${p.muted}">${kind}</div>${n.a}${amp(42,p.accent)}${n.b}<div style="width:60px;height:1px;background:${p.accent};margin:12px 0 6px"></div><div style="font-size:20px;letter-spacing:.32em">${date}</div></div></div>`;}
+  if(t==='typo'){const n=nm(64,840);
+    return `<div class="tl" style="${base}">${bg}<div class="c" style="inset:0;gap:14px">${n.a}${one?'':`<div style="font:400 15px Montserrat,sans-serif;letter-spacing:.45em;color:${p.accent}">ЖӘНЕ</div>`}${n.b}<div style="font-size:15px;letter-spacing:.3em;color:${p.muted};margin-top:18px">${up(kind)}${kind&&date?' · ':''}${up(date)}</div></div></div>`;}
+  if(t==='oval'){const n=nm(30,250);
+    return `<div class="tl${p.dark?' dark':''}" style="${base};--bg:${p.bg}">${bg}<div class="emboss" style="position:absolute;left:309px;top:26px;width:310px;height:470px;padding:13px;box-sizing:border-box"><div class="dots c" style="position:relative;gap:10px;padding:0 22px"><div style="font-style:italic;font-size:18px;color:${p.muted}">${kind}</div>${n.a}${amp(30,p.accent)}${n.b}<div style="width:40px;height:1px;background:${p.accent};margin:8px 0"></div><div style="font-size:16px;letter-spacing:.3em">${date}</div></div></div></div>`;}
+  /* photo */
+  const n=nm(44,400),ph=c.couple_url
+    ?`<div style="position:absolute;left:0;top:0;width:470px;height:522px;background:url('${esc(c.couple_url)}') 50% 20%/cover no-repeat;-webkit-mask-image:linear-gradient(to right,#000 70%,transparent);mask-image:linear-gradient(to right,#000 70%,transparent)"></div>`
+    :`<div class="emboss" style="position:absolute;left:90px;top:56px;width:300px;height:410px;padding:12px;box-sizing:border-box;--bg:${p.bg}"><div class="dots" style="display:grid;place-items:center;text-align:center;color:${p.muted};font:400 13px/1.5 Montserrat,sans-serif;padding:0 40px">Фото пары<br>загрузите в кабинете</div></div>`;
+  return `<div class="tl${p.dark?' dark':''}" style="${base}">${ph}<div class="c" style="left:470px;top:0;bottom:0;right:30px;gap:10px"><div style="font-style:italic;font-size:22px;color:${p.muted}">${kind}</div>${n.a}${amp(36,p.accent)}${n.b}<div style="width:56px;height:1px;background:${p.accent};margin:10px 0 4px"></div><div style="font-size:18px;letter-spacing:.32em">${date}</div></div></div>`;
 }
-/* ---------- фоновые узоры: кодом, на широкий экран, в цветах праздника ---------- */
-const PAT_NAMES={none:'Чистый фон',spiral:'Спирали',medallion:'Медальоны',ring:'Кольца',heart:'Сердечки',lattice:'Ромбы',stripe:'Полосы',damask:'Дамаск',mandala:'Мандала'};
-const PAT_LINE={medallion:.24,heart:.34,lattice:.22,stripe:.3,mandala:.26};
-const coil=(col,cx,cy,R,sign,turns,w)=>spiralG(col,(a,b)=>[a,b],cx+R,cy,cx,cy,sign,turns,w);
-function patShapes(kind,col,W,H,cell){
-  const c2=cell/2;
-  if(kind==='spiral'){
-    for(let y=-c2;y<H+cell;y+=cell)for(let xx=-c2;xx<W+cell;xx+=cell){
-      coil(col,xx+c2,y+c2,cell*.34,1,1.4,cell*.026);
-      coil(col,xx+cell,y+cell*.16,cell*.19,-1,1.2,cell*.02);
-    }
-  } else if(kind==='medallion'){
-    tileG(col,W,H,cell);
-  } else if(kind==='ring'){
-    for(let y=-c2;y<H+cell;y+=cell)for(let xx=-c2;xx<W+cell;xx+=cell){
-      [.42,.3,.18].forEach(k=>{const p=new Path2D();p.arc(xx+c2,y+c2,cell*k,0,TAU);col.S.push({p,w:cell*.022});});
-      dotG(col,xx+c2,y+c2,cell*.045);
-    }
-  } else if(kind==='heart'){
-    // «сердечко» из двух рогов қошқар мүйіз и капли — как на текемете
-    for(let y=0;y<H+cell;y+=cell)for(let xx=0;xx<W+cell;xx+=cell){
-      const off=((y/cell)|0)%2?c2:0,cx=xx+off+c2,cy=y+cell*.62;
-      hornG(col,cx,cy,cell*.42,.62,{tip:false});
-      hornG(col,cx,cy,cell*.42,-.62,{tip:false});
-      dropG(col,cx,cy+cell*.1,cell*.16,0);
-    }
-  } else if(kind==='lattice'){
-    for(let y=-cell;y<H+cell*2;y+=cell)for(let xx=-cell;xx<W+cell*2;xx+=cell){
-      const p=new Path2D();p.moveTo(xx,y);p.lineTo(xx+c2,y+c2);p.lineTo(xx,y+cell);p.lineTo(xx-c2,y+c2);p.closePath();col.S.push({p,w:cell*.014});
-      dotG(col,xx,y+c2,cell*.035);
-    }
-  } else if(kind==='stripe'){
-    // вертикальные полосы с завитками и каплями
-    for(let xx=cell*.35;xx<W+cell;xx+=cell*.62){
-      const line=new Path2D();line.moveTo(xx,-cell);line.lineTo(xx,H+cell);col.S.push({p:line,w:cell*.016});
-      for(let y=-cell*.5;y<H+cell;y+=cell*.52){
-        const side=((Math.round((y+cell)/(cell*.52)))|0)%2?1:-1;
-        coil(col,xx+side*cell*.16,y+cell*.26,cell*.1,-side,1.3,cell*.019);
-        dropG(col,xx+side*cell*.1,y+cell*.26,cell*.09,side*Math.PI/2);
-      }
-    }
-  } else if(kind==='damask'){
-    const cl=cell*1.5;
-    for(let y=-cl;y<H+cl;y+=cl)for(let xx=-cl;xx<W+cl;xx+=cl){
-      const off=((y/cl)|0)%2?cl/2:0;
-      hornG(col,xx+off+cl/4,y+cl/3,cl*.52,0);
-      hornG(col,xx+off+cl*.75,y+cl*.8,cl*.52,Math.PI);
-      dropG(col,xx+off+cl*.5,y+cl*.55,cl*.16,0);
-      dropG(col,xx+off,y+cl*.15,cl*.13,Math.PI);
-    }
-  } else if(kind==='mandala'){
-    medallionG(col,W/2,H/2,H*.44,8);
-    ringG(col,W/2,H/2,H*.46);
-    const R=H*.5;
-    for(let y=-R;y<H+R;y+=H*.5)for(let xx=-R;xx<W+R;xx+=H*.5){
-      if(Math.hypot(xx-W/2,y-H/2)<H*.62)continue;
-      crossG(col,xx,y,H*.16);
-    }
-  }
+/* Шаблон в контейнере любой ширины: рисуем 928×522 и масштабируем */
+function mountTpl(box,cfg){
+  const w=box.clientWidth||928;box.style.position='relative';box.style.overflow='hidden';
+  box.innerHTML=`<div style="position:absolute;left:0;top:0;transform-origin:0 0;transform:scale(${w/928})">${tplHTML(cfg)}</div>`;
 }
-function renderPattern(cv,c){
-  if(!cv)return;const fp=fitCanvas(cv);if(!fp)return;const [x,W,H]=fp;
-  const kind=c.bgpat||'none';x.clearRect(0,0,W,H);
-  if(kind==='none'||!PAT_NAMES[kind])return;
-  const col=Col();patShapes(kind,col,W,H,c.patCell||Math.max(64,H/4.6));
-  const embossed=kind==='spiral'||kind==='ring'||kind==='damask';
-  paint(x,col,{mode:embossed?'emboss':'outline',c1:mix(c.bg1,c.c1,.55),c2:mix(c.bg1,'#ffffff',.55),a1:PAT_LINE[kind]||.3},W,H);
+
+/* ---------- фото: полароид, рамки Premium ---------- */
+const FR={ // проём в процентах: слева, сверху, справа, снизу
+  altyn:{name:'Алтын',h:[620,438,15.4,18.1,14.8,18.5],v:[438,620,18.1,14.8,18.5,15.4]},
+  kara: {name:'Қара-алтын',h:[620,417,15,16.9,12.5,16.9],v:[417,620,16.9,12.5,16.9,15]},
+  kumis:{name:'Күміс',h:[620,506,7.4,9.3,7.4,8.4],v:[506,620,8.4,7.4,9.3,7.4]},
+};
+const frameKey=f=>FR[f]?f:'altyn';
+function stampOf(cfg){const m=String(full(cfg).date||'').match(/(\d{1,2})[.\/\- ·]+(\d{1,2})[.\/\- ·]+(\d{2,4})/);
+  const d=m?[m[1],m[2],m[3].slice(-2)]:(()=>{const x=new Date();return [x.getDate(),x.getMonth()+1,String(x.getFullYear()).slice(-2)];})();
+  return `${String(d[0]).padStart(2,'0')} ${String(d[1]).padStart(2,'0')} ’${d[2]}`;}
+/* фото с плёнкой; без фото — инициал гостя на бумаге */
+function photoHTML(card,cls,style,film,stamp){
+  const ini=esc((String(card.name||'').trim()[0]||'♡').toLocaleUpperCase('kk'));
+  return `<div class="ph${film&&film!=='none'?' film-'+film:''} ${cls||''}" style="${style||''};${card.photo?`background-image:url('${esc(card.photo)}')`:''}">${card.photo?'':`<span class="ini">${ini}</span>`}${stamp&&card.photo&&film!=='none'?`<span class="stamp">${esc(stamp)}</span>`:''}</div>`;
 }
-/* Центральный медальон (вращается) */
-function renderRose(rc,c){
-  if(!rc)return;const rx=rc.getContext('2d');rx.setTransform(1,0,0,1,0,0);rx.clearRect(0,0,900,900);
-  const show=c.layout==='medallion'||c.layout==='circle';rc.style.display=show?'':'none';
-  if(show){const col=Col();if(c.layout==='circle')ringG(col,450,450,430);else medallionG(col,450,450,430,c.n||8);paint(rx,col,c,900,900);rc.style.opacity=c.layout==='circle'?.9:(c.n===4?.5:.85);}
+/* рамка по ориентации фото; width — ширина рамки в px */
+function frameHTML(card,orient,width,film){
+  const g=FR[frameKey(card.frame)][orient==='h'?'h':'v'],k=width/g[0],h=Math.round(g[1]*k);
+  return `<div class="frm" style="width:${Math.round(width)}px;height:${h}px">${photoHTML(card,'',`left:${g[2]}%;top:${g[3]}%;right:${g[4]}%;bottom:${g[5]}%`,film)}<img src="/static/img/frame-${frameKey(card.frame)}-${orient==='h'?'h':'v'}.png" alt=""></div>`;
 }
-/* Узор в шапке телефона гостя */
-function renderHeadOrn(cv,c){
-  const fp=fitCanvas(cv);if(!fp)return;const [x,W,H]=fp,col=Col();
-  if(c.layout==='corners'||c.layout==='circle'){const S=H*.8;cornerG(col,0,0,S,0);cornerG(col,W,0,S,Math.PI/2);cornerG(col,W,H,S,Math.PI);cornerG(col,0,H,S,-Math.PI/2);}
-  else tileG(col,W,H,H*.95);
-  x.globalAlpha=.75;paint(x,col,c,W,H);
-}
-/* CSS-переменные праздника на элементе + фон */
-function theme(el,c){
-  const mid=c.grad==='linear'?mix(c.bg1,c.bg2,.35):c.bg1,ink=lum(mix(mid,c.bg2,.3))>.33?'#3a2430':'#fff6e8';
-  const bg=c.grad==='linear'?`linear-gradient(90deg,${c.bg2} 0%,${mix(c.bg2,c.bg1,.55)} 55%,${c.bg1} 100%)`:`radial-gradient(ellipse at 50% 45%,${c.bg1} 0%,${mix(c.bg1,c.bg2,.6)} 55%,${c.bg2} 100%)`;
-  const st=el.style,light=ink!=='#fff6e8';
-  st.setProperty('--ev-bg',mid);st.setProperty('--ev-halo',mid);st.setProperty('--ev-acc',c.acc);st.setProperty('--ev-ink',ink);
-  st.setProperty('--ev-font',c.font);st.setProperty('--ev-size',c.size||'8cqw');st.setProperty('--ev-grad',bg);
-  st.setProperty('--ev-g3',mix(c.acc,'#ffffff',light?.12:.45));st.setProperty('--ev-gpk',mix(c.acc,'#ffffff',light?.4:.85));
-  st.setProperty('--sheen',c.sheen||'30s');
-  return {bg,mid,ink};
+const orientCache={};
+function orientOf(url){
+  if(!url)return Promise.resolve('v');if(orientCache[url])return Promise.resolve(orientCache[url]);
+  return new Promise(ok=>{const i=new Image();i.onload=()=>ok(orientCache[url]=i.naturalWidth>i.naturalHeight*1.06?'h':'v');i.onerror=()=>ok('v');i.src=url;});
 }
 
 /* ---------- картинки ---------- */
@@ -226,21 +178,20 @@ async function readImg(file,max,q){
   c.width=Math.round(w*k);c.height=Math.round(h*k);c.getContext('2d').drawImage(src,0,0,c.width,c.height);
   return c.toDataURL('image/jpeg',q||.85);
 }
-function hueOf(s){let h=0;for(const ch of s)h=(h*31+ch.charCodeAt(0))%360;return h;}
+/* Для пульта: маленькая картинка вместо фото */
 const avCache={};
 function avatar(name){
   name=name||'Гость';if(avCache[name])return avCache[name];
-  const h=hueOf(name),c=document.createElement('canvas');c.width=c.height=360;const x=c.getContext('2d');
-  const g=x.createLinearGradient(0,0,360,360);g.addColorStop(0,`hsl(${h},45%,55%)`);g.addColorStop(1,`hsl(${(h+40)%360},50%,28%)`);x.fillStyle=g;x.fillRect(0,0,360,360);
-  const col=Col();medallionG(col,180,180,200,8);paint(x,col,{mode:'flat',c1:'#ffffff',a1:.16},360,360);
-  x.fillStyle='#fff7e6';x.font='700 130px Manrope, sans-serif';x.textAlign='center';x.textBaseline='middle';x.fillText((name.trim()[0]||'?').toUpperCase(),180,190);
+  const c=document.createElement('canvas');c.width=c.height=240;const x=c.getContext('2d');
+  const g=x.createLinearGradient(0,0,240,240);g.addColorStop(0,'#efe8dc');g.addColorStop(1,'#ded4c3');x.fillStyle=g;x.fillRect(0,0,240,240);
+  x.fillStyle='#8a7f70';x.font='300 120px "Cormorant Garamond", serif';x.textAlign='center';x.textBaseline='middle';x.fillText((name.trim()[0]||'?').toLocaleUpperCase('kk'),120,128);
   return avCache[name]=c.toDataURL('image/jpeg',.85);
 }
 const photoOf=card=>card.photo||avatar(card.name);
 
 /* ---------- правила показа ---------- */
-/* Обычная открытка 8 сек, конверт 15 сек + 2 сек за каждую 1 000 ₸, не больше 60 */
-const durOf=v=>v?Math.min(60,15+Math.floor(v/1000)*2):8;
+/* Бесплатное поздравление 10 сек, Premium 1 минута (ТЗ 0.4) */
+const durOf=v=>v?60:10;
 
 /* ---------- QR ---------- */
 function loadQR(){return window.qrcode?Promise.resolve():new Promise((ok,no)=>{const s=document.createElement('script');s.src='/static/qrcode.js';s.onload=ok;s.onerror=no;document.head.appendChild(s);});}
@@ -260,6 +211,7 @@ async function api(url,body,headers){
 const abs=p=>location.origin+p;
 const tm=t=>new Date(t).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit',timeZone:'Asia/Almaty'});
 
-window.TOI={$,fmt,esc,reduce,TPL,TPL_NAMES,FONTS,PRESETS,PAT_NAMES,full,preset,mix,rgba,lum,Col,medallionG,paint,renderBand,renderRose,renderPattern,renderHeadOrn,theme,
-  readImg,avatar,photoOf,durOf,drawQR,api,abs,tm,fitCanvas};
+window.TOI={$,fmt,esc,reduce,FONTS_URL,PAL,NFONT,SCRIPT,CAPF,capFont,capStyle,TPLS,TPL_BY,PRESETS,FR,full,preset,palOf,vars,
+  splitNames,niceDate,up,initials,fitSize,tplHTML,mountTpl,stampOf,photoHTML,frameHTML,frameKey,orientOf,
+  readImg,avatar,photoOf,durOf,drawQR,api,abs,tm};
 })();

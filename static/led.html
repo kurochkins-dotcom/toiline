@@ -6,20 +6,21 @@
 <meta name="robots" content="noindex">
 <title>Toi Line · экран</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Great+Vibes&family=Lobster&family=Comfortaa:wght@600;700&family=Forum&family=Playfair+Display:wght@600;700&family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Playfair+Display:ital@0;1&family=Noto+Serif+Display:wght@200;300&family=Prata&family=Pinyon+Script&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/toi.css">
 <link rel="stylesheet" href="/static/led.css">
 <style>
 [hidden]{display:none!important}
 html,body{margin:0;height:100%;overflow:hidden}
-body{background:var(--ev-grad,#111);display:grid;place-items:center;cursor:none}
+body{background:var(--bg,#111);display:grid;place-items:center;cursor:none}
 body.cursor{cursor:default}
 #led{width:min(100vw,177.78vh)}
-.net{position:fixed;left:10px;top:10px;z-index:20;display:none;align-items:center;gap:6px;font:600 12px/1 Manrope,sans-serif;color:#fff;background:rgba(0,0,0,.55);padding:6px 10px;border-radius:99px}
+.net{position:fixed;left:10px;top:10px;z-index:20;display:none;align-items:center;gap:6px;font:600 12px/1 Montserrat,sans-serif;color:#fff;background:rgba(0,0,0,.55);padding:6px 10px;border-radius:99px}
 .net i{width:8px;height:8px;border-radius:50%;background:#e5484d}
 body.offline .net{display:flex}
-.hint{position:fixed;inset:auto 0 16px;margin:auto;width:max-content;max-width:90vw;z-index:20;font:600 14px/1.3 Manrope,sans-serif;color:#fff;background:rgba(0,0,0,.65);padding:10px 16px;border-radius:12px;transition:opacity .5s}
+.hint{position:fixed;inset:auto 0 16px;margin:auto;width:max-content;max-width:90vw;z-index:20;font:500 14px/1.3 Montserrat,sans-serif;color:#fff;background:rgba(0,0,0,.65);padding:10px 16px;border-radius:12px;transition:opacity .5s}
 .hint.off{opacity:0;pointer-events:none}
-.err{position:fixed;inset:0;display:grid;place-items:center;color:#fff;font:600 18px Manrope,sans-serif;background:#111;z-index:30;text-align:center;padding:20px}
+.err{position:fixed;inset:0;display:grid;place-items:center;color:#fff;font:500 18px Montserrat,sans-serif;background:#111;z-index:30;text-align:center;padding:20px}
 </style>
 </head>
 <body>
@@ -63,7 +64,7 @@ function next(){
 function kick(){if(!current)next();}
 function ticker(){
   const v=[...cards.values()].filter(c=>c.amount&&(c.status==='shown'||shownLocal.has(c.id))).sort((a,b)=>(b.shown_at||b.t)-(a.shown_at||a.t));
-  scene.ticker(v.length?`★ ${v[0].name} подарил(а) конверт ${T.fmt(v[0].amount)}`:'');
+  scene.ticker(v.slice(0,6).map(c=>`★ ${c.name} · ${T.fmt(c.amount)}`).join('      '));
 }
 
 /* ---------- связь ---------- */
@@ -81,7 +82,7 @@ async function sync(){
     $('err').hidden=true;save();flush();kick();
   }catch(e){if(/неверная/.test(e.message)){$('err').textContent='Ссылка на экран неверная. Возьмите новую в пульте модератора.';$('err').hidden=false;}}
 }
-function applyCfg(c){cfg=c;scene.setCfg(c);T.theme(document.body,T.full(c));document.title=(c.names||'Toi Line')+' · экран';}
+function applyCfg(c){cfg=c;scene.setCfg(c);T.vars(document.body,c);document.title=(c.names||'Toi Line')+' · экран';}
 function onCard(c,quiet){
   if(c.status==='hidden'||c.status==='pending'){cards.delete(c.id);if(current&&current.id===c.id)next();}
   else{
@@ -113,7 +114,8 @@ document.addEventListener('click',()=>{try{const p=document.documentElement.requ
 setTimeout(()=>$('hint').classList.add('off'),15000);
 let mt;document.addEventListener('mousemove',()=>{document.body.classList.add('cursor');clearTimeout(mt);mt=setTimeout(()=>document.body.classList.remove('cursor'),2500);});
 if('serviceWorker' in navigator)navigator.serviceWorker.register('/sw.js',{scope:'/'}).catch(()=>{});
-keep([location.pathname,'/static/common.js','/static/scene.js','/static/led.css']);
+keep([location.pathname,'/static/common.js','/static/scene.js','/static/led.css','/static/toi.css','/static/fonts/toi-great-vibes.ttf','/static/fonts/toi-comforter.ttf','/static/fonts/toi-comforter-brush.ttf',
+  ...['magnolia','rose-pink','rose-yellow','iris'].map(n=>`/static/img/${n}.png`),...['altyn','kara','kumis'].flatMap(f=>['h','v'].map(o=>`/static/img/frame-${f}-${o}.png`))]);
 
 restore();
 if(cfg)applyCfg(cfg);

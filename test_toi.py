@@ -107,7 +107,7 @@ def main():
     code, j = req("/api/admin/events")
     ok(code == 401, "без ключа список мероприятий закрыт")
     code, j = req("/api/admin/events", {"type": "wedding", "names": "Диас & Диара", "date": "21 · 11 · 2026",
-                                                  "tpl": "pink", "kaspi_phone": "+7 701 000 00 00", "kaspi_name": "Диас Е.",
+                                                  "tpl": "arch", "kaspi_phone": "+7 701 000 00 00", "kaspi_name": "Диас Е.",
                                                   "moderation": True, "bg1": "javascript:", "hack": 1}, {"X-Toi-Admin": KEY})
     ok(code == 200 and j["id"], "мероприятие создано")
     eid, L = j["id"], j["links"]
@@ -115,7 +115,7 @@ def main():
     cA, cB, cC = dev(f"/g/{eid}"), dev(f"/g/{eid}"), dev(f"/g/{eid}")
     mod = "/api" + L["mod"]
     led = "/api" + L["led"]
-    for p in (L["guest"], L["mod"], L["led"], L["album"], "/static/common.js", "/static/qrcode.js", "/sw.js"):
+    for p in (L["guest"], L["mod"], L["led"], L["album"], "/static/common.js", "/static/qrcode.js", "/static/toi.css", "/static/img/frame-altyn-h.png", "/static/fonts/toi-comforter.ttf", "/sw.js"):
         code, _ = req(p, raw=True)
         ok(code == 200, f"открывается {p.split('/')[2] if p.count('/') > 2 else p}")
 
@@ -136,7 +136,7 @@ def main():
     ok(code == 200 and j["online"]["led"] >= 1, "пульт видит, что экран на связи")
 
     # обычная открытка с фото → ждёт модератора
-    code, g1 = req(f"/api/e/{eid}/card", {"name": "Ерлан ағай", "msg": "Бақытты болыңдар!", "table": "7", "frame": "soft", "photo": PHOTO},
+    code, g1 = req(f"/api/e/{eid}/card", {"name": "Ерлан ағай", "msg": "Бақытты болыңдар!", "table": "7", "frame": "kara", "photo": PHOTO},
                    {"Cookie": cA})
     ok(code == 200 and g1["status"] == "pending", "открытка гостя ждёт модератора")
     c = s_mod.wait("card", lambda d: d["id"] == g1["id"])
@@ -190,20 +190,22 @@ def main():
     ok(len(j["cards"]) == 1, "скрытая открытка ушла из альбома")
 
     # настройки экрана
-    code, j = req(mod + "/cfg", {"names": "Диас & Диара ♥", "tpl": "green", "moderation": False, "font": "<script>"})
-    ok(code == 200 and j["cfg"]["names"] == "Диас & Диара ♥" and j["cfg"]["tpl"] == "green", "настройки сохранились")
-    s_led.wait("config", lambda d: d["tpl"] == "green")
+    code, j = req(mod + "/cfg", {"names": "Диас & Диара ♥", "tpl": "oval", "palette": "night", "moderation": False, "nfont": "<script>"})
+    ok(code == 200 and j["cfg"]["names"] == "Диас & Диара ♥" and j["cfg"]["tpl"] == "oval" and j["cfg"]["palette"] == "night" and j["cfg"]["nfont"] == "corm", "настройки сохранились")
+    s_led.wait("config", lambda d: d["tpl"] == "oval")
     ok(True, "экран получил новые настройки сразу")
-    code, j = req(mod + "/cfg", {"bgpat": "spiral"})
-    ok(code == 200 and j["cfg"]["bgpat"] == "spiral", "фоновый узор сохраняется")
+    code, j = req(mod + "/cfg", {"film": "vhs", "fx_sheen": False})
+    ok(code == 200 and j["cfg"]["film"] == "vhs" and j["cfg"]["fx_sheen"] is False, "фильтр фото и эффекты сохраняются")
     code, j = req(mod + "/cfg", {"card": "landscape"})
     ok(code == 200 and j["cfg"]["card"] == "landscape", "формат карточки сохраняется")
     code, j = req(mod + "/cfg", {"card": "что-то"})
     ok(code == 200 and j["cfg"]["card"] == "landscape", "неизвестный формат отбрасывается")
-    code, j = req(mod + "/cfg", {"bgpat": "мусор"})
-    ok(code == 200 and j["cfg"]["bgpat"] == "spiral", "неизвестный узор не ломает настройки")
+    code, j = req(mod + "/cfg", {"tpl": "мусор", "palette": "мусор", "film": "мусор"})
+    ok(code == 200 and j["cfg"]["tpl"] == "oval" and j["cfg"]["palette"] == "night" and j["cfg"]["film"] == "vhs", "неизвестный шаблон и палитра не ломают настройки")
     code, j = req(mod + "/cfg", {"splash": PHOTO})
     ok(code == 200 and j["cfg"]["splash_url"].endswith(".jpg"), "заставка загружена")
+    code, j = req(mod + "/cfg", {"couple": PHOTO})
+    ok(code == 200 and j["cfg"]["couple_url"].endswith(".jpg"), "фото пары загружено")
     code, g3 = req(f"/api/e/{eid}/card", {"name": "Сауле", "msg": "Любви!"}, {"Cookie": cC})
     ok(g3["status"] == "approved", "без проверки открытка сразу идёт на экран")
     s_led.wait("card", lambda d: d["id"] == g3["id"])

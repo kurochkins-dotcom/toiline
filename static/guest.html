@@ -3,299 +3,306 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#faf7f1">
-<title>Поздравить · Toi Line</title>
+<meta name="theme-color" content="#F5F1EA">
+<title>Toi Line</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Great+Vibes&family=Lobster&family=Comfortaa:wght@600;700&family=Forum&family=Playfair+Display:wght@600;700&family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Playfair+Display:ital@0;1&family=Noto+Serif+Display:wght@200;300&family=Prata&family=Pinyon+Script&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/toi.css">
 <style>
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 html,body{margin:0}
-body{background:#faf7f1;color:#221e28;font-family:"Manrope",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:15px;line-height:1.45;-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--ink);font-family:Montserrat,system-ui,sans-serif;font-size:15px;line-height:1.45;-webkit-text-size-adjust:100%}
 button,input,textarea{font:inherit;color:inherit}
 button{cursor:pointer}
-.scr{max-width:480px;margin:0 auto;min-height:100dvh;display:flex;flex-direction:column;background:#faf7f1}
-.ph-head{position:relative;color:var(--ev-ink);padding:30px 18px 24px;text-align:center;overflow:hidden;flex:none;background:var(--ev-grad,#ccc)}
-.ph-head canvas{position:absolute;inset:0;width:100%;height:100%;opacity:.55}
-.ph-head::after{content:"";position:absolute;inset:0;background:radial-gradient(closest-side,var(--ev-halo) 30%,transparent 100%);opacity:.85}
-.ph-in{position:relative;z-index:1;display:grid;gap:6px;justify-items:center}
-.kindpill{font-size:11px;font-weight:800;letter-spacing:.22em;text-transform:uppercase;padding:4px 10px;border-radius:99px;background:color-mix(in srgb,var(--ev-ink) 14%,transparent)}
-.ph-head .nm{font-family:var(--ev-font);font-size:38px;line-height:1.1;text-wrap:balance;color:var(--ev-ink);text-shadow:0 1px 0 color-mix(in srgb,var(--ev-acc) 60%,transparent),0 2px 12px rgba(0,0,0,.18)}
-.ph-head .dt{font-size:12px;font-weight:600;opacity:.85}
-.view{padding:16px 16px calc(24px + env(safe-area-inset-bottom));display:grid;gap:12px;align-content:start;flex:1}
-.hello{margin:2px 0 4px;font-size:15px;line-height:1.4;text-align:center;color:#4a4352}
-.action{display:grid;grid-template-columns:44px 1fr;grid-template-rows:auto auto;column-gap:12px;align-items:center;text-align:left;border-radius:18px;padding:16px;border:1px solid #e6dfd1;background:#fff;box-shadow:0 2px 10px rgba(30,20,10,.06)}
-.action .ico{grid-row:1/3;width:44px;height:44px;border-radius:14px;display:grid;place-items:center;background:#f2ede3;color:#2b2531}
-.action .ico svg{width:24px;height:24px}
-.action .tx{display:grid;gap:3px}
-.action .tx b{font-size:16px}
-.action .tx small{font-size:12.5px;color:#6f6878;line-height:1.35}
-.action .tag{grid-column:2;justify-self:start;margin-top:8px;font-size:11px;font-weight:800;padding:3px 9px;border-radius:99px;background:#eef6f4;color:#1d6b5e}
-.action.env{border:0;background:linear-gradient(150deg,#3a2a0c,#1d1505);color:#fff4d8;box-shadow:0 6px 20px rgba(120,80,10,.3),inset 0 0 0 1.5px #d4a64a}
-.action.env .ico{background:linear-gradient(180deg,#f5d98b,#c9963a);color:#3a2600}
-.action.env .tx small{color:#d9c9a2}
-.action.env .tag{background:linear-gradient(180deg,#f5d98b,#c9963a);color:#3a2600}
-.action:active{transform:scale(.99)}
-.fine{font-size:11.5px;color:#8a8392;text-align:center;margin:4px 6px 0;line-height:1.4}
-.topbar{display:flex;align-items:center;gap:10px}
-.topbar b{font-size:17px}
-.back{width:38px;height:38px;border-radius:12px;border:1px solid #e3dccd;background:#fff;font-size:18px;line-height:1}
-.envsum{display:grid;gap:8px;padding:12px;border-radius:16px;background:linear-gradient(180deg,#fff8e4,#fbecc4);border:1px solid #e8cd8c}
-.envsum .lbl,.fld .lbl,.fld label{font-size:12px;font-weight:700;color:#7a7384}
-.envsum .lbl{color:#7d6328}
-.sums{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
-.sums button{border:1px solid #e3c47c;background:#fff;border-radius:12px;padding:10px 4px;font-weight:800;font-size:13px;color:#5a3f0a;font-variant-numeric:tabular-nums}
-.sums button[aria-pressed="true"]{background:linear-gradient(180deg,#f5d98b,#d3a24a);border-color:#c9963a;color:#2e1d00}
-.own{display:flex;align-items:center;gap:8px;font-size:13px;color:#7d6328;font-weight:700}
-.own span{flex:1}
-.own input{width:120px;border:1px solid #e3c47c;border-radius:10px;padding:8px 9px;background:#fff;font-weight:800;text-align:right;color:#2e1d00;font-size:16px}
-.envsum small{font-size:12px;color:#7d6328;line-height:1.35}
-.shot{display:flex;align-items:center;gap:14px;padding:12px;border-radius:16px;border:1.5px dashed #d8ccb3;background:#fff;cursor:pointer}
-.shot-pic{width:72px;height:72px;border-radius:50%;flex:none;display:grid;place-items:center;background:#f2ede3 center/cover;color:#6b6273}
-.shot-pic svg{width:30px;height:30px}
-.shot.has .shot-pic svg{display:none}
-.shot-tx{font-weight:800;font-size:15px}
-.shot-tx small{display:block;font-weight:600;font-size:12px;color:#8a8392}
-.fld{display:grid;gap:6px}
-.fld input,.fld textarea{border:1px solid #e3dccd;border-radius:12px;padding:11px 12px;background:#fff;color:#221e28;resize:none;font-size:16px}
-.chips{display:flex;flex-wrap:wrap;gap:6px}
-.chips button{border:1px solid #e0d8c7;background:#fff;border-radius:99px;padding:7px 12px;font-size:13px;font-weight:600;color:#3d3746}
-.chips button[aria-pressed="true"]{border-color:#c9963a;background:#fff4da;color:#6b4708}
-.pv{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:center;padding:10px;border-radius:14px;background:#221c2c;color:#fff}
-.mini{display:grid;justify-items:center;background:#fffcf5;padding:4px 4px 0;border-radius:3px;transform:rotate(-2deg);box-shadow:0 2px 6px rgba(0,0,0,.35)}
-.mini b{font-family:var(--ev-font);font-size:10px;font-weight:400;color:#2a2018;padding:3px 0 4px;max-width:86px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.pv i{width:54px;height:66px;border-radius:1px;background:center/cover #444}
-.pv.f-soft i{border-radius:12px 12px 1px 1px}
-.pv.f-orn .mini{border:1.5px solid var(--ev-acc)}
-.pv.f-soft .mini{background:#fff7f9}
-
-.pv p{margin:0;font-family:var(--ev-font);font-size:16px;line-height:1.25;overflow-wrap:anywhere}
-.pv small{font-size:11px;opacity:.75;font-weight:700}
-.pv em{display:none;font-style:normal;font-weight:800;font-size:17px;color:#f5d98b}
-.pv.vip{background:linear-gradient(150deg,#3a2a0c,#140e03);box-shadow:inset 0 0 0 1.5px #d4a64a}
-.pv.vip em{display:block}
-.pv.vip i{outline-color:#e7bf63}
-.go{border:0;border-radius:16px;padding:16px;font-weight:800;font-size:16px;background:#221e28;color:#fff;width:100%}
-.go.env{background:linear-gradient(180deg,#f5d98b,#c9963a);color:#3a2600}
-.go.kaspi{background:#f14635;color:#fff}
-.go.light{background:#fff;color:#221e28;border:1px solid #e3dccd}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.scr{max-width:480px;margin:0 auto;min-height:100dvh;display:flex;flex-direction:column;padding:20px 24px calc(28px + env(safe-area-inset-bottom))}
+.lang{align-self:flex-end;display:flex;gap:4px}
+.lang button{height:32px;padding:0 10px;border-radius:16px;border:1px solid color-mix(in srgb,var(--muted) 45%,transparent);background:transparent;font:600 12px Montserrat,sans-serif}
+.lang button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.hero{margin-top:48px;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center}
+.hero .kind{font-family:'Toi Great Vibes',cursive;font-size:30px;color:var(--accent)}
+.hero h1{margin:0;font-weight:300;line-height:1.1}
+.hero .rule{width:56px;height:1px;background:var(--accent)}
+.hero .date{font-size:12px;letter-spacing:.45em;color:var(--muted)}
+.hello{margin:40px 0 0;text-align:center;font-family:'Cormorant Garamond',serif;font-size:21px;line-height:1.35;color:color-mix(in srgb,var(--ink) 85%,var(--bg))}
+.acts{margin-top:auto;padding-top:28px;display:flex;flex-direction:column;gap:12px}
+.act{display:flex;align-items:center;justify-content:space-between;min-height:64px;padding:10px 12px 10px 22px;border-radius:32px;border:1px solid color-mix(in srgb,var(--muted) 35%,transparent);background:color-mix(in srgb,#fff 70%,var(--bg));text-align:left;color:var(--ink)}
+.dark .act{background:color-mix(in srgb,#fff 6%,var(--bg))}
+.act span.t{display:flex;flex-direction:column;gap:2px}
+.act b{font-weight:600;font-size:16px}
+.act small{font-size:12px;color:var(--muted)}
+.act i{flex:none;display:flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:22px;border:1px solid var(--accent);font:600 12px Montserrat,sans-serif;font-style:normal;color:var(--accent)}
+.act.prem{border:0;background:linear-gradient(100deg,#2A2622,#4A3F33);color:#F5F1EA}
+.act.prem small{color:#E2D3B4}
+.act.prem i{border:0;background:linear-gradient(135deg,#E6CD95,#B08D4E);color:#2A2622}
+.brand{text-align:center;font-size:11px;color:var(--muted);margin-top:8px;letter-spacing:.06em}
+.fine{text-align:center;font-size:11.5px;color:var(--muted);margin:2px 6px 0;line-height:1.4}
+/* шапка шага */
+.bar{display:flex;align-items:center;gap:12px}
+.back{width:44px;height:44px;border-radius:22px;border:1px solid color-mix(in srgb,var(--muted) 45%,transparent);background:transparent;font-size:18px;line-height:1;display:grid;place-items:center}
+.bar .ttl{font-family:'Cormorant Garamond',serif;font-size:22px;letter-spacing:.06em}
+.badge{margin-left:auto;font-size:12px;font-weight:600;color:var(--accent);border:1px solid var(--accent);border-radius:14px;padding:5px 10px;white-space:nowrap}
+/* бесплатное: полароид */
+.polwrap{align-self:center;margin:20px 0 6px;position:relative}
+.pol.g{width:250px;padding:12px 12px 0;transform:rotate(-2deg);cursor:pointer;border:0;display:block}
+.pol.g .ph{width:226px;height:250px;font-size:12px}
+.pol.g .cap{height:62px;display:flex;align-items:center;justify-content:center;color:#2A2622;font-size:26px;line-height:1;overflow:hidden;white-space:nowrap}
+.pol.g .hint{position:absolute;inset:0;display:flex;flex-direction:column;gap:8px;align-items:center;justify-content:center;color:#6E665C;font-size:13px;font-weight:500}
+.pol.g .hint svg{width:34px;height:34px}
+.redo{position:absolute;right:16px;top:16px;width:44px;height:44px;border-radius:22px;border:0;background:rgba(255,255,255,.88);font-size:18px;color:#2A2622;z-index:2}
+.flds{display:flex;flex-direction:column;gap:12px;margin-top:10px}
+.fld{display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:600;color:var(--muted)}
+.fld em{font-style:normal;font-weight:400}
+.fld input,.fld textarea{height:48px;border-radius:12px;border:1px solid color-mix(in srgb,var(--muted) 40%,transparent);background:color-mix(in srgb,#fff 80%,var(--bg));padding:0 14px;font:400 16px Montserrat,sans-serif;color:var(--ink)}
+.fld textarea{height:84px;padding:12px 14px;resize:none}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chips button{border:1px solid color-mix(in srgb,var(--muted) 35%,transparent);background:transparent;border-radius:99px;padding:6px 11px;font-size:12.5px;color:var(--ink)}
+.go{margin-top:auto;height:58px;border-radius:29px;border:0;background:var(--ink);color:var(--bg);font:600 16px Montserrat,sans-serif;width:100%}
 .go:disabled{opacity:.6}
-.err{margin:0;font-size:13px;color:#b3261e;text-align:center}
-.done{justify-items:center;text-align:center;padding-top:40px}
-.check{width:72px;height:72px;border-radius:50%;display:grid;place-items:center;font-size:34px;font-weight:800;background:#e3f4ef;color:#1d6b5e}
-.check.vip{background:linear-gradient(180deg,#f5d98b,#c9963a);color:#3a2600}
-.check.wait{background:#f2ede3;color:#6b6273}
-.check.no{background:#fbe3e1;color:#b3261e}
-.done h3{margin:4px 0 0;font-size:20px}
-.done p{margin:0;color:#5d5666;max-width:300px}
-.pay{display:grid;gap:12px}
-.kbox{background:#fff;border:1px solid #eee;border-radius:20px;padding:18px;display:grid;gap:12px;text-align:center;box-shadow:0 6px 24px rgba(0,0,0,.06)}
-.kbox .k{width:54px;height:54px;border-radius:14px;background:#f14635;color:#fff;font-weight:800;display:grid;place-items:center;margin:0 auto;font-size:22px}
-.kbox .sumv{font-size:32px;font-weight:800;font-variant-numeric:tabular-nums}
-.kbox .to{font-size:14px;color:#55505d}
-.phone{display:flex;align-items:center;justify-content:center;gap:8px;font-size:20px;font-weight:800;font-variant-numeric:tabular-nums}
-.phone button{font-size:12px;font-weight:700;border:1px solid #ddd;background:#f6f6f6;border-radius:8px;padding:5px 9px}
-.steps{margin:0;padding-left:20px;text-align:left;font-size:13.5px;color:#4a4352;display:grid;gap:4px}
-.loading{padding:60px 20px;text-align:center;color:#8a8392}
+.spacer{flex:1;min-height:18px}
+.err{color:#B3261E;font-size:13px;margin:8px 0 0;text-align:center}
+/* Premium: тёмная страница-открытка, без шапки праздника */
+.prem-page{background:#1E1B19;color:#F5F1EA;--muted:#BDB3A6;--ink:#F5F1EA}
+.prem-page .back{border-color:#4A433C}
+.prem-page .badge{color:#1E1B19;background:linear-gradient(135deg,#E6CD95,#B08D4E);border:0}
+.fstage{align-self:center;margin:14px 0 4px;min-height:240px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px}
+.fstage .frm{filter:drop-shadow(0 14px 30px rgba(0,0,0,.5))}
+.fstage .cap{font-family:'Toi Comforter',cursive;font-size:28px;line-height:1.1;text-align:center;min-height:30px}
+.frames{display:flex;gap:8px;justify-content:center;margin-top:8px}
+.frames button{height:44px;padding:0 10px;white-space:nowrap;border-radius:22px;border:1px solid #4A433C;background:transparent;color:#F5F1EA;font:500 13px Montserrat,sans-serif;display:flex;align-items:center;gap:8px}
+.frames button img{width:16px;height:22px;object-fit:contain}
+.frames button[aria-pressed="true"]{border-color:#E6CD95;background:rgba(230,205,149,.14);color:#F1DDA8;font-weight:600}
+.two{display:flex;gap:8px;margin-top:12px}
+.two button{flex:1;height:44px;border-radius:12px;border:1px solid #4A433C;background:transparent;color:#F5F1EA;font:500 13px Montserrat,sans-serif}
+.prem-page .fld input,.prem-page .fld textarea{background:#2A2622;border-color:#4A433C;color:#F5F1EA}
+.sums{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.sums button{height:44px;border-radius:12px;border:1px solid #4A433C;background:transparent;color:#F5F1EA;font:500 13px Montserrat,sans-serif}
+.sums button[aria-pressed="true"]{border-color:#E6CD95;background:rgba(230,205,149,.14);color:#F1DDA8;font-weight:600}
+.go.gold{background:linear-gradient(100deg,#E6CD95,#B08D4E);color:#1E1B19;margin-top:18px}
+/* Kaspi */
+.kbox{margin-top:20px;display:grid;gap:12px;justify-items:center;text-align:center;padding:22px 18px;border-radius:20px;background:#2A2622;border:1px solid #4A433C}
+.kbox .k{width:52px;height:52px;border-radius:14px;background:#F14635;color:#fff;font:700 26px Montserrat,sans-serif;display:grid;place-items:center}
+.kbox .to{font-size:14px;color:#BDB3A6}
+.kbox .to b{color:#F5F1EA;font-size:16px}
+.kbox .sumv{font-family:'Cormorant Garamond',serif;font-size:44px;line-height:1;background:linear-gradient(100deg,#F1DDA8,#B08D4E);-webkit-background-clip:text;background-clip:text;color:transparent}
+.kbox .phone{display:flex;gap:8px;align-items:center;font-weight:600;font-size:17px}
+.kbox .phone button{border:1px solid #4A433C;background:transparent;color:#F5F1EA;border-radius:10px;padding:6px 10px;font-size:12px}
+.kbox ol{margin:0;padding-left:20px;text-align:left;font-size:13.5px;color:#D9D0C3;display:grid;gap:4px}
+.go.kaspi{background:#F14635;color:#fff;display:flex;align-items:center;justify-content:center;text-decoration:none;margin-top:14px}
+/* готово */
+.done{margin:auto 0;text-align:center;display:grid;gap:12px;justify-items:center}
+.done .ok{width:72px;height:72px;border-radius:50%;border:1px solid var(--accent);display:grid;place-items:center;font-family:'Cormorant Garamond',serif;font-size:34px;color:var(--accent)}
+.done h3{margin:0;font-family:'Cormorant Garamond',serif;font-weight:400;font-size:30px;line-height:1.15}
+.done p{margin:0;color:var(--muted);max-width:320px}
+.loading{margin:auto;color:var(--muted);text-align:center}
 </style>
 </head>
 <body>
-<div class="scr" id="scr">
-  <header class="ph-head" id="head">
-    <canvas id="orn"></canvas>
-    <div class="ph-in">
-      <span class="kindpill" id="kind"></span>
-      <div class="nm" id="names"></div>
-      <div class="dt"><span id="date"></span><span id="tblLine"></span></div>
-    </div>
-  </header>
+<input id="fFile" type="file" accept="image/*" hidden>
+<input id="fSelfie" type="file" accept="image/*" capture="user" hidden>
 
-  <div class="loading" id="vLoad">Загружаем праздник…</div>
+<div class="scr" id="vLoad"><div class="loading" data-t="loading"></div></div>
 
-  <section class="view" id="vHome" hidden>
-    <p class="hello" id="hello"></p>
-    <button class="action" data-go="free">
-      <span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-2.5h6L17 8h3v11H4z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="12" cy="13" r="3.5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></span>
-      <span class="tx"><b>Отправить поздравление</b><small>Селфи и пожелание выйдут на большой экран</small></span>
-      <span class="tag">Бесплатно</span>
-    </button>
-    <button class="action env" data-go="env" id="envBtn">
-      <span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M3.5 7l8.5 6.5L20.5 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></span>
-      <span class="tx"><b>Отправить конверт · VIP</b><small>С переводом через Kaspi. Вне очереди, в золотой рамке, сумма видна всем</small></span>
-      <span class="tag">от 1 000 ₸</span>
-    </button>
-    <p class="fine" id="fine">Перевод в конверте уходит напрямую организатору тоя. Перед показом поздравления проверяет модератор.</p>
+<div class="scr" id="vHome" hidden>
+  <div class="lang" role="group" aria-label="Тіл / Язык"><button data-lang="kk">ҚАЗ</button><button data-lang="ru">РУС</button></div>
+  <div class="hero"><div class="kind" id="hKind"></div><h1 id="hNames"></h1><div class="rule"></div><div class="date" id="hDate"></div></div>
+  <p class="hello" id="hello"></p>
+  <div class="acts">
+    <button class="act" data-go="free"><span class="t"><b data-t="free"></b><small data-t="freeSub" id="freeSub"></small></span><i data-t="sec10"></i></button>
+    <button class="act prem" data-go="prem" id="premBtn"><span class="t"><b data-t="prem"></b><small data-t="premSub"></small></span><i data-t="min1"></i></button>
     <p class="err" id="homeErr" hidden></p>
-  </section>
-
-  <section class="view" id="vForm" hidden>
-    <div class="topbar"><button class="back" data-go="home" aria-label="Назад">←</button><b id="fTitle">Поздравление</b></div>
-    <div class="envsum" id="envSum">
-      <span class="lbl">Сумма в конверте</span>
-      <div class="sums" id="sums">
-        <button data-s="1000">1 000 ₸</button><button data-s="3000">3 000 ₸</button><button data-s="5000" aria-pressed="true">5 000 ₸</button>
-        <button data-s="10000">10 000 ₸</button><button data-s="20000">20 000 ₸</button><button data-s="50000">50 000 ₸</button>
-      </div>
-      <label class="own"><span>Своя сумма</span><input type="number" id="gSum" min="500" step="500" value="5000" inputmode="numeric"> ₸</label>
-      <small id="envHint"></small>
-    </div>
-    <label class="shot" for="gPhoto" id="shot">
-      <span class="shot-pic" id="thumb"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-2.5h6L17 8h3v11H4z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="12" cy="13" r="3.5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></span>
-      <span class="shot-tx" id="shotTx">Сделать селфи<small>Можно без фото</small></span>
-    </label>
-    <input id="gPhoto" type="file" accept="image/*" capture="user" hidden>
-    <div class="fld"><label for="gName">Ваше имя</label><input type="text" id="gName" maxlength="30" placeholder="Например, Ерлан ағай" autocomplete="name"></div>
-    <div class="fld" id="tblField"><label for="gTbl">Номер стола</label><input type="text" id="gTbl" maxlength="6" inputmode="numeric" placeholder="Необязательно"></div>
-    <div class="fld"><label for="gMsg">Пожелание</label><textarea id="gMsg" maxlength="140" rows="3"></textarea>
-      <div class="chips" id="quick"></div></div>
-    <div class="fld" id="frameField"><span class="lbl">Рамка</span>
-      <div class="chips" id="frames"><button data-f="orn" aria-pressed="true">Золотая</button><button data-f="soft" aria-pressed="false">Арка</button><button data-f="classic" aria-pressed="false">Полароид</button></div></div>
-    <div class="fld"><span class="lbl">Так это будет на экране</span>
-      <div class="pv" id="pv"><div class="mini"><i id="pvPic"></i><b id="pvWho"></b></div><div><em id="pvAmt"></em><p id="pvMsg"></p><small id="pvFrom"></small></div></div></div>
-    <button class="go" id="send">Отправить на экран</button>
-    <p class="err" id="err" hidden></p>
-  </section>
-
-  <section class="view pay" id="vPay" hidden>
-    <div class="topbar"><button class="back" data-go="env" aria-label="Назад">←</button><b>Перевод через Kaspi</b></div>
-    <div class="kbox">
-      <div class="k">K</div>
-      <div class="to">Переведите организатору тоя<br><b id="kName"></b></div>
-      <div class="sumv" id="kSum"></div>
-      <div class="phone" id="kPhoneRow"><span id="kPhone"></span><button id="kCopy" type="button">Скопировать</button></div>
-      <ol class="steps" id="kSteps"></ol>
-    </div>
-    <a class="go kaspi" id="kOpen" href="#" target="_blank" rel="noopener" style="text-align:center;text-decoration:none" hidden>Открыть Kaspi</a>
-    <button class="go env" id="kDone">Я перевёл(а), отправить конверт</button>
-    <p class="err" id="kErr" hidden></p>
-    <p class="fine">Модератор сверит перевод в Kaspi организатора, и конверт выйдет на экран. Деньги идут напрямую организатору, Toi Line их не получает.</p>
-  </section>
-
-  <section class="view done" id="vDone" hidden>
-    <div class="check" id="doneIco">✓</div>
-    <h3 id="doneT"></h3>
-    <p id="doneP"></p>
-    <button class="go" data-go="home" style="margin-top:12px">Отправить ещё</button>
-  </section>
+    <div class="brand">Toi Line</div>
+  </div>
 </div>
+
+<div class="scr" id="vFree" hidden>
+  <div class="bar"><button class="back" data-go="home" aria-label="Назад">‹</button><div class="ttl" data-t="free"></div><span class="badge" data-t="onScreen10"></span></div>
+  <div class="polwrap">
+    <button class="pol g" id="fPol" type="button"><div class="ph film-warm" id="fPh"><div class="hint" id="fHint"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-2.5h6L17 8h3v11H4z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><circle cx="12" cy="13" r="3.5" fill="none" stroke="currentColor" stroke-width="1.4"/></svg><span data-t="takeSelfie"></span></div></div><div class="cap" id="fCap" style="font-family:'Toi Great Vibes',cursive"></div></button>
+    <button class="redo" id="fRedo" type="button" aria-label="Переснять" hidden>↻</button>
+  </div>
+  <div class="flds">
+    <label class="fld"><span data-t="yourName"></span><input type="text" id="fName" maxlength="30" autocomplete="name"></label>
+    <label class="fld"><span><span data-t="wish"></span> <em data-t="optional"></em></span><textarea id="fMsg" maxlength="140"></textarea></label>
+    <div class="chips" id="fQuick"></div>
+  </div>
+  <div class="spacer"></div>
+  <button class="go" id="fSend" data-t="toScreen"></button>
+  <p class="err" id="fErr" hidden></p>
+</div>
+
+<div class="scr prem-page" id="vPrem" hidden>
+  <div class="bar"><button class="back" data-go="home" aria-label="Назад">‹</button><span class="badge" data-t="onScreen60"></span></div>
+  <div class="fstage"><div id="pFrame"></div><div class="cap" id="pCap"></div></div>
+  <div class="frames" id="pFrames"></div>
+  <div class="two"><button type="button" data-pick="fFile" data-t="upload"></button><button type="button" data-pick="fSelfie" data-t="selfie"></button></div>
+  <div class="flds">
+    <label class="fld"><span data-t="fromWhom"></span><input type="text" id="pName" maxlength="30" autocomplete="name"></label>
+    <label class="fld"><span data-t="wish"></span><input type="text" id="pMsg" maxlength="140"></label>
+    <div class="fld"><span data-t="sum"></span>
+      <div class="sums" id="pSums"><button data-s="5000">5 000</button><button data-s="10000" aria-pressed="true">10 000</button><button data-s="20000">20 000</button><button data-s="own" data-t="other"></button></div>
+      <input type="number" id="pOwn" min="500" step="500" inputmode="numeric" hidden></div>
+  </div>
+  <button class="go gold" id="pSend"></button>
+  <p class="err" id="pErr" hidden></p>
+</div>
+
+<div class="scr prem-page" id="vPay" hidden>
+  <div class="bar"><button class="back" data-go="prem" aria-label="Назад">‹</button><div class="ttl">Kaspi</div></div>
+  <div class="kbox">
+    <div class="k">K</div>
+    <div class="to"><span data-t="payTo"></span><br><b id="kName"></b></div>
+    <div class="sumv" id="kSum"></div>
+    <div class="phone" id="kPhoneRow"><span id="kPhone"></span><button id="kCopy" type="button" data-t="copy"></button></div>
+    <ol id="kSteps"></ol>
+  </div>
+  <a class="go kaspi" id="kOpen" href="#" target="_blank" rel="noopener" hidden data-t="openKaspi"></a>
+  <button class="go gold" id="kDone" data-t="iPaid"></button>
+  <p class="err" id="kErr" hidden></p>
+  <p class="fine" data-t="payFine"></p>
+</div>
+
+<div class="scr" id="vDone" hidden>
+  <div class="done"><div class="ok" id="dIco">✓</div><h3 id="dT"></h3><p id="dP"></p>
+    <button class="go" data-go="home" style="margin-top:14px;max-width:320px" data-t="again"></button></div>
+</div>
+
 <script src="/static/common.js"></script>
 <script>
 (function(){
 const T=TOI,$=T.$;
 const eid=location.pathname.split('/')[2];
 const table=(new URLSearchParams(location.search).get('t')||'').replace(/[^0-9a-zA-Zа-яА-Я-]/g,'').slice(0,6);
-let c=null,mode='free',frame='orn',photo=null,sending=false,poll=0;
+const L={
+  kk:{loading:'Той жүктелуде…',notFound:'Той табылмады. Сілтемені немесе QR-кодты тексеріңіз.',free:'Құттықтау',freeSub:'тегін · селфи және есім',prem:'Премиум құттықтау',premSub:'рамкадағы фото · конверт',sec10:'10с',min1:'1 мин',
+    onScreen10:'экранда 10 с',onScreen60:'экранда 1 минут',takeSelfie:'Селфи түсіру',yourName:'Есіміңіз',wish:'Тілек',optional:'(міндетті емес)',toScreen:'Экранға жіберу',upload:'Сурет жүктеу',selfie:'Селфи түсіру',
+    fromWhom:'Кімнен',sum:'Конвертке сома',other:'Басқа',send:'Жіберу',payTo:'Той иесіне аударыңыз',copy:'Көшіру',copied:'Көшірілді',openKaspi:'Kaspi ашу',iPaid:'Аудардым, жіберу',
+    payFine:'Ақша тікелей той иесіне түседі. Модератор аударымды тексеріп, конвертті экранға шығарады.',again:'Тағы жіберу',sending:'Жіберілуде…',
+    needName:'Есіміңізді жазыңыз',needSome:'Фото қосыңыз немесе тілек жазыңыз',minSum:'Ең аз сома 500 ₸',
+    stepOpen:'«Kaspi ашу» түймесін басыңыз',stepPhone:'Kaspi → Аударымдар → телефон нөмірі бойынша',stepSum:s=>`${s} аударыңыз`,stepBack:'Осында оралып, «Аудардым» түймесін басыңыз',stepDemo:'Бұл демо: ақша аудару керек емес, төмендегі түймені басыңыз',
+    dSent:'Құттықтау жіберілді',dSentP:'Модератор тексереді, сосын экранға шығады. Экранға қараңыз!',dEnvSent:'Конверт жіберілді',dEnvSentP:'Модератор Kaspi-дегі аударымды тексеріп, конвертті экранға бірінші шығарады.',
+    dQueue:'Сіз кезектесіз',dQueueP:n=>n>1?`Алдыңызда ${n-1}. Экранға қараңыз!`:'Келесі сіз. Экранға қараңыз!',dEnvQueueP:'Конверт кезексіз, алтын рамкада шығады. Экранға қараңыз!',
+    dShown:'Құттықтауыңыз экранда!',dShownP:'Рақмет! Тойдан кейін ол құттықтаулар альбомына түседі.',dHidden:'Модератор құттықтауды өткізбеді',dHiddenP:'Басқа құттықтау жіберуге болады.',dHiddenEnvP:'Той иесі аударымды қайтарады.',
+    freeWait:m=>`Тегін құттықтау — 30 минутта бір рет. Келесісі ${m} минуттан кейін, ал конвертті қазір жіберуге болады.`,freeIn:m=>`${m} минуттан кейін тегін`},
+  ru:{loading:'Загружаем праздник…',notFound:'Праздник не найден. Проверьте ссылку или QR-код.',free:'Поздравить',freeSub:'бесплатно · селфи и имя',prem:'Премиум-поздравление',premSub:'фото в рамке · конверт',sec10:'10с',min1:'1 мин',
+    onScreen10:'на экране 10 с',onScreen60:'на экране 1 минуту',takeSelfie:'Сделать селфи',yourName:'Ваше имя',wish:'Пожелание',optional:'(необязательно)',toScreen:'Отправить на экран',upload:'Загрузить фото',selfie:'Сделать селфи',
+    fromWhom:'От кого',sum:'Сумма в конверт',other:'Другая',send:'Отправить',payTo:'Переведите организатору тоя',copy:'Скопировать',copied:'Скопировано',openKaspi:'Открыть Kaspi',iPaid:'Я перевёл(а), отправить',
+    payFine:'Деньги идут напрямую организатору. Модератор сверит перевод и выведет конверт на экран.',again:'Отправить ещё',sending:'Отправляем…',
+    needName:'Напишите своё имя',needSome:'Добавьте фото или пожелание',minSum:'Минимальная сумма 500 ₸',
+    stepOpen:'Нажмите «Открыть Kaspi»',stepPhone:'Kaspi → Переводы → по номеру телефона',stepSum:s=>`Переведите ${s}`,stepBack:'Вернитесь сюда и нажмите «Я перевёл(а)»',stepDemo:'Это демо: переводить деньги не нужно, просто нажмите кнопку ниже',
+    dSent:'Поздравление отправлено',dSentP:'Модератор быстро проверит его, и оно выйдет на экран. Смотрите на экран!',dEnvSent:'Конверт отправлен',dEnvSentP:'Модератор сверит перевод в Kaspi, и конверт выйдет на экран первым.',
+    dQueue:'Вы в очереди на экран',dQueueP:n=>n>1?`Перед вами ${n-1}. Смотрите на экран!`:'Вы следующий. Смотрите на экран!',dEnvQueueP:'Конверт выйдет вне очереди, в золотой рамке. Смотрите на экран!',
+    dShown:'Ваше поздравление на экране!',dShownP:'Спасибо! После тоя оно попадёт в альбом поздравлений.',dHidden:'Модератор не пропустил поздравление',dHiddenP:'Можно отправить другое поздравление.',dHiddenEnvP:'Организатор вернёт ваш перевод.',
+    freeWait:m=>`Бесплатное поздравление — раз в 30 минут. Следующее через ${m} мин, а конверт можно отправить прямо сейчас.`,freeIn:m=>`бесплатно через ${m} мин`},
+};
+let lang='kk';try{lang=localStorage.getItem('toi-lang')||'kk';}catch(e){}
+const t=k=>(L[lang]||L.kk)[k];
+let c=null,raw=null,photo=null,orient='v',frame='altyn',amount=10000,sending=false,poll=0,view='load',canEnv=false,pickFor='free';
 
-/* Бесплатное поздравление — одно с устройства в полчаса (то же правило проверяет сервер).
-   Здесь только показываем обратный отсчёт, чтобы гость не заполнял форму впустую. */
-const FREE_EVERY=30*60*1000,freeKey='toi-free-'+eid;
-function freeLeft(){try{const t=+localStorage.getItem(freeKey)||0;return Math.max(0,t+FREE_EVERY-Date.now());}catch(x){return 0;}}
-function blockFree(at){try{localStorage.setItem(freeKey,String(at||Date.now()));}catch(x){}}
-function freeNote(){
-  const left=freeLeft(),small=document.querySelector('#vHome .action:not(.env) small');
-  if(small)small.textContent=left?`Бесплатно через ${Math.ceil(left/60000)} мин · пока можно отправить конверт`:'Селфи и пожелание выйдут на большой экран';
-  if(!left)$('homeErr').hidden=true;
+function i18n(){
+  document.documentElement.lang=lang;
+  document.querySelectorAll('[data-t]').forEach(e=>{const v=t(e.dataset.t);if(typeof v==='string')e.textContent=v;});
+  document.querySelectorAll('[data-lang]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.lang===lang)));
+  $('pSend').textContent=t('send')+' · '+T.fmt(amount);freeNote();
 }
+document.addEventListener('click',e=>{const b=e.target.closest('[data-lang]');if(!b)return;lang=b.dataset.lang;try{localStorage.setItem('toi-lang',lang);}catch(x){}i18n();});
+
+/* Бесплатное — раз в 30 минут с устройства (то же правило на сервере); здесь только подсказка */
+const FREE_EVERY=30*60*1000,freeKey='toi-free-'+eid;
+function freeLeft(){try{const v=+localStorage.getItem(freeKey)||0;return Math.max(0,v+FREE_EVERY-Date.now());}catch(x){return 0;}}
+function blockFree(at){try{localStorage.setItem(freeKey,String(at||Date.now()));}catch(x){}}
+function freeNote(){const l=freeLeft();$('freeSub').textContent=l?t('freeIn')(Math.ceil(l/60000)):t('freeSub');if(!l)$('homeErr').hidden=true;}
 
 function go(v){
-  ['vLoad','vHome','vForm','vPay','vDone'].forEach(id=>$(id).hidden=true);
-  if(v==='home'){$('vHome').hidden=false;freeNote();}
-  else if(v==='free'||v==='env'){
-    const left=freeLeft();
-    if(v==='free'&&left){$('vHome').hidden=false;freeNote();
-      return err('homeErr',`Бесплатное поздравление — раз в 30 минут. Следующее через ${Math.ceil(left/60000)} мин, а конверт можно отправить прямо сейчас.`);}
-    mode=v;$('vForm').hidden=false;
-    $('fTitle').textContent=v==='env'?'Конверт · VIP':'Поздравление';
-    $('envSum').hidden=v!=='env';$('frameField').hidden=v==='env';
-    $('send').classList.toggle('env',v==='env');$('send').textContent=v==='env'?'Дальше: перевод через Kaspi':'Отправить на экран';
-    $('err').hidden=true;updHint();updPv();}
-  else if(v==='pay')$('vPay').hidden=false;
-  else $('vDone').hidden=false;
-  scrollTo(0,0);
+  if(v==='free'&&freeLeft()){return err('homeErr',t('freeWait')(Math.ceil(freeLeft()/60000)));}
+  view=v;['vLoad','vHome','vFree','vPrem','vPay','vDone'].forEach(id=>$(id).hidden=true);
+  $({home:'vHome',free:'vFree',prem:'vPrem',pay:'vPay',done:'vDone'}[v]).hidden=false;
+  document.querySelector('meta[name=theme-color]').content=(v==='prem'||v==='pay')?'#1E1B19':T.palOf(raw).bg;
+  if(v==='home')freeNote();if(v==='free')updFree();if(v==='prem')updPrem();
+  ['fErr','pErr','kErr'].forEach(id=>$(id).hidden=true);scrollTo(0,0);
 }
 document.addEventListener('click',e=>{const b=e.target.closest('[data-go]');if(b)go(b.dataset.go);});
-const sum=()=>Math.round(+$('gSum').value||0);
-function updHint(){const v=sum();$('envHint').textContent=`Выйдет вне очереди, в золотом конверте, на ${T.durOf(v)} сек.${v>=10000?' С салютом.':''}`;
-  [...$('sums').children].forEach(b=>b.setAttribute('aria-pressed',+b.dataset.s===v));updPv();}
-const who=()=>$('gName').value.trim()||'Гость';
-const tbl=()=>table||$('gTbl').value.trim();
-function updPv(){
-  const pv=$('pv'),v=mode==='env'?sum():0;
-  pv.className='pv'+(v?' vip':' f-'+frame);
-  $('pvPic').style.backgroundImage=`url("${photo||T.avatar(who())}")`;
-  $('pvAmt').textContent=v?'Конверт · '+T.fmt(v):'';
-  $('pvMsg').textContent='«'+($('gMsg').value.trim()||'…')+'»';
-  $('pvFrom').textContent=who()+(tbl()?' · стол №'+tbl():'');
-  const wh=$('pvWho');if(wh)wh.textContent=who();
-}
-['gName','gMsg','gTbl'].forEach(id=>$(id).addEventListener('input',updPv));
-$('gSum').addEventListener('input',updHint);
-$('sums').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;$('gSum').value=b.dataset.s;updHint();});
-$('quick').addEventListener('click',e=>{const b=e.target.closest('button');if(b){$('gMsg').value=b.textContent;updPv();}});
-$('frames').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;frame=b.dataset.f;[...$('frames').children].forEach(x=>x.setAttribute('aria-pressed',x===b));updPv();});
-$('gPhoto').addEventListener('change',async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;
-  $('shotTx').innerHTML='Обрабатываем фото…';
-  try{photo=await T.readImg(f,900,.82);$('thumb').style.backgroundImage=`url(${photo})`;$('shot').classList.add('has');$('shotTx').innerHTML='Переснять селфи';}
-  catch(er){$('shotTx').innerHTML='Сделать селфи<small>Фото не открылось, попробуйте ещё раз</small>';}
-  updPv();});
-function err(id,t){$(id).textContent=t;$(id).hidden=false;}
+function err(id,s){$(id).textContent=s;$(id).hidden=false;}
 
-function check(){
-  if(!$('gName').value.trim())return 'Напишите своё имя, чтобы '+(c.who||'хозяева')+' знали, от кого поздравление.';
-  if(!$('gMsg').value.trim())return 'Напишите пожелание или выберите готовое.';
-  if(mode==='env'&&sum()<500)return 'Минимальная сумма конверта 500 ₸.';
-  return '';
+/* ---------- фото ---------- */
+async function onFile(e){const f=e.target.files[0];e.target.value='';if(!f)return;
+  try{photo=await T.readImg(f,1200,.84);orient=await T.orientOf(photo);}catch(er){photo=null;}
+  if(pickFor==='free')updFree();else updPrem();}
+$('fFile').addEventListener('change',onFile);$('fSelfie').addEventListener('change',onFile);
+$('fPol').addEventListener('click',()=>{pickFor='free';$('fSelfie').click();});
+$('fRedo').addEventListener('click',()=>{pickFor='free';$('fSelfie').click();});
+document.querySelectorAll('[data-pick]').forEach(b=>b.addEventListener('click',()=>{pickFor='prem';$(b.dataset.pick).click();}));
+
+/* ---------- бесплатное ---------- */
+function updFree(){
+  const ph=$('fPh');ph.style.backgroundImage=photo?`url(${photo})`:'';$('fHint').hidden=!!photo;$('fRedo').hidden=!photo;
+  ph.className='ph'+(c&&c.film!=='none'?' film-'+(c.film||'warm'):'');
+  $('fCap').textContent=$('fName').value.trim()||'';
 }
-$('send').addEventListener('click',()=>{
-  const e=check();if(e)return err('err',e);
-  try{localStorage.setItem('toi-name',$('gName').value.trim());}catch(x){}
-  if(mode==='env'){
-    $('kSum').textContent=T.fmt(sum());$('kName').textContent=c.kaspi_name||'';
-    $('kPhone').textContent=c.kaspi_phone||'';$('kPhoneRow').hidden=!c.kaspi_phone;
-    $('kOpen').hidden=!c.kaspi_link;if(c.kaspi_link)$('kOpen').href=c.kaspi_link;
-    if(c.demo){$('kSteps').innerHTML='<li>Это демо: переводить деньги не нужно, просто нажмите кнопку ниже</li>';$('kPhoneRow').hidden=true;}
-    else $('kSteps').innerHTML=(c.kaspi_link?['Нажмите «Открыть Kaspi»']:['Откройте Kaspi → Переводы → «Клиенту Kaspi» по номеру телефона'])
-      .concat([`Переведите ${T.fmt(sum())}`,'Вернитесь сюда и нажмите «Я перевёл(а)»']).map(s=>`<li>${T.esc(s)}</li>`).join('');
-    $('kErr').hidden=true;go('pay');
-  } else submit(0,'send','err');
+$('fName').addEventListener('input',updFree);
+$('fQuick').addEventListener('click',e=>{const b=e.target.closest('button');if(b)$('fMsg').value=b.textContent;});
+$('fSend').addEventListener('click',()=>{
+  if(!$('fName').value.trim())return err('fErr',t('needName'));
+  if(!photo&&!$('fMsg').value.trim())return err('fErr',t('needSome'));
+  submit({name:$('fName').value.trim(),msg:$('fMsg').value.trim(),amount:0},'fSend','fErr');
 });
-$('kCopy').addEventListener('click',async()=>{try{await navigator.clipboard.writeText((c.kaspi_phone||'').replace(/[^\d+]/g,''));$('kCopy').textContent='Скопировано';}catch(e){}});
-$('kDone').addEventListener('click',()=>submit(sum(),'kDone','kErr'));
 
-async function submit(amount,btn,errId){
-  if(sending)return;sending=true;const b=$(btn),t=b.textContent;b.disabled=true;b.textContent='Отправляем…';
+/* ---------- Premium ---------- */
+$('pFrames').innerHTML=Object.entries(T.FR).map(([k,f])=>`<button type="button" data-f="${k}" aria-pressed="${k===frame}"><img src="/static/img/frame-${k}-v.png" alt="">${f.name}</button>`).join('');
+$('pFrames').addEventListener('click',e=>{const b=e.target.closest('[data-f]');if(!b)return;frame=b.dataset.f;updPrem();});
+function updPrem(){
+  const w=Math.min(320,innerWidth-70),card={name:$('pName').value.trim(),photo,frame};
+  $('pFrame').innerHTML=T.frameHTML(card,orient,orient==='h'?w:w*.72,c?c.film:'warm');
+  $('pCap').textContent=card.name;
+  [...$('pFrames').children].forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.f===frame)));
+  $('pSend').textContent=t('send')+' · '+T.fmt(amount);
+}
+$('pName').addEventListener('input',updPrem);
+$('pSums').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+  [...$('pSums').children].forEach(x=>x.setAttribute('aria-pressed',String(x===b)));
+  if(b.dataset.s==='own'){$('pOwn').hidden=false;$('pOwn').focus();amount=Math.round(+$('pOwn').value||0);}else{$('pOwn').hidden=true;amount=+b.dataset.s;}updPrem();});
+$('pOwn').addEventListener('input',()=>{amount=Math.round(+$('pOwn').value||0);updPrem();});
+$('pSend').addEventListener('click',()=>{
+  if(!$('pName').value.trim())return err('pErr',t('needName'));
+  if(amount<500)return err('pErr',t('minSum'));
+  try{localStorage.setItem('toi-name',$('pName').value.trim());}catch(x){}
+  $('kSum').textContent=T.fmt(amount);$('kName').textContent=c.kaspi_name||'';
+  $('kPhone').textContent=c.kaspi_phone||'';$('kPhoneRow').hidden=!c.kaspi_phone;
+  $('kOpen').hidden=!c.kaspi_link;if(c.kaspi_link)$('kOpen').href=c.kaspi_link;
+  const steps=c.demo?[t('stepDemo')]:[c.kaspi_link?t('stepOpen'):t('stepPhone'),t('stepSum')(T.fmt(amount)),t('stepBack')];
+  if(c.demo)$('kPhoneRow').hidden=true;
+  $('kSteps').innerHTML=steps.map(s=>`<li>${T.esc(s)}</li>`).join('');go('pay');
+});
+$('kCopy').addEventListener('click',async()=>{try{await navigator.clipboard.writeText((c.kaspi_phone||'').replace(/[^\d+]/g,''));$('kCopy').textContent=t('copied');}catch(e){}});
+$('kDone').addEventListener('click',()=>submit({name:$('pName').value.trim(),msg:$('pMsg').value.trim(),amount,frame},'kDone','kErr'));
+
+/* ---------- отправка ---------- */
+async function submit(body,btn,errId){
+  if(sending)return;sending=true;const b=$(btn),old=b.textContent;b.disabled=true;b.textContent=t('sending');
   try{
-    const r=await T.api(`/api/e/${eid}/card`,{name:$('gName').value.trim(),msg:$('gMsg').value.trim(),frame,table:tbl(),amount,photo:photo||''});
-    photo=null;$('thumb').style.backgroundImage='';$('shot').classList.remove('has');$('shotTx').innerHTML='Сделать селфи<small>Можно без фото</small>';
-    if(!amount){blockFree();freeNote();}
-    done(amount,r.status,r.pos);watch(r.id,r.token,amount);
+    try{localStorage.setItem('toi-name',body.name);}catch(x){}
+    const r=await T.api(`/api/e/${eid}/card`,{...body,table,photo:photo||''});
+    photo=null;orient='v';if(!body.amount){blockFree();$('fMsg').value='';}
+    done(body.amount,r.status,r.pos);watch(r.id,r.token,body.amount);
   }catch(e){
-    if(e.retry){blockFree(Date.now()-(FREE_EVERY-e.retry*1000));freeNote();}
-    err(errId,e.message||'Не получилось отправить. Проверьте интернет и попробуйте ещё раз.');
-  }
-  finally{sending=false;b.disabled=false;b.textContent=t;}
+    if(e.retry)blockFree(Date.now()-(FREE_EVERY-e.retry*1000));
+    err(errId,e.message||'Error');
+  }finally{sending=false;b.disabled=false;b.textContent=old;}
 }
 function done(vip,status,pos){
-  const ico=$('doneIco'),T_=$('doneT'),P=$('doneP');
-  ico.className='check'+(vip?' vip':'');ico.textContent='✓';
-  if(status==='pending'){
-    T_.textContent=vip?'Конверт отправлен':'Поздравление отправлено';
-    P.textContent=vip?'Модератор сверит перевод в Kaspi, и конверт выйдет на экран первым, в золотой рамке.':'Модератор быстро проверит его, и оно выйдет на экран. Смотрите на экран!';
-  }else if(status==='approved'){
-    T_.textContent='Вы в очереди на экран';
-    P.textContent=vip?'Конверт выйдет на экран вне очереди, в золотой рамке. Смотрите на экран!':(pos>1?`Перед вами ${pos-1}. Смотрите на экран!`:'Вы следующий. Смотрите на экран!');
-  }else if(status==='shown'){
-    ico.textContent='★';T_.textContent='Ваше поздравление на экране!';P.textContent='Спасибо! Его увидел весь зал, а после тоя оно попадёт в альбом поздравлений.';
-  }else if(status==='hidden'){
-    ico.className='check no';ico.textContent='×';T_.textContent='Модератор не пропустил поздравление';
-    P.textContent=vip?'Организатор вернёт ваш перевод. Можно отправить другое поздравление.':'Можно отправить другое поздравление.';
-  }
-  if($('vDone').hidden)go('done');
+  let ico='✓',h='',p='';
+  if(status==='pending'){h=t(vip?'dEnvSent':'dSent');p=t(vip?'dEnvSentP':'dSentP');}
+  else if(status==='approved'){h=t('dQueue');p=vip?t('dEnvQueueP'):t('dQueueP')(pos);}
+  else if(status==='shown'){ico='★';h=t('dShown');p=t('dShownP');}
+  else if(status==='hidden'){ico='×';h=t('dHidden');p=vip?t('dHiddenEnvP'):t('dHiddenP');}
+  $('dIco').textContent=ico;$('dT').textContent=h;$('dP').textContent=p;
+  if(view!=='done')go('done');
 }
 function watch(id,token,vip){
   clearInterval(poll);let n=0,last='';
   poll=setInterval(async()=>{
-    if(++n>240||$('vDone').hidden)return clearInterval(poll);
+    if(++n>240||view!=='done')return clearInterval(poll);
     try{const r=await T.api(`/api/e/${eid}/card/${id}?token=${token}`);
       const k=r.status+r.pos;if(k!==last){last=k;done(vip,r.status,r.pos);}
       if(r.status==='shown'||r.status==='hidden')clearInterval(poll);}catch(e){}
@@ -303,21 +310,19 @@ function watch(id,token,vip){
 }
 
 async function load(){
-  try{const r=await T.api(`/api/e/${eid}`);c=T.full(r.cfg);}
-  catch(e){$('vLoad').textContent='Праздник не найден. Проверьте ссылку или QR-код.';return;}
-  const head=$('head');const th=T.theme(head,c);head.style.background=th.bg;
-  document.querySelector('meta[name=theme-color]').content=th.mid;
-  $('kind').textContent=c.kind||'';$('names').textContent=c.names||'';$('date').textContent=c.date||'';
-  $('tblLine').textContent=table?(c.date?' · ':'')+'стол №'+table:'';$('tblField').hidden=!!table;
+  i18n();
+  try{const r=await T.api(`/api/e/${eid}`);raw=r.cfg;c=T.full(r.cfg);}
+  catch(e){document.querySelector('#vLoad .loading').textContent=t('notFound');return;}
+  T.vars(document.body,raw);
+  const f=T.NFONT[c.nfont],[a,b]=T.splitNames(c.names),cap=s=>f.caps?T.up(s):s;
+  const h=$('hNames');h.style.cssText=`font-family:${f.fam};font-weight:${f.w===400&&f.caps?300:f.w};font-style:${f.it};letter-spacing:${f.caps?'.12em':f.ls};font-size:${T.fitSize(Math.round(44*f.k),[cap(a),cap(b)],330,f.caps?.8:.5)}px`;
+  h.innerHTML=T.esc(cap(a))+(b?'<br>&amp; '+T.esc(cap(b)):'');
+  $('hKind').textContent=c.kind||'';$('hDate').textContent=T.niceDate(c.date);
   $('hello').textContent=c.hello||T.PRESETS[c.type].hello;
-  document.title='Поздравить · '+(c.names||'Toi Line');
-  $('quick').innerHTML=(c.quick||[]).map(q=>`<button type="button">${T.esc(q)}</button>`).join('');
-  $('gMsg').value=(c.quick||[])[0]||'';
-  try{$('gName').value=localStorage.getItem('toi-name')||'';}catch(e){}
-  const canEnv=!!(c.kaspi_phone||c.kaspi_link);$('envBtn').hidden=!canEnv;
-  $('fine').textContent=canEnv?'Перевод в конверте уходит напрямую организатору тоя. Перед показом поздравления проверяет модератор.':'Перед показом поздравления проверяет модератор.';
-  if(c.moderation===false&&canEnv)$('fine').textContent='Перевод в конверте уходит напрямую организатору тоя.';
-  requestAnimationFrame(()=>T.renderHeadOrn($('orn'),c));
+  document.title=(c.names||'Toi Line')+' · Toi Line';
+  $('fQuick').innerHTML=(c.quick||[]).slice(0,4).map(q=>`<button type="button">${T.esc(q)}</button>`).join('');
+  try{const n=localStorage.getItem('toi-name')||'';$('fName').value=n;$('pName').value=n;}catch(e){}
+  canEnv=!!(c.kaspi_phone||c.kaspi_link||c.demo);$('premBtn').hidden=!canEnv;
   go('home');
 }
 load();
