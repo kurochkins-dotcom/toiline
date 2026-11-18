@@ -1,0 +1,44 @@
+/* Toi Line: общий стиль. Рукописные шрифты с дорисованными казахскими буквами (OFL, переименованы),
+   палитра мероприятия через CSS-переменные (--bg --ink --muted --accent), полароид, рамки Premium, плёнка. */
+@font-face{font-family:'Toi Great Vibes';src:url(/static/fonts/toi-great-vibes.ttf) format('truetype');font-display:swap}
+@font-face{font-family:'Toi Comforter';src:url(/static/fonts/toi-comforter.ttf) format('truetype');font-display:swap}
+@font-face{font-family:'Toi Comforter Brush';src:url(/static/fonts/toi-comforter-brush.ttf) format('truetype');font-display:swap}
+
+:root{--bg:#F7F3EC;--ink:#2A2622;--muted:#6E665C;--accent:#8A6A35;--paper:#FBF8F2;--line:#E6E1D8}
+
+/* шаблон экрана: рисуется в коробке 928×522 и масштабируется */
+.tl{position:relative;width:928px;height:522px;overflow:hidden;font-family:'Cormorant Garamond',serif}
+.tl img{position:absolute;pointer-events:none;user-select:none}
+.tl .c{position:absolute;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.tl .nm{line-height:1.08;white-space:nowrap}
+.tl .bgimg{position:absolute;inset:0;background:center/cover no-repeat}
+.tl .bgimg::after{content:"";position:absolute;inset:0;background:color-mix(in srgb,var(--bg) 72%,transparent)}
+/* золотой перелив по именам: цвет текста сохраняется, по нему раз в ~10 сек проходит блик */
+.fx-sheen .nm{background:linear-gradient(100deg,currentColor 40%,var(--accent) 50%,currentColor 60%) 100% 0/320% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:tlSheen 11s ease-in-out infinite}
+@keyframes tlSheen{0%,70%{background-position:100% 0}100%{background-position:0 0}}
+.sparks{position:absolute;inset:0;pointer-events:none}
+.sparks i{position:absolute;width:6px;height:6px;border-radius:50%;background:var(--spark,#C9A766);box-shadow:0 0 10px var(--spark,#C9A766);opacity:0;animation:tlTw 5s ease-in-out infinite}
+@keyframes tlTw{0%,100%{opacity:0;transform:scale(.4)}50%{opacity:.85;transform:scale(1)}}
+@media (prefers-reduced-motion:reduce){.fx-sheen .nm,.sparks i{animation:none}}
+
+/* рельефный овал (реф. 02): тени тиснения от палитры */
+.emboss{border-radius:50%;background:var(--bg);box-shadow:inset 0 3px 4px rgba(255,255,255,.9),inset 0 -3px 5px rgba(120,100,70,.2),0 3px 3px rgba(255,255,255,.8),0 -2px 4px rgba(120,100,70,.16)}
+.dark .emboss{box-shadow:inset 0 2px 3px rgba(255,255,255,.08),inset 0 -3px 5px rgba(0,0,0,.5),0 2px 3px rgba(255,255,255,.05),0 -2px 4px rgba(0,0,0,.45)}
+.emboss>.dots{width:100%;height:100%;border-radius:50%;border:2.5px dotted rgba(120,100,70,.3);box-sizing:border-box}
+.dark .emboss>.dots{border-color:rgba(201,167,102,.45)}
+
+/* фото гостя: лёгкая плёнка (ТЗ: «лёгкий фильтр под плёнку») */
+.ph{position:relative;background:#d9d2c6 center/cover no-repeat;overflow:hidden}
+.ph.film-warm{filter:sepia(.16) saturate(.9) contrast(1.04) brightness(1.03)}
+.ph.film-vhs{filter:saturate(1.12) contrast(1.08) blur(.25px)}
+.ph.film-warm::after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 50% 42%,transparent 55%,rgba(40,25,10,.32) 100%)}
+.ph.film-vhs::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(0,0,0,.09) 0 1px,transparent 1px 3px),radial-gradient(ellipse at 50% 45%,transparent 60%,rgba(0,0,0,.3) 100%)}
+.ph .stamp{position:absolute;right:.6em;bottom:.45em;z-index:1;font-family:ui-monospace,Menlo,monospace;color:#F29A3A;letter-spacing:.08em;text-shadow:0 0 6px rgba(242,154,58,.6)}
+.ph .ini{position:absolute;inset:0;display:grid;place-items:center;font-size:8em;font-family:'Cormorant Garamond',serif;font-weight:300;color:#8a7f70;background:linear-gradient(160deg,#efe8dc,#ded4c3)}
+
+/* полароид */
+.pol{background:#fff;box-shadow:0 .8em 1.8em rgba(42,38,34,.22);box-sizing:border-box}
+/* рамка Premium: PNG с прозрачной серединой, фото подложено в проём */
+.frm{position:relative}
+.frm>.ph{position:absolute}
+.frm>img{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}

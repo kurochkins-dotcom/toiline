@@ -5,107 +5,131 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
 <title>Toi Line · мероприятия</title>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{--ui-bg:#101218;--ui-panel:#181b24;--ui-line:#2b3040;--ui-ink:#eceef4;--ui-muted:#959cb0;--ui-accent:#3fb8a9;--gold:#f3d58a;color-scheme:dark}
+:root{--bg:#F7F5F1;--panel:#FFFFFF;--line:#E6E1D8;--line2:#EEE9E1;--ink:#2A2622;--muted:#6E665C}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 html,body{margin:0}
-body{background:var(--ui-bg);color:var(--ui-ink);font-family:"Manrope",system-ui,sans-serif;font-size:15px;line-height:1.45}
-button,input,select{font:inherit;color:inherit}
+body{background:var(--bg);color:var(--ink);font-family:Montserrat,system-ui,sans-serif;font-size:14px;line-height:1.45}
+button,input{font:inherit;color:inherit}
 button{cursor:pointer}
-.wrap{max-width:900px;margin:0 auto;padding:20px 16px 60px;display:grid;gap:16px}
-h1{margin:0;font-size:24px;font-weight:800}
-.lead{margin:2px 0 0;color:var(--ui-muted)}
-.card{background:var(--ui-panel);border:1px solid var(--ui-line);border-radius:16px;padding:16px;display:grid;gap:12px}
-.card h2{margin:0;font-size:17px}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;align-items:end}
-.field{display:grid;gap:4px}
-.field label{font-size:12px;color:var(--ui-muted);font-weight:600}
-.field input,.field select{background:var(--ui-bg);border:1px solid var(--ui-line);border-radius:10px;padding:9px 11px;width:100%}
-.types{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-@media (max-width:640px){.types{grid-template-columns:repeat(2,1fr)}}
-.type{border:1px solid var(--ui-line);background:var(--ui-bg);border-radius:12px;padding:10px 12px;text-align:left;display:grid;gap:2px;position:relative;overflow:hidden}
-.type::before{content:"";position:absolute;inset:0 auto 0 0;width:6px;background:var(--sw)}
-.type b{font-size:14px;padding-left:4px}.type span{font-size:12px;color:var(--ui-muted);padding-left:4px}
-.type[aria-pressed="true"]{border-color:var(--ui-accent);box-shadow:0 0 0 1px var(--ui-accent) inset}
-.btn{border:1px solid var(--ui-line);background:var(--ui-bg);border-radius:10px;padding:10px 14px;font-weight:700;text-decoration:none;display:inline-block;text-align:center}
-.btn.primary{background:var(--ui-accent);border-color:var(--ui-accent);color:#06201d}
-.btn.small{padding:6px 10px;font-size:13px}
-.err{color:#ff8a80;font-size:13px;margin:0}
-.ev{display:grid;gap:6px;background:var(--ui-bg);border:1px solid var(--ui-line);border-radius:12px;padding:12px}
-.ev .h{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
-.ev .h b{font-size:15px}
-.ev .h span{font-size:12px;color:var(--ui-muted)}
-.ev .row{display:flex;gap:6px;flex-wrap:wrap}
-.note{font-size:12.5px;color:var(--ui-muted)}
-.new{border-color:var(--ui-accent)}
+a{color:var(--ink)}
+header{height:64px;display:flex;align-items:center;padding:0 clamp(16px,4vw,40px);background:var(--panel);border-bottom:1px solid var(--line)}
+.logo{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:500;letter-spacing:.04em}
+header .r{margin-left:auto;color:var(--muted);display:flex;gap:14px;align-items:center}
+header .r button{border:0;background:none;color:var(--muted);text-decoration:underline}
+main{max-width:1200px;margin:0 auto;padding:clamp(20px,4vw,40px) clamp(16px,4vw,40px) 60px;display:flex;flex-direction:column;gap:24px}
+.head{display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap}
+h1{margin:0;font-family:'Cormorant Garamond',serif;font-weight:400;font-size:44px;line-height:1}
+.sub{color:var(--muted);margin-top:6px}
+.head .r{margin-left:auto;display:flex;gap:10px;flex-wrap:wrap}
+.search{height:44px;padding:0 16px;border:1px solid var(--line);border-radius:22px;background:var(--panel);width:260px;max-width:100%}
+.btn{height:44px;padding:0 22px;border:1px solid var(--line);border-radius:22px;background:var(--panel);font-weight:600;display:inline-flex;align-items:center;justify-content:center;text-decoration:none}
+.btn.dark{background:var(--ink);border-color:var(--ink);color:#fff}
+.btn.sm{height:34px;padding:0 14px;font-size:12px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.form{padding:22px 24px;display:grid;gap:16px}
+.form h2{margin:0;font-family:'Cormorant Garamond',serif;font-weight:400;font-size:28px}
+.types{display:flex;gap:8px;flex-wrap:wrap}
+.types button{height:38px;padding:0 16px;border-radius:19px;border:1px solid #CFC7BA;background:#fff;font-weight:500;font-size:13px}
+.types button[aria-pressed="true"]{border:2px solid var(--ink);font-weight:600}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.fld{display:flex;flex-direction:column;gap:6px;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.fld input{height:44px;border:1px solid var(--line);border-radius:12px;padding:0 14px;font-size:14px;letter-spacing:0;text-transform:none;color:var(--ink);font-weight:400}
+.row{display:grid;grid-template-columns:90px 1.4fr .7fr .7fr auto;align-items:center;padding:16px 24px;border-bottom:1px solid var(--line2);gap:12px}
+.row.th{padding:14px 24px;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.row:last-child{border-bottom:0}
+.row.new{background:#FBF8F2}
+.id{font-weight:600;letter-spacing:.06em;text-transform:uppercase}
+.ev{display:flex;align-items:center;gap:14px;min-width:0}
+.mono{width:40px;height:40px;flex:none;border-radius:20px;border:1px solid rgba(0,0,0,.08);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:16px}
+.ev b{font-weight:500;display:block}
+.ev small{color:var(--muted);font-size:12px}
+.acts{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.acts a,.acts button{font-weight:600;font-size:12px;border:1px solid var(--line);background:#fff;border-radius:16px;height:32px;padding:0 12px;display:inline-flex;align-items:center;text-decoration:none}
+.acts a.main{background:var(--ink);color:#fff;border-color:var(--ink)}
+.muted{color:var(--muted)}
+.err{color:#B3261E;font-size:13px;margin:0}
+.login{max-width:420px;margin:12vh auto 0;padding:28px;display:grid;gap:14px}
+@media (max-width:1100px){.row.th{display:none}.row{grid-template-columns:1fr;gap:8px}.acts{justify-content:flex-start}}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <header><h1>Toi Line</h1><p class="lead">Живой праздничный экран для тоя. Создайте мероприятие и получите три ссылки: для гостей (QR), для пульта модератора и для LED-экрана.</p></header>
+<header><div class="logo">Toi Line</div><div class="r"><span>Администратор</span><button id="logout" hidden>Выйти</button></div></header>
 
-  <div class="card" id="login" hidden>
-    <h2>Вход</h2>
-    <div class="grid"><div class="field"><label for="key">Ключ администратора</label><input type="password" id="key" autocomplete="current-password"></div>
-    <button class="btn primary" id="enter">Войти</button></div>
-    <p class="err" id="lErr" hidden></p>
-  </div>
-
-  <div id="main" hidden style="display:grid;gap:16px">
-    <div class="card">
-      <h2>Новый той</h2>
-      <div class="types" id="types">
-        <button class="type" data-t="wedding" style="--sw:#e7b2c0" aria-pressed="true"><b>Свадьба</b><span>Үйлену тойы</span></button>
-        <button class="type" data-t="jubilee" style="--sw:#1d5a4d" aria-pressed="false"><b>Юбилей</b><span>Мерейтой</span></button>
-        <button class="type" data-t="uzatu" style="--sw:#6e1430" aria-pressed="false"><b>Қыз ұзату</b><span>Проводы невесты</span></button>
-        <button class="type" data-t="tusau" style="--sw:#a9d6ea" aria-pressed="false"><b>Тұсаукесер</b><span>1 годик</span></button>
-      </div>
-      <div class="grid">
-        <div class="field"><label for="names">Главная надпись</label><input type="text" id="names" maxlength="60"></div>
-        <div class="field"><label for="date">Дата</label><input type="text" id="date" maxlength="30" placeholder="21 · 11 · 2026"></div>
-        <div class="field"><label for="kname">Получатель Kaspi</label><input type="text" id="kname" maxlength="60" placeholder="Диас Е."></div>
-        <div class="field"><label for="kphone">Телефон Kaspi организатора</label><input type="tel" id="kphone" maxlength="20" placeholder="+7 7__ ___ __ __"></div>
-      </div>
-      <div><button class="btn primary" id="create">Создать</button></div>
-      <p class="err" id="cErr" hidden></p>
-      <p class="note">Шаблон, цвета, шрифт, заставку и пожелания организатор или вы настроите потом во вкладке «Экран» пульта.</p>
-    </div>
-    <div class="card">
-      <h2>Мероприятия</h2>
-      <div id="list" style="display:grid;gap:8px"></div>
-    </div>
-    <div><button class="btn small" id="logout">Выйти</button></div>
-  </div>
+<div class="panel login" id="login" hidden>
+  <h1 style="font-size:34px">Вход</h1>
+  <label class="fld">Ключ администратора<input type="password" id="key" autocomplete="current-password"></label>
+  <button class="btn dark" id="enter">Войти</button>
+  <p class="err" id="lErr" hidden></p>
 </div>
+
+<main id="main" hidden>
+  <div class="head">
+    <div><h1>Мероприятия</h1><div class="sub" id="sum"></div></div>
+    <div class="r"><input class="search" type="search" id="q" placeholder="Поиск по имени или номеру" aria-label="Поиск"><button class="btn dark" id="newBtn">+ Новое мероприятие</button></div>
+  </div>
+
+  <div class="panel form" id="form" hidden>
+    <h2>Новое мероприятие</h2>
+    <div class="types" id="types">
+      <button data-t="wedding" aria-pressed="true">Свадьба</button><button data-t="jubilee" aria-pressed="false">Юбилей</button>
+      <button data-t="uzatu" aria-pressed="false">Қыз ұзату</button><button data-t="tusau" aria-pressed="false">Тұсаукесер</button>
+    </div>
+    <div class="grid">
+      <label class="fld">Имена<input type="text" id="names" maxlength="60"></label>
+      <label class="fld">Дата<input type="text" id="date" maxlength="30" placeholder="12.09.2026"></label>
+      <label class="fld">Получатель Kaspi<input type="text" id="kname" maxlength="60" placeholder="Диас Е."></label>
+      <label class="fld">Телефон Kaspi<input type="tel" id="kphone" maxlength="20" placeholder="+7 7__ ___ __ __"></label>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><button class="btn dark" id="create">Создать и открыть кабинет</button><span class="muted" style="font-size:12px">Шаблон, цвет и шрифт выбираются в кабинете, во вкладке «Оформление».</span></div>
+    <p class="err" id="cErr" hidden></p>
+  </div>
+
+  <div class="panel">
+    <div class="row th"><div>Номер</div><div>Мероприятие</div><div>Дата</div><div>Поздравления</div><div></div></div>
+    <div id="list"></div>
+  </div>
+</main>
 <script src="/static/common.js"></script>
 <script>
 (function(){
 const T=TOI,$=T.$,esc=T.esc;
-let key='',type='wedding',justMade='';
+let key='',type='wedding',justMade='',events=[];
 try{key=localStorage.getItem('toi-admin')||'';}catch(e){}
 const H=()=>({'X-Toi-Admin':key});
-function show(m){$('login').hidden=m;$('main').hidden=!m;}
+const TYPE={wedding:'Свадьба',jubilee:'Юбилей',uzatu:'Қыз ұзату',tusau:'Тұсаукесер'};
+function show(m){$('login').hidden=m;$('main').hidden=!m;$('logout').hidden=!m;}
 async function load(){
-  try{const r=await T.api('/api/admin/events',undefined,H());show(true);list(r.events);}
+  try{const r=await T.api('/api/admin/events',undefined,H());show(true);events=r.events;list();}
   catch(e){show(false);if(key){$('lErr').textContent=e.message;$('lErr').hidden=false;}}
 }
-function list(evs){
-  $('list').innerHTML=evs.map(e=>`<div class="ev${e.id===justMade?' new':''}"><div class="h"><b>${esc(e.names||'Без названия')}</b><span>${esc(e.kind)} · ${esc(e.date)} · открыток ${e.cards} · конвертов ${T.fmt(e.sum)}</span></div>
-    <div class="row"><a class="btn small primary" href="${e.links.mod}" target="_blank">Пульт</a><a class="btn small" href="${e.links.led}" target="_blank">LED-экран</a><a class="btn small" href="${e.links.guest}" target="_blank">Гость</a><a class="btn small" href="${e.links.album}" target="_blank">Альбом</a>
-    <button class="btn small" data-copy="${esc(T.abs(e.links.mod))}">Ссылка на пульт</button><button class="btn small" data-del="${e.id}">Удалить</button></div></div>`).join('')||'<div class="note">Пока нет мероприятий.</div>';
+function list(){
+  const q=$('q').value.trim().toLowerCase();
+  const evs=events.filter(e=>!q||(e.names||'').toLowerCase().includes(q)||e.id.includes(q));
+  $('sum').textContent=`Всего ${events.length} · поздравлений ${events.reduce((s,e)=>s+e.cards,0)} · в конвертах ${T.fmt(events.reduce((s,e)=>s+e.sum,0))}`;
+  $('list').innerHTML=evs.map(e=>{const p=T.PAL[e.palette]||T.PAL.ivory;
+    return `<div class="row${e.id===justMade?' new':''}"><div class="id">${esc(e.id)}</div>
+    <div class="ev"><span class="mono" style="background:${p.bg};color:${p.ink}">${esc(T.initials(e.names).replace(' & ','·')||'—')}</span><div><b>${esc(e.names||'Без названия')}</b><small>${esc(TYPE[e.type]||e.kind||'')}${e.tpl?' · '+esc((T.TPL_BY[e.tpl]||{}).name||''):''}</small></div></div>
+    <div>${esc(e.date||'—')}</div><div class="muted">${e.cards} · ${T.fmt(e.sum)}</div>
+    <div class="acts"><a class="main" href="${e.links.mod}" target="_blank">Открыть кабинет</a><a href="${e.links.led}" target="_blank">Экран</a><a href="${e.links.guest}" target="_blank">Гость</a><a href="${e.links.album}" target="_blank">Альбом</a>
+    <button data-copy="${esc(T.abs(e.links.mod))}">Ссылка</button><button data-del="${e.id}" aria-label="Удалить">✕</button></div></div>`;}).join('')
+    ||'<div class="row muted">Пока нет мероприятий.</div>';
 }
-$('types').addEventListener('click',e=>{const b=e.target.closest('.type');if(!b)return;type=b.dataset.t;[...$('types').children].forEach(x=>x.setAttribute('aria-pressed',x===b));$('names').placeholder=T.PRESETS[type].names;});
+$('q').addEventListener('input',list);
+$('newBtn').addEventListener('click',()=>{$('form').hidden=!$('form').hidden;if(!$('form').hidden)$('names').focus();});
+$('types').addEventListener('click',e=>{const b=e.target.closest('[data-t]');if(!b)return;type=b.dataset.t;[...$('types').children].forEach(x=>x.setAttribute('aria-pressed',String(x===b)));$('names').placeholder=T.PRESETS[type].names;});
 $('names').placeholder=T.PRESETS.wedding.names;
 $('enter').addEventListener('click',()=>{key=$('key').value.trim();try{localStorage.setItem('toi-admin',key);}catch(e){}load();});
 $('key').addEventListener('keydown',e=>{if(e.key==='Enter')$('enter').click();});
 $('logout').addEventListener('click',()=>{key='';try{localStorage.removeItem('toi-admin');}catch(e){}show(false);});
 $('create').addEventListener('click',async()=>{
-  const p=T.preset(type);p.names=$('names').value.trim()||p.names;p.date=$('date').value.trim();p.kaspi_name=$('kname').value.trim();p.kaspi_phone=$('kphone').value.trim();
-  p.sheen='30s';p.moderation=true;
-  try{const r=await T.api('/api/admin/events',p,H());justMade=r.id;$('cErr').hidden=true;['names','date','kname','kphone'].forEach(id=>$(id).value='');load();}
-  catch(e){$('cErr').textContent=e.message;$('cErr').hidden=false;}
+  const p=T.preset(type);p.names=$('names').value.trim()||p.names;p.date=$('date').value.trim();p.kaspi_name=$('kname').value.trim();p.kaspi_phone=$('kphone').value.trim();p.moderation=true;
+  const w=window.open('','_blank');
+  try{const r=await T.api('/api/admin/events',p,H());justMade=r.id;$('cErr').hidden=true;['names','date','kname','kphone'].forEach(id=>$(id).value='');$('form').hidden=true;
+    if(w)w.location=r.links.mod+'#design';load();}
+  catch(e){if(w)w.close();$('cErr').textContent=e.message;$('cErr').hidden=false;}
 });
 document.addEventListener('click',async e=>{
   const c=e.target.closest('[data-copy]');if(c){try{await navigator.clipboard.writeText(c.dataset.copy);c.textContent='Скопировано';}catch(er){}}

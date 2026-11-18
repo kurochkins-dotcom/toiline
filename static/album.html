@@ -2,56 +2,220 @@
 <html lang="kk">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="robots" content="noindex">
-<title>Альбом поздравлений · Toi Line</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#F4F0E8">
+<title>Альбом · Toi Line</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Great+Vibes&family=Lobster&family=Comfortaa:wght@600;700&family=Forum&family=Playfair+Display:wght@600;700&family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Playfair+Display:ital@0;1&family=Noto+Serif+Display:wght@200;300&family=Prata&family=Pinyon+Script&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/toi.css">
 <style>
 *{box-sizing:border-box}
-html,body{margin:0}
-body{background:#f6f1e7;color:#2b2a33;font-family:"Manrope",system-ui,sans-serif;font-size:15px;line-height:1.45}
-.hero{position:relative;color:var(--ev-ink);padding:48px 18px 40px;text-align:center;overflow:hidden;background:var(--ev-grad,#ccc)}
-.hero canvas{position:absolute;inset:0;width:100%;height:100%;opacity:.5}
-.hero::after{content:"";position:absolute;inset:0;background:radial-gradient(closest-side,var(--ev-halo) 30%,transparent 100%);opacity:.85}
-.hero .in{position:relative;z-index:1;display:grid;gap:8px;justify-items:center}
-.kind{font-size:12px;font-weight:800;letter-spacing:.22em;text-transform:uppercase}
-.nm{font-family:var(--ev-font);font-size:clamp(40px,8vw,72px);line-height:1.1;text-wrap:balance}
-.dt{font-size:13px;font-weight:600;opacity:.85}
-.wrap{max-width:1100px;margin:0 auto;padding:24px 16px 60px;display:grid;gap:18px}
-.totals{text-align:center;color:#6b6676;font-weight:600}
-.album{columns:4 220px;column-gap:16px}
-.pc{break-inside:avoid;margin:0 0 16px;background:#fffdf8;border-radius:12px;padding:10px 10px 14px;display:grid;gap:8px;box-shadow:0 6px 18px rgba(60,40,10,.12)}
-.pc img{width:100%;border-radius:8px;display:block;background:#ddd}
-.pc .m{font-family:var(--ev-font);font-size:18px;line-height:1.3;overflow-wrap:anywhere}
-.pc .f{font-size:12px;color:#6b6676;font-weight:700}
-.pc.vip{background:linear-gradient(180deg,#fff6dc,#f3e0aa);outline:2px solid #c99a3d}
-.pc.vip .f{color:#8a5f12}
-.empty{text-align:center;color:#8a8392;padding:40px}
-footer{text-align:center;font-size:12px;color:#8a8392}
+[hidden]{display:none!important}
+html,body{margin:0;height:100%}
+body{color:var(--ink);font-family:Montserrat,system-ui,sans-serif;background:linear-gradient(180deg,color-mix(in srgb,var(--bg) 92%,#fff),color-mix(in srgb,var(--bg) 88%,var(--muted)));background-attachment:fixed;overflow:hidden}
+body.dark{background:linear-gradient(180deg,#24201d,#171412)}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;background:repeating-radial-gradient(circle at 30% 20%,rgba(42,38,34,.02) 0 1px,transparent 1px 3px)}
+button{font:inherit;color:inherit;cursor:pointer}
+/* обложка */
+.cover{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;padding:56px 28px calc(32px + env(safe-area-inset-bottom));max-width:480px;margin:0 auto;overflow:auto}
+.cover .ttl{font-family:'Toi Great Vibes',cursive;font-size:56px;color:var(--accent);line-height:1.1}
+.cover .oval{margin-top:24px;width:230px;height:300px;padding:14px;flex:none}
+.cover .oval .dots{padding:8px}
+.cover .oval .in{width:100%;height:100%;border-radius:50%;background:center 20%/cover no-repeat;display:grid;place-items:center;font-family:'Cormorant Garamond',serif;font-size:64px;font-weight:300;color:var(--muted)}
+.cover .mono{margin-top:28px;font-family:'Cormorant Garamond',serif;font-size:58px;font-weight:300;line-height:1}
+.cover .mono span{font-size:34px;vertical-align:middle;color:var(--accent)}
+.cover .nms{margin-top:10px;font-size:12px;letter-spacing:.4em;color:var(--muted);text-align:center}
+.cover .dt{margin-top:8px;font-size:12px;letter-spacing:.3em;color:var(--muted)}
+.cover .foot{margin-top:auto;padding-top:24px;width:100%;display:flex;flex-direction:column;gap:12px;align-items:center}
+.cover .cnt{font-size:13px;color:var(--muted)}
+.open{width:100%;height:56px;border-radius:28px;border:0;background:var(--ink);color:var(--bg);font-weight:600;font-size:15px}
+/* развороты */
+.book{position:fixed;inset:0;display:flex;flex-direction:column}
+.top{height:56px;flex:none;display:flex;align-items:center;justify-content:space-between;padding:0 12px;max-width:480px;width:100%;margin:0 auto}
+.top .mid{font-family:'Cormorant Garamond',serif;font-size:18px;letter-spacing:.2em}
+.ib{width:44px;height:44px;border:0;background:transparent;display:grid;place-items:center;font-size:22px;border-radius:22px}
+.pages{flex:1;display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain}
+.pages::-webkit-scrollbar{display:none}
+.page{flex:none;width:100%;scroll-snap-align:center;overflow-y:auto;padding:4px 0 20px}
+.sheet{max-width:440px;margin:0 auto;padding:0 16px;display:flex;flex-direction:column;gap:30px}
+.it{display:flex;align-items:center;gap:14px}
+.it.r{flex-direction:row-reverse}
+.it.b{flex-direction:column}
+.it .pic{position:relative;flex:none}
+.it .note{flex:1;min-width:0;line-height:1.15;overflow-wrap:anywhere}
+.it.b .note{text-align:center;max-width:300px}
+.it .note small{display:block;margin-top:6px;color:var(--muted)}
+.pol.a{padding:8px 8px 30px;border-radius:2px}
+.deck{padding:7px;background:#F7F2E8;box-shadow:0 8px 18px rgba(42,38,34,.2);clip-path:polygon(0 2%,3% 0,6% 2%,9% 0,12% 2%,15% 0,18% 2%,21% 0,24% 2%,27% 0,30% 2%,33% 0,36% 2%,39% 0,42% 2%,45% 0,48% 2%,51% 0,54% 2%,57% 0,60% 2%,63% 0,66% 2%,69% 0,72% 2%,75% 0,78% 2%,81% 0,84% 2%,87% 0,90% 2%,93% 0,96% 2%,100% 0,100% 100%,0 100%)}
+.clip{position:absolute;right:20px;top:-18px;z-index:2}
+.dl{position:absolute;right:-10px;bottom:-10px;width:40px;height:40px;border-radius:20px;border:0;background:#fff;box-shadow:0 4px 10px rgba(0,0,0,.15);display:grid;place-items:center;z-index:3}
+.nav{flex:none;display:flex;align-items:center;justify-content:center;gap:18px;font-size:13px;color:var(--muted);padding:8px 0 calc(14px + env(safe-area-inset-bottom))}
+.nav button{width:44px;height:44px;border-radius:22px;border:1px solid color-mix(in srgb,var(--muted) 40%,transparent);background:transparent;font-size:16px}
+.empty{margin:auto;text-align:center;color:var(--muted);padding:40px}
+/* скачать */
+.sheet-dl{position:fixed;inset:0;background:rgba(20,16,12,.45);display:flex;align-items:flex-end;justify-content:center;z-index:10}
+.sheet-dl .box{width:100%;max-width:480px;background:var(--bg);border-radius:20px 20px 0 0;padding:20px 20px calc(24px + env(safe-area-inset-bottom));display:grid;gap:10px}
+.sheet-dl h4{margin:0 0 4px;font-family:'Cormorant Garamond',serif;font-weight:400;font-size:24px;text-align:center}
+.sheet-dl button{height:52px;border-radius:26px;border:1px solid color-mix(in srgb,var(--muted) 40%,transparent);background:transparent;font-weight:600}
+.sheet-dl button.pri{background:var(--ink);color:var(--bg);border:0}
+.sheet-dl small{color:var(--muted);text-align:center;font-size:12px}
 </style>
 </head>
 <body>
-<header class="hero" id="hero"><canvas id="orn"></canvas><div class="in"><div class="kind" id="kind"></div><div class="nm" id="names">Альбом поздравлений</div><div class="dt" id="date"></div></div></header>
-<main class="wrap">
-  <div class="totals" id="totals"></div>
-  <div class="album" id="album"></div>
-  <footer>Toi Line · живой экран для тоя</footer>
-</main>
+<section class="cover" id="cover">
+  <div class="ttl">Альбом</div>
+  <div class="oval emboss"><div class="dots"><div class="in" id="cPic"></div></div></div>
+  <div class="mono" id="cMono"></div>
+  <div class="nms" id="cNames"></div>
+  <div class="dt" id="cDate"></div>
+  <div class="foot"><div class="cnt" id="cCount"></div><button class="open" id="openBtn">Альбомды ашу</button></div>
+</section>
+<section class="book" id="book" hidden>
+  <div class="top"><button class="ib" id="toCover" aria-label="К обложке">‹</button><span class="mid" id="bMono"></span>
+    <button class="ib" id="share" aria-label="Поделиться"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" aria-hidden="true"><path d="M12 15V3M8 7l4-4 4 4"/><path d="M5 12v8h14v-8"/></svg></button></div>
+  <div class="pages" id="pages"></div>
+  <div class="nav"><button id="prev" aria-label="Предыдущая страница">‹</button><span id="pno">1 / 1</span><button id="next" aria-label="Следующая страница">›</button></div>
+</section>
+<div class="sheet-dl" id="dlSheet" hidden><div class="box">
+  <h4>Скачать фото</h4>
+  <button class="pri" data-fmt="post">Для поста · 4:5</button>
+  <button data-fmt="story">Для сторис · 9:16</button>
+  <small id="dlNote">Фото в красивой рамке, 1080 px</small>
+  <button data-fmt="">Отмена</button>
+</div></div>
 <script src="/static/common.js"></script>
 <script>
 (async function(){
 const T=TOI,$=T.$,esc=T.esc;
 const eid=location.pathname.split('/')[2];
-try{
-  const r=await T.api(`/api/a/${eid}`),c=T.full(r.cfg);
-  const th=T.theme($('hero'),c);$('hero').style.background=th.bg;T.theme(document.body,c);
-  $('kind').textContent=c.kind||'';$('names').textContent=c.names||'';$('date').textContent=[c.date,'альбом поздравлений'].filter(Boolean).join(' · ');
-  document.title='Альбом · '+(c.names||'Toi Line');
-  requestAnimationFrame(()=>T.renderHeadOrn($('orn'),c));
-  $('totals').textContent=r.cards.length?`${r.cards.length} поздравлений от гостей`:'';
-  $('album').innerHTML=r.cards.map(a=>`<div class="pc${a.amount?' vip':''}"><img loading="lazy" alt="" src="${esc(T.photoOf(a))}"><div class="m">${esc(a.msg)}</div><div class="f">${esc(a.name)}${a.amount?' · конверт '+T.fmt(a.amount):''}</div></div>`).join('')||'<div class="empty">Здесь соберутся поздравления, показанные на экране.</div>';
-}catch(e){$('album').innerHTML='<div class="empty">Альбом не найден.</div>';}
+let r;
+try{r=await T.api(`/api/a/${eid}`);}catch(e){document.body.innerHTML='<div class="empty" style="padding-top:30vh">Альбом не найден.</div>';return;}
+const raw=r.cfg,c=T.full(raw),pal=T.vars(document.body,raw),cards=r.cards;
+document.querySelector('meta[name=theme-color]').content=pal.bg;
+const [n1,n2]=T.splitNames(c.names),mono=T.initials(c.names),date=T.niceDate(c.date);
+document.title='Альбом · '+(c.names||'Toi Line');
+
+/* обложка */
+const coverPic=c.couple_url||(cards.find(x=>x.photo)||{}).photo||'';
+if(coverPic)$('cPic').style.backgroundImage=`url('${coverPic}')`;else $('cPic').textContent=mono.replace(' & ','·');
+$('cMono').innerHTML=mono.split(' & ').map(esc).join('<span> &amp; </span>');
+$('cNames').textContent=T.up([n1,n2].filter(Boolean).join(' · '));
+$('cDate').textContent=date;$('bMono').textContent=mono;
+$('cCount').textContent=cards.length?`${cards.length} құттықтау · ${cards.filter(x=>x.photo).length} фото`:'Құттықтаулар әзірге жоқ';
+$('openBtn').addEventListener('click',()=>{$('cover').hidden=true;$('book').hidden=false;pageNo();});
+$('toCover').addEventListener('click',()=>{$('book').hidden=true;$('cover').hidden=false;});
+
+/* развороты: по 3 фото на страницу, подпись то справа, то слева, то снизу */
+const CLIP='<svg class="clip" aria-hidden="true" width="18" height="56" viewBox="0 0 18 56" fill="none" stroke="#8C8C8C" stroke-width="1.6"><path d="M5 50 V8 a4 4 0 0 1 8 0 V44 a2.5 2.5 0 0 1 -5 0 V14"/></svg>';
+const DL='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2A2622" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>';
+const orient={};await Promise.all(cards.map(async x=>orient[x.id]=x.photo?await T.orientOf(x.photo):'v'));
+function item(x,i){
+  const o=orient[x.id],lay=['l','r','b'][i%3],rot=[-2.5,2,1.5,-2,3,-1.5][i%6],w=lay==='b'?(o==='h'?260:190):(o==='h'?186:140);
+  let pic;
+  if(x.amount)pic=T.frameHTML(x,o,o==='h'?w*1.15:w*1.1,c.film);
+  else if(i%2)pic=`<div class="deck">${T.photoHTML(x,'',`width:${w}px;height:${Math.round(w*(o==='h'?.68:1.2))}px;font-size:9px`,c.film)}</div>${i%4===1?CLIP:''}`;
+  else pic=`<div class="pol a">${T.photoHTML(x,'',`width:${w}px;height:${Math.round(w*(o==='h'?.67:1.15))}px;font-size:9px`,c.film,T.stampOf(raw))}</div>`;
+  const f=T.capFont(x),sz=x.msg&&x.msg.length>70?19:22;
+  return `<div class="it ${lay}"><div class="pic" style="transform:rotate(${rot}deg)">${pic}<button class="dl" data-dl="${x.id}" aria-label="Скачать фото">${DL}</button></div>
+    <div class="note" style="${T.capStyle(x,sz)};transform:rotate(${-rot/1.5}deg)">${x.msg?esc(x.msg):''}<small style="font-size:.8em">— ${esc(x.name)}</small></div></div>`;
+}
+const per=3,pages=[];for(let i=0;i<cards.length;i+=per)pages.push(cards.slice(i,i+per));
+$('pages').innerHTML=pages.length?pages.map((p,pi)=>`<div class="page"><div class="sheet">${p.map((x,j)=>item(x,pi*per+j)).join('')}</div></div>`).join('')
+  :'<div class="page"><div class="empty">После тоя здесь появятся поздравления гостей.</div></div>';
+const P=$('pages');
+function pageNo(){const n=Math.max(1,pages.length),k=Math.round(P.scrollLeft/(P.clientWidth||1))+1;$('pno').textContent=`${Math.min(k,n)} / ${n}`;}
+P.addEventListener('scroll',()=>requestAnimationFrame(pageNo));
+$('prev').addEventListener('click',()=>P.scrollBy({left:-P.clientWidth,behavior:'smooth'}));
+$('next').addEventListener('click',()=>P.scrollBy({left:P.clientWidth,behavior:'smooth'}));
+addEventListener('keydown',e=>{if($('book').hidden)return;if(e.key==='ArrowLeft')$('prev').click();if(e.key==='ArrowRight')$('next').click();});
+$('share').addEventListener('click',async()=>{const u=location.href.split('#')[0];
+  try{if(navigator.share)await navigator.share({title:'Альбом · '+(c.names||''),url:u});else{await navigator.clipboard.writeText(u);$('share').style.opacity=.4;setTimeout(()=>$('share').style.opacity=1,800);}}catch(e){}});
+
+/* ---------- скачать: пост 4:5 и сторис 9:16, рисуем на canvas ---------- */
+let dlCard=null;
+document.addEventListener('click',e=>{const b=e.target.closest('[data-dl]');if(b){dlCard=cards.find(x=>x.id===+b.dataset.dl);$('dlSheet').hidden=false;}});
+$('dlSheet').addEventListener('click',async e=>{
+  const b=e.target.closest('[data-fmt]');if(!b&&e.target!==$('dlSheet'))return;
+  if(!b||!b.dataset.fmt){$('dlSheet').hidden=true;return;}
+  $('dlNote').textContent='Готовим картинку…';
+  try{await exportCard(dlCard,b.dataset.fmt);$('dlSheet').hidden=true;}catch(er){$('dlNote').textContent='Не получилось: '+er.message;return;}
+  $('dlNote').textContent='Фото в красивой рамке, 1080 px';
+});
+const loadImg=u=>new Promise((ok,no)=>{const i=new Image();i.onload=()=>ok(i);i.onerror=()=>no(new Error('картинка не загрузилась'));i.src=u;});
+function film(x,w,h){ // лёгкая тёплая плёнка + виньетка (ctx.filter есть не во всех браузерах — считаем сами)
+  if(c.film==='none')return;const d=x.getImageData(0,0,w,h),p=d.data,k=c.film==='vhs'?0:.16;
+  for(let i=0;i<p.length;i+=4){const r=p[i],g=p[i+1],b=p[i+2];
+    let R=r*(1-.607*k)+g*.769*k+b*.189*k,G=r*.349*k+g*(1-.314*k)+b*.168*k,B=r*.272*k+g*.534*k+b*(1-.869*k);
+    const s=c.film==='vhs'?1.12:.9,l=.3*R+.59*G+.11*B;R=l+(R-l)*s;G=l+(G-l)*s;B=l+(B-l)*s;
+    p[i]=Math.min(255,(R-128)*1.04+131);p[i+1]=Math.min(255,(G-128)*1.04+131);p[i+2]=Math.min(255,(B-128)*1.04+131);}
+  x.putImageData(d,0,0);
+  const g=x.createRadialGradient(w/2,h*.42,Math.min(w,h)*.4,w/2,h*.42,Math.max(w,h)*.75);g.addColorStop(0,'rgba(40,25,10,0)');g.addColorStop(1,'rgba(40,25,10,.3)');x.fillStyle=g;x.fillRect(0,0,w,h);
+}
+async function photoCanvas(card,w,h){ // фото, обрезанное по центру, с плёнкой
+  const cv=document.createElement('canvas');cv.width=w;cv.height=h;const x=cv.getContext('2d');
+  if(card.photo){const im=await loadImg(card.photo),k=Math.max(w/im.naturalWidth,h/im.naturalHeight),iw=im.naturalWidth*k,ih=im.naturalHeight*k;
+    x.drawImage(im,(w-iw)/2,(h-ih)*.35,iw,ih);film(x,w,h);}
+  else{const g=x.createLinearGradient(0,0,w,h);g.addColorStop(0,'#efe8dc');g.addColorStop(1,'#ded4c3');x.fillStyle=g;x.fillRect(0,0,w,h);
+    x.fillStyle='#8a7f70';x.font=`300 ${Math.round(h*.4)}px "Cormorant Garamond"`;x.textAlign='center';x.textBaseline='middle';x.fillText((card.name||'♡').trim()[0].toLocaleUpperCase('kk'),w/2,h/2);}
+  return cv;
+}
+function wrap(x,text,maxW){const words=String(text||'').split(/\s+/),lines=[];let l='';
+  for(const w of words){const t=l?l+' '+w:w;if(x.measureText(t).width>maxW&&l){lines.push(l);l=w;}else l=t;}if(l)lines.push(l);return lines;}
+function spaced(x,text,cx,y,ls){const ch=[...text],ws=ch.map(s=>x.measureText(s).width),tot=ws.reduce((a,b)=>a+b,0)+ls*(ch.length-1);let px=cx-tot/2;x.textAlign='left';ch.forEach((s,i)=>{x.fillText(s,px,y);px+=ws[i]+ls;});x.textAlign='center';}
+function paper(x,W,H){const g=x.createLinearGradient(0,0,0,H);
+  if(pal.dark){g.addColorStop(0,'#2a2521');g.addColorStop(1,'#1a1715');}else{g.addColorStop(0,'#F6F2EA');g.addColorStop(1,'#E9E2D5');}
+  x.fillStyle=g;x.fillRect(0,0,W,H);}
+async function exportCard(card,fmt){
+  const f=T.capFont(card),fam=f.fam.split(',')[0].replace(/'/g,'');
+  await Promise.all([document.fonts.load(`${f.it} 60px "${fam}"`,card.msg||card.name),document.fonts.load('300 60px "Cormorant Garamond"'),document.fonts.load('italic 60px "Cormorant Garamond"'),document.fonts.load('60px "Toi Comforter Brush"')]);
+  const W=1080,H=fmt==='post'?1350:1920,cv=document.createElement('canvas');cv.width=W;cv.height=H;const x=cv.getContext('2d');
+  paper(x,W,H);x.textAlign='center';x.textBaseline='alphabetic';
+  const o=orient[card.id],ink=pal.dark?'#F3EBDD':'#2A2622',muted=pal.dark?'#C9BBA4':'#6E665C',accent=pal.accent;
+  const capFont=sz=>`${f.it} ${Math.round(sz*f.k)}px ${f.fam.replace(/'/g,'"')}`;
+  const namesLine=T.up([n1,n2].filter(Boolean).join(' & '));
+  async function framed(maxW,maxH,cy){ // рамка Premium по ориентации фото
+    const g=T.FR[T.frameKey(card.frame)][o],k=Math.min(maxW/g[0],maxH/g[1]),fw=g[0]*k,fh=g[1]*k,fx=(W-fw)/2,fy=cy-fh/2;
+    const pw=fw*(1-(g[2]+g[4])/100),ph=fh*(1-(g[3]+g[5])/100);
+    x.drawImage(await photoCanvas(card,Math.round(pw),Math.round(ph)),fx+fw*g[2]/100,fy+fh*g[3]/100,pw,ph);
+    x.save();x.shadowColor='rgba(0,0,0,.35)';x.shadowBlur=40;x.shadowOffsetY=20;x.drawImage(await loadImg(`/static/img/frame-${T.frameKey(card.frame)}-${o}.png`),fx,fy,fw,fh);x.restore();
+    return fy+fh;
+  }
+  if(fmt==='post'){
+    let bottom;
+    if(card.amount)bottom=await framed(o==='h'?900:640,880,560);
+    else{ // полароид
+      const pw=o==='h'?760:620,ph=o==='h'?510:720,pad=34,capH=card.msg?200:120,bw=pw+pad*2,bh=ph+pad+capH,cx=W/2,cy=600;
+      x.save();x.translate(cx,cy);x.rotate(-2*Math.PI/180);x.shadowColor='rgba(42,38,34,.25)';x.shadowBlur=50;x.shadowOffsetY=24;x.fillStyle='#FBF8F2';x.fillRect(-bw/2,-bh/2,bw,bh);x.shadowColor='transparent';
+      x.drawImage(await photoCanvas(card,pw,ph),-pw/2,-bh/2+pad);
+      if(card.photo&&c.film!=='none'){x.fillStyle='#F29A3A';x.font='600 30px ui-monospace,Menlo,monospace';x.textAlign='right';x.fillText(T.stampOf(raw),pw/2-24,-bh/2+pad+ph-22);x.textAlign='center';}
+      x.fillStyle='#2A2622';let y=-bh/2+pad+ph+70;
+      if(card.msg){x.font=capFont(40);const ls=wrap(x,card.msg,pw-20).slice(0,2);ls.forEach(l=>{x.fillText(l,0,y);y+=52;});x.font=capFont(34);x.fillText('— '+card.name,0,y+4);}
+      else{x.font=capFont(52);x.fillText(card.name,0,y+10);}
+      x.restore();bottom=cy+bh/2;
+    }
+    if(card.amount){x.fillStyle=ink;let y=bottom+80;if(card.msg){x.font=capFont(42);wrap(x,card.msg,860).slice(0,2).forEach(l=>{x.fillText(l,W/2,y);y+=56;});}x.font=capFont(36);x.fillStyle=muted;x.fillText('— '+card.name,W/2,y+6);}
+    x.fillStyle=muted;x.font='400 32px "Cormorant Garamond"';spaced(x,namesLine+(date?' · '+date:''),W/2,H-70,10);
+  }else{
+    x.fillStyle=ink;x.font='300 74px "Cormorant Garamond"';spaced(x,namesLine,W/2,210,20);
+    x.fillStyle=muted;x.font='400 34px "Cormorant Garamond"';spaced(x,date,W/2,280,16);
+    let bottom;
+    if(card.amount)bottom=await framed(o==='h'?960:720,960,820);
+    else{ // рельефный овал с фото
+      const ow=660,oh=870,cx=W/2,cy=820;
+      x.save();x.beginPath();x.ellipse(cx,cy,ow/2,oh/2,0,0,Math.PI*2);x.fillStyle=pal.dark?'#2a2521':'#F3EDE2';x.shadowColor='rgba(120,100,70,.28)';x.shadowBlur=18;x.shadowOffsetY=-4;x.fill();x.restore();
+      x.save();x.setLineDash([3,9]);x.lineWidth=5;x.lineCap='round';x.strokeStyle=pal.dark?'rgba(201,167,102,.5)':'rgba(120,100,70,.35)';x.beginPath();x.ellipse(cx,cy,ow/2-36,oh/2-36,0,0,Math.PI*2);x.stroke();x.restore();
+      const iw=ow-110,ih=oh-110;x.save();x.beginPath();x.ellipse(cx,cy,iw/2,ih/2,0,0,Math.PI*2);x.clip();x.drawImage(await photoCanvas(card,iw,ih),cx-iw/2,cy-ih/2);x.restore();
+      bottom=cy+oh/2;
+    }
+    let y=bottom+110;x.fillStyle=ink;
+    if(card.msg){x.font='italic 400 64px "Cormorant Garamond"';wrap(x,card.msg,860).slice(0,4).forEach(l=>{x.fillText(l,W/2,y);y+=84;});}
+    x.fillStyle=accent;x.font='62px "Toi Comforter Brush"';x.fillText('— '+card.name,W/2,y+20);
+  }
+  const blob=await new Promise(ok=>cv.toBlob(ok,'image/jpeg',.92));
+  const name=`toi-${eid}-${card.id}-${fmt}.jpg`,file=new File([blob],name,{type:'image/jpeg'});
+  if(navigator.canShare&&navigator.canShare({files:[file]})&&/Mobi|Android|iPhone/i.test(navigator.userAgent)){try{await navigator.share({files:[file]});return;}catch(e){if(e.name==='AbortError')return;}}
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000);
+}
 })();
 </script>
 </body>
