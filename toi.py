@@ -1,4 +1,4 @@
-"""Toi Online: живой LED-экран для тоя (Антон 16.11.2026). Самостоятельный сервис (раньше жил внутри Постика).
+"""Toi Line: живой LED-экран для тоя (Антон 16.11.2026). Самостоятельный сервис (раньше жил внутри Постика).
 
 На каждое мероприятие три ссылки:
   /g/<id>              гость (QR на столе и на экране)
@@ -96,7 +96,7 @@ def ensure_demo():
     if _db.execute("SELECT 1 FROM events WHERE id=?", (DEMO["id"],)).fetchone():
         return
     cfg = clean_cfg({"type": "wedding", "tpl": "pink", "kind": "Үйлену тойы", "names": "Диас & Диара",
-                     "sub": "Шаңырақтарың биік болсын!", "date": "Toi Online · демо", "font": "'Great Vibes', cursive",
+                     "sub": "Шаңырақтарың биік болсын!", "date": "Toi Line · демо", "font": "'Great Vibes', cursive",
                      "size": "9cqw", "bg1": "#ee4fd8", "bg2": "#a4116f", "c1": "#b8122f", "acc": "#ffd979",
                      "moderation": False, "kaspi_name": "Демо", "kaspi_phone": "+7 700 000 00 00", "sheen": "12s"})
     cfg["demo"] = True

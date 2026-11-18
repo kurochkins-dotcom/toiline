@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
-<title>Альбом поздравлений · Toi Online</title>
+<title>Альбом поздравлений · Toi Line</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Great+Vibes&family=Lobster&family=Comfortaa:wght@600;700&family=Forum&family=Playfair+Display:wght@600;700&family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -36,7 +36,7 @@ footer{text-align:center;font-size:12px;color:#8a8392}
 <main class="wrap">
   <div class="totals" id="totals"></div>
   <div class="album" id="album"></div>
-  <footer>Toi Online · живой экран для тоя</footer>
+  <footer>Toi Line · живой экран для тоя</footer>
 </main>
 <script src="/static/common.js"></script>
 <script>
@@ -47,7 +47,7 @@ try{
   const r=await T.api(`/api/a/${eid}`),c=T.full(r.cfg);
   const th=T.theme($('hero'),c);$('hero').style.background=th.bg;T.theme(document.body,c);
   $('kind').textContent=c.kind||'';$('names').textContent=c.names||'';$('date').textContent=[c.date,'альбом поздравлений'].filter(Boolean).join(' · ');
-  document.title='Альбом · '+(c.names||'Toi Online');
+  document.title='Альбом · '+(c.names||'Toi Line');
   requestAnimationFrame(()=>T.renderHeadOrn($('orn'),c));
   $('totals').textContent=r.cards.length?`${r.cards.length} поздравлений от гостей`:'';
   $('album').innerHTML=r.cards.map(a=>`<div class="pc${a.amount?' vip':''}"><img loading="lazy" alt="" src="${esc(T.photoOf(a))}"><div class="m">${esc(a.msg)}</div><div class="f">${esc(a.name)}${a.amount?' · конверт '+T.fmt(a.amount):''}</div></div>`).join('')||'<div class="empty">Здесь соберутся поздравления, показанные на экране.</div>';

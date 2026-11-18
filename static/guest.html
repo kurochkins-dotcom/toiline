@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#faf7f1">
-<title>Поздравить · Toi Online</title>
+<title>Поздравить · Toi Line</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Great+Vibes&family=Lobster&family=Comfortaa:wght@600;700&family=Forum&family=Playfair+Display:wght@600;700&family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -168,7 +168,7 @@ button{cursor:pointer}
     <a class="go kaspi" id="kOpen" href="#" target="_blank" rel="noopener" style="text-align:center;text-decoration:none" hidden>Открыть Kaspi</a>
     <button class="go env" id="kDone">Я перевёл(а), отправить конверт</button>
     <p class="err" id="kErr" hidden></p>
-    <p class="fine">Модератор сверит перевод в Kaspi организатора, и конверт выйдет на экран. Деньги идут напрямую организатору, Toi Online их не получает.</p>
+    <p class="fine">Модератор сверит перевод в Kaspi организатора, и конверт выйдет на экран. Деньги идут напрямую организатору, Toi Line их не получает.</p>
   </section>
 
   <section class="view done" id="vDone" hidden>
@@ -310,7 +310,7 @@ async function load(){
   $('kind').textContent=c.kind||'';$('names').textContent=c.names||'';$('date').textContent=c.date||'';
   $('tblLine').textContent=table?(c.date?' · ':'')+'стол №'+table:'';$('tblField').hidden=!!table;
   $('hello').textContent=c.hello||T.PRESETS[c.type].hello;
-  document.title='Поздравить · '+(c.names||'Toi Online');
+  document.title='Поздравить · '+(c.names||'Toi Line');
   $('quick').innerHTML=(c.quick||[]).map(q=>`<button type="button">${T.esc(q)}</button>`).join('');
   $('gMsg').value=(c.quick||[])[0]||'';
   try{$('gName').value=localStorage.getItem('toi-name')||'';}catch(e){}

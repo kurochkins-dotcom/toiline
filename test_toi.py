@@ -1,4 +1,4 @@
-"""Проверка Toi Online на живом сервере :
+"""Проверка Toi Line на живом сервере :
 ADMIN_KEY=test PORT=8123 python server.py
 BASE=http://127.0.0.1:8123 ADMIN_KEY=test python test_toi.py
 """
@@ -101,7 +101,7 @@ def ok(cond, msg):
 
 
 def main():
-    print("Toi Online")
+    print("Toi Line")
     code, _ = req("/", raw=True)
     ok(code == 200, "страница админки открывается")
     code, j = req("/api/admin/events")
@@ -229,7 +229,7 @@ def main():
     ok(code == 404, "удалённое мероприятие закрыто")
     s_mod.close()
     s_led.close()
-    print("Toi Online: всё хорошо")
+    print("Toi Line: всё хорошо")
 
 
 if __name__ == "__main__":
