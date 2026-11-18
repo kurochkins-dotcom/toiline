@@ -1,4 +1,4 @@
-"""Toi Online: сервер. Только стандартная библиотека Python 3.10+.
+"""Toi Line: сервер. Только стандартная библиотека Python 3.10+.
 
 Запуск: ADMIN_KEY=придумайте PORT=8000 DATA_DIR=./data python server.py
 Вся логика в toi.py, здесь только HTTP: чтение тела, ответы, адрес посетителя.
@@ -128,7 +128,7 @@ def main():
     toi.db()  # база и демо-той создаются при старте
     srv = ThreadingHTTPServer(("0.0.0.0", PORT), H)
     srv.daemon_threads = True
-    print(f"Toi Online запущен на порту {PORT}", flush=True)
+    print(f"Toi Line запущен на порту {PORT}", flush=True)
     if not toi.admin_key():
         print("ВНИМАНИЕ: ADMIN_KEY не задан, админка отключена.", flush=True)
     srv.serve_forever()
