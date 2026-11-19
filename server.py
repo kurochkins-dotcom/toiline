@@ -78,7 +78,7 @@ class H(BaseHTTPRequestHandler):
     def sec(self):
         self.send_header("X-Content-Type-Options", "nosniff")
         self.send_header("Referrer-Policy", "no-referrer")
-        self.send_header("Content-Security-Policy", "frame-ancestors 'none'")
+        self.send_header("Content-Security-Policy", "frame-ancestors 'self'")
 
     def send_bytes(self, code, data, ctype, extra=None):
         self.drain()

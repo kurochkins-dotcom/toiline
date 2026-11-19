@@ -601,6 +601,8 @@ def handle_get(h, path):
             return _file(h, os.path.join(STATIC, PAGES[parts[0]]), "text/html; charset=utf-8")
         if parts == ["o"]:   # кабинет организатора: вход и разделы на одной странице
             return _file(h, os.path.join(STATIC, PAGES["o"]), "text/html; charset=utf-8")
+        if parts == ["p"]:   # презентация возможностей для показа на iPad (вход по ключу администратора)
+            return _file(h, os.path.join(STATIC, "present.html"), "text/html; charset=utf-8")
         if parts == ["sw.js"]:  # сервис-воркер в корне управляет всеми страницами
             return _file(h, os.path.join(STATIC, "sw.js"), CTYPES["js"])
         if len(parts) == 2 and parts[0] == "static":
