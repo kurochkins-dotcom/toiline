@@ -2,9 +2,10 @@
 
 На каждое мероприятие три ссылки:
   /g/<id>              гость (QR на столе и на экране)
-  /m/<id>/<ключ>       пульт модератора и организатора
+  /m/<id>/<ключ>       пульт тамады (модерация, эфир, оформление экрана)
   /s/<id>/<ключ>       LED-экран (оператор открывает в Chrome и жмёт F11)
-плюс альбом /a/<id> после тоя.
+плюс альбом /a/<id> после тоя и кабинет организатора /o (вход по логину = номер мероприятия и паролю,
+модерации там нет: организатор со стороны семьи видит праздник, приглашение, конверты и итог).
 
 Связь в реальном времени: Server-Sent Events (веб-сокетов в стандартной библиотеке нет, а SSE хватает:
 команды идут от сервера к экрану и пульту, обратно обычные POST). Деньги через нас не идут: гость переводит
@@ -39,6 +40,8 @@ MIN_ENV = 500                     # минимальный конверт, ₸
 MAX_ENV = 5_000_000
 GUEST_LIMIT = (60, 600)           # против ботов: 60 открыток с одного адреса за 10 минут (гостя сдерживает FREE_EVERY)
 FREE_EVERY = 30 * 60              # бесплатное поздравление с одного устройства — раз в 30 минут
+ORG_COOKIE = "toi_org"            # вход организатора: случайный токен, сессии в таблице org_sessions
+ORG_DAYS = 60
 DEV_COOKIE = "toi_dev"            # cookie устройства: по ней считаем бесплатные поздравления, а не по IP (в зале один Wi-Fi)
 SSE_LIFETIME = 270                # поток живёт ~4.5 минуты, браузер сам переподключается (прокси не любят вечные ответы)
 SSE_PING = 15                     # Cloudflare рвёт тихое соединение через 100 сек
@@ -52,6 +55,7 @@ NFONTS = {"corm", "play", "noto", "prata", "pinyon"}
 FILMS = {"warm", "vhs", "none"}             # фильтр на фото гостей: тёплая плёнка, VHS, без
 CARDS = {"auto", "portrait", "landscape"}  # формат карточки-полароида на экране
 TYPES = {"wedding", "jubilee", "uzatu", "tusau"}
+LANGS = {"kz", "ru"}
 FRAMES = {"altyn", "kara", "kumis"}        # рамки Premium: Алтын, Қара-алтын, Күміс
 
 _db_lock = threading.Lock()
@@ -82,7 +86,13 @@ def db():
         CREATE INDEX IF NOT EXISTS cards_eid ON cards(eid, status);
         CREATE TABLE IF NOT EXISTS free_pass(
             dev TEXT NOT NULL, eid TEXT NOT NULL, last INTEGER NOT NULL, PRIMARY KEY(dev, eid));
+        CREATE TABLE IF NOT EXISTS org_sessions(
+            token TEXT PRIMARY KEY, eid TEXT NOT NULL, created INTEGER NOT NULL);
         """)
+        try:   # пароль организатора (ТЗ 0.8); у мероприятий, созданных раньше, появится при первом открытии админки
+            c.execute("ALTER TABLE events ADD COLUMN org_pw TEXT NOT NULL DEFAULT ''")
+        except sqlite3.OperationalError:
+            pass
         _db = c
         ensure_demo()
     return _db
@@ -145,9 +155,22 @@ def clean_cfg(j, old=None):
     c = dict(old or {})
     j = j if isinstance(j, dict) else {}
     for k, n in (("kind", 40), ("names", 60), ("sub", 90), ("date", 30), ("hello", 200), ("kaspi_name", 60),
-                 ("kaspi_phone", 20), ("organizer", 60)):
+                 ("kaspi_phone", 20), ("organizer", 60),
+                 # «О празднике» из кабинета организатора: попадает в приглашение, экран и альбом
+                 ("title", 120), ("time", 10), ("place", 80), ("address", 120), ("host", 80)):
         if k in j:
             c[k] = clean_str(j[k], n)
+    if "gis" in j:   # ссылка на маршрут в 2GIS
+        link = clean_str(j["gis"], 300)
+        c["gis"] = link if re.match(r"https://[^\s\"'<>]+$", link) else ""
+    if isinstance(j.get("inv"), dict):   # приглашение: свой шаблон/цвет/шрифт (пусто — как у экрана), язык, свой текст
+        iv, old_iv = j["inv"], dict(c.get("inv") or {})
+        for k, allowed in (("tpl", TPLS), ("palette", PALETTES), ("nfont", NFONTS), ("lang", LANGS)):
+            if k in iv:
+                old_iv[k] = iv[k] if iv[k] in allowed else ""
+        if "text" in iv:
+            old_iv["text"] = clean_str(iv["text"], 160)
+        c["inv"] = old_iv
     if "kaspi_link" in j:
         link = clean_str(j["kaspi_link"], 300)
         c["kaspi_link"] = link if re.match(r"https://[^\s\"'<>]+$", link) else ""
@@ -225,14 +248,76 @@ def links(e):
             "led": f"/s/{e['id']}/{e['led_key']}", "album": f"/a/{e['id']}"}
 
 
+def new_password():
+    return new_id(8)
+
+
+def org_password(e):
+    """Пароль организатора; у старых мероприятий создаём при первом обращении."""
+    if not e.get("org_pw"):
+        e["org_pw"] = new_password()
+        ex("UPDATE events SET org_pw=? WHERE id=?", (e["org_pw"], e["id"]))
+    return e["org_pw"]
+
+
+def reset_org_password(eid):
+    pw = new_password()
+    ex("UPDATE events SET org_pw=? WHERE id=?", (pw, eid))
+    ex("DELETE FROM org_sessions WHERE eid=?", (eid,))   # старый вход перестаёт работать
+    return pw
+
+
+def org_login(login, password):
+    e = get_event(clean_str(login, 12).lower())
+    if not e or e["cfg"].get("demo") or not password or not hmac.compare_digest(org_password(e).encode(), clean_str(password, 40).encode()):
+        return None
+    tok = secrets.token_hex(24)
+    ex("INSERT INTO org_sessions(token,eid,created) VALUES(?,?,?)", (tok, e["id"], now_ms()))
+    if secrets.randbelow(20) == 0:
+        ex("DELETE FROM org_sessions WHERE created < ?", (now_ms() - ORG_DAYS * 86400000,))
+    return tok, e
+
+
+def org_event(h):
+    """Мероприятие по cookie организатора или None."""
+    m = re.search(r"(?:^|;\s*)" + ORG_COOKIE + r"=([0-9a-f]{48})", h.headers.get("Cookie") or "")
+    if not m:
+        return None
+    r = q("SELECT eid, created FROM org_sessions WHERE token=?", (m.group(1),), one=True)
+    if not r or r["created"] < now_ms() - ORG_DAYS * 86400000:
+        return None
+    return get_event(r["eid"])
+
+
+def org_cookie(h, tok, age):
+    sec = "; Secure" if (h.headers.get("X-Forwarded-Proto") or "").lower() == "https" else ""
+    return {"Set-Cookie": f"{ORG_COOKIE}={tok}; Path=/; Max-Age={age}; HttpOnly; SameSite=Lax{sec}"}
+
+
+def envelopes(e):
+    """Конверты для организатора: подтверждённые тамадой (деньги пришли на Kaspi), без скрытых, и итог одной строкой."""
+    rows = q("SELECT * FROM cards WHERE eid=? AND amount>0 AND paid=1 AND status IN ('approved','shown') ORDER BY created",
+             (e["id"],))
+    items = [{"name": r["name"], "table": r["tbl"], "amount": r["amount"], "t": r["created"]} for r in rows]
+    total = sum(i["amount"] for i in items)
+    pct = int(e["cfg"].get("pct", 10))
+    fee = round(total * pct / 100)
+    dep = int(e["cfg"].get("deposit", 20000))
+    return items, {"count": len(items), "sum": total, "pct": pct, "fee": fee, "deposit": dep, "due": fee - dep}
+
+
+ORG_FIELDS = ("kind", "names", "date", "title", "time", "place", "address", "host", "gis", "inv")
+
+
 def create_event(cfg):
     for _ in range(20):
         eid = new_id(6)
         if not q("SELECT 1 FROM events WHERE id=?", (eid,), one=True):
             break
-    e = {"id": eid, "mod_key": new_id(10), "led_key": new_id(10), "created": now_ms(), "cfg": clean_cfg(cfg)}
-    ex("INSERT INTO events(id,mod_key,led_key,created,cfg) VALUES(?,?,?,?,?)",
-       (e["id"], e["mod_key"], e["led_key"], e["created"], json.dumps(e["cfg"], ensure_ascii=False)))
+    e = {"id": eid, "mod_key": new_id(10), "led_key": new_id(10), "created": now_ms(), "cfg": clean_cfg(cfg),
+         "org_pw": new_password()}
+    ex("INSERT INTO events(id,mod_key,led_key,created,cfg,org_pw) VALUES(?,?,?,?,?,?)",
+       (e["id"], e["mod_key"], e["led_key"], e["created"], json.dumps(e["cfg"], ensure_ascii=False), e["org_pw"]))
     os.makedirs(os.path.join(TOI_DIR, eid), exist_ok=True)
     return e
 
@@ -465,7 +550,7 @@ def online(eid):
 
 
 # ---------------------------------------------------------------- HTTP
-PAGES = {"": "admin.html", "g": "guest.html", "m": "mod.html", "s": "led.html", "a": "album.html"}
+PAGES = {"": "admin.html", "g": "guest.html", "m": "mod.html", "s": "led.html", "a": "album.html", "o": "org.html"}
 CTYPES = {"js": "application/javascript; charset=utf-8", "css": "text/css; charset=utf-8", "svg": "image/svg+xml",
           "png": "image/png", "jpg": "image/jpeg", "ttf": "font/ttf", "json": "application/json; charset=utf-8", "webmanifest": "application/manifest+json"}
 
@@ -513,14 +598,16 @@ def handle_get(h, path):
             return _file(h, os.path.join(STATIC, PAGES["g"]), "text/html; charset=utf-8", extra=cookie)
         if parts[0] in ("a",) and len(parts) == 2 or parts[0] in ("m", "s") and len(parts) == 3:
             return _file(h, os.path.join(STATIC, PAGES[parts[0]]), "text/html; charset=utf-8")
+        if parts == ["o"]:   # кабинет организатора: вход и разделы на одной странице
+            return _file(h, os.path.join(STATIC, PAGES["o"]), "text/html; charset=utf-8")
         if parts == ["sw.js"]:  # сервис-воркер в корне управляет всеми страницами
             return _file(h, os.path.join(STATIC, "sw.js"), CTYPES["js"])
         if len(parts) == 2 and parts[0] == "static":
             m = re.fullmatch(r"([a-z0-9_-]+)\.(js|css|svg|png|webmanifest)", parts[1])
             if not m:
                 return h.err(404, "Не найдено")
-            if parts[1] == "qrcode.js":
-                return _file(h, os.path.join(STATIC, "qrcode.js"), CTYPES["js"], "public, max-age=86400")
+            if parts[1] in ("qrcode.js", "html2canvas.js", "jszip.js"):   # сторонние библиотеки не меняются
+                return _file(h, os.path.join(STATIC, parts[1]), CTYPES["js"], "public, max-age=86400")
             return _file(h, os.path.join(STATIC, parts[1]), CTYPES[m.group(2)])
         if len(parts) == 3 and parts[0] == "static" and parts[1] in ("img", "fonts"):   # рамки, гравюры, шрифты
             m = re.fullmatch(r"([a-z0-9_-]+)\.(png|jpg|ttf)", parts[2])
@@ -544,6 +631,15 @@ def handle_get(h, path):
 
 def api_get(h, parts):
     kind = parts[0]
+    if kind == "o" and parts[1:] == ["state"]:   # кабинет организатора: без ссылок тамады и экрана
+        e = org_event(h)
+        if not e:
+            return h.err(401, "Войдите в кабинет")
+        items, tot = envelopes(e)
+        shown = q("SELECT COUNT(*) n, COALESCE(SUM(photo<>''),0) p FROM cards WHERE eid=? AND status='shown'", (e["id"],), one=True)
+        lk = links(e)
+        return h.send_json(200, {"cfg": public_cfg(e), "links": {"guest": lk["guest"], "album": lk["album"]},
+                                 "envelopes": items, "totals": tot, "album": {"cards": shown["n"], "photos": shown["p"]}})
     if kind == "admin" and parts[1:] == ["events"]:
         if not _is_admin(h):
             return h.err(401, "Нужен ключ администратора")
@@ -556,7 +652,7 @@ def api_get(h, parts):
             out.append({"id": e["id"], "created": e["created"], "names": e["cfg"].get("names", ""),
                         "date": e["cfg"].get("date", ""), "kind": e["cfg"].get("kind", ""), "type": e["cfg"].get("type", ""),
                         "tpl": e["cfg"].get("tpl", ""), "palette": e["cfg"].get("palette", ""), "cards": n["n"],
-                        "sum": n["s"], "links": links(e)})
+                        "sum": n["s"], "links": links(e), "org": None if e["cfg"].get("demo") else {"login": e["id"], "password": org_password(e)}})
         return h.send_json(200, {"events": out})
     if kind == "e" and len(parts) == 2:          # гость: настройки праздника
         e = get_event(parts[1])
@@ -599,11 +695,19 @@ def handle_post(h, path):
             return h.err(404, "Не найдено")
         j = h.json_body() or {}
         kind = parts[1]
+        if kind == "o":
+            return org_post(h, parts[2:], j)
         if kind == "admin" and parts[2:] == ["events"]:
             if not _is_admin(h):
                 return h.err(401, "Нужен ключ администратора")
             e = create_event(j)
             return h.send_json(200, {"id": e["id"], "links": links(e)})
+        if kind == "admin" and len(parts) == 5 and parts[2] == "events" and parts[4] == "password":
+            if not _is_admin(h):
+                return h.err(401, "Нужен ключ администратора")
+            if not get_event(parts[3]):
+                return h.err(404, "Мероприятие не найдено")
+            return h.send_json(200, {"login": parts[3], "password": reset_org_password(parts[3])})
         if kind == "admin" and len(parts) == 5 and parts[2] == "events" and parts[4] == "delete":
             if not _is_admin(h):
                 return h.err(401, "Нужен ключ администратора")
@@ -659,3 +763,41 @@ def handle_post(h, path):
         import traceback
         traceback.print_exc()
         return h.err(500, "Ошибка сервера: " + str(ex_)[:100])
+
+
+_org_bad = {}  # адрес -> [время неверного пароля]: 10 ошибок за 15 минут закрывают вход для адреса
+
+
+def org_post(h, parts, j):
+    if parts == ["login"]:
+        ip, t = h.ip(), time.time()
+        fails = [x for x in _org_bad.get(ip, []) if t - x < 900]
+        if len(fails) >= 10:
+            return h.err(429, "Слишком много попыток. Подождите 15 минут.")
+        res = org_login(j.get("login"), j.get("password"))
+        if not res:
+            _org_bad[ip] = fails + [t]
+            return h.err(401, "Неверный логин или пароль")
+        tok, e = res
+        return h.send_json(200, {"ok": True}, headers=org_cookie(h, tok, ORG_DAYS * 86400))
+    if parts == ["logout"]:
+        m = re.search(r"(?:^|;\s*)" + ORG_COOKIE + r"=([0-9a-f]{48})", h.headers.get("Cookie") or "")
+        if m:
+            ex("DELETE FROM org_sessions WHERE token=?", (m.group(1),))
+        return h.send_json(200, {"ok": True}, headers=org_cookie(h, "", 0))
+    e = org_event(h)
+    if not e:
+        return h.err(401, "Войдите в кабинет")
+    if parts == ["cfg"]:   # только поля организатора: модерацию, Kaspi и оформление экрана меняет тамада
+        cfg = clean_cfg({k: j[k] for k in ORG_FIELDS if k in j}, e["cfg"])
+        if "couple" in j:
+            if j["couple"]:
+                try:
+                    cfg["couple"] = save_jpeg(e["id"], j["couple"], SPLASH_MAX)
+                except ValueError as v:
+                    return h.err(400, str(v))
+            else:
+                cfg["couple"] = ""
+        save_cfg(e, cfg)
+        return h.send_json(200, {"cfg": public_cfg(e)})
+    return h.err(404, "Не найдено")
