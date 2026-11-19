@@ -50,6 +50,9 @@ h1{margin:0;font-family:'Cormorant Garamond',serif;font-weight:400;font-size:44p
 .acts a,.acts button{font-weight:600;font-size:12px;border:1px solid var(--line);background:#fff;border-radius:16px;height:32px;padding:0 12px;display:inline-flex;align-items:center;text-decoration:none}
 .acts a.main{background:var(--ink);color:#fff;border-color:var(--ink)}
 .muted{color:var(--muted)}
+.org{grid-column:1/-1;display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:13px;padding-top:2px}
+.org b{letter-spacing:.04em}
+.org button{font-weight:600;font-size:12px;border:1px solid var(--line);background:#fff;border-radius:16px;height:30px;padding:0 12px}
 .err{color:#B3261E;font-size:13px;margin:0}
 .login{max-width:420px;margin:12vh auto 0;padding:28px;display:grid;gap:14px}
 @media (max-width:1100px){.row.th{display:none}.row{grid-template-columns:1fr;gap:8px}.acts{justify-content:flex-start}}
@@ -114,7 +117,9 @@ function list(){
     <div class="ev"><span class="mono" style="background:${p.bg};color:${p.ink}">${esc(T.initials(e.names).replace(' & ','·')||'—')}</span><div><b>${esc(e.names||'Без названия')}</b><small>${esc(TYPE[e.type]||e.kind||'')}${e.tpl?' · '+esc((T.TPL_BY[e.tpl]||{}).name||''):''}</small></div></div>
     <div>${esc(e.date||'—')}</div><div class="muted">${e.cards} · ${T.fmt(e.sum)}</div>
     <div class="acts"><a class="main" href="${e.links.mod}" target="_blank">Открыть кабинет</a><a href="${e.links.led}" target="_blank">Экран</a><a href="${e.links.guest}" target="_blank">Гость</a><a href="${e.links.album}" target="_blank">Альбом</a>
-    <button data-copy="${esc(T.abs(e.links.mod))}">Ссылка</button><button data-del="${e.id}" aria-label="Удалить">✕</button></div></div>`;}).join('')
+    <button data-copy="${esc(T.abs(e.links.mod))}" title="Пульт тамады: модерация и эфир. Организатору не отправлять">Ссылка тамады</button><button data-del="${e.id}" aria-label="Удалить">✕</button></div>
+    ${e.org?`<div class="org"><span class="muted">Кабинет организатора:</span> логин <b>${esc(e.org.login)}</b> · пароль <b>${esc(e.org.password)}</b>
+      <button data-access="${e.id}">Скопировать доступ</button><button data-pw="${e.id}">Новый пароль</button></div>`:''}</div>`;}).join('')
     ||'<div class="row muted">Пока нет мероприятий.</div>';
 }
 $('q').addEventListener('input',list);
@@ -133,6 +138,11 @@ $('create').addEventListener('click',async()=>{
 });
 document.addEventListener('click',async e=>{
   const c=e.target.closest('[data-copy]');if(c){try{await navigator.clipboard.writeText(c.dataset.copy);c.textContent='Скопировано';}catch(er){}}
+  const a=e.target.closest('[data-access]');if(a){const ev=events.find(x=>x.id===a.dataset.access);
+    const txt=`Кабинет организатора Toi Line\n${T.abs('/o?l='+ev.org.login)}\nЛогин: ${ev.org.login}\nПароль: ${ev.org.password}`;
+    try{await navigator.clipboard.writeText(txt);a.textContent='Скопировано';}catch(er){prompt('Скопируйте',txt);}}
+  const pw=e.target.closest('[data-pw]');if(pw&&confirm('Сделать новый пароль? Старый перестанет работать, организатору нужно будет отправить новый.')){
+    try{await T.api(`/api/admin/events/${pw.dataset.pw}/password`,{},H());load();}catch(er){alert(er.message);}}
   const d=e.target.closest('[data-del]');if(d&&confirm('Удалить мероприятие? Ссылки перестанут работать.')){await T.api(`/api/admin/events/${d.dataset.del}/delete`,{},H()).catch(()=>{});load();}
 });
 load();

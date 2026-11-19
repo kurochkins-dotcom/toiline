@@ -142,6 +142,95 @@ function mountTpl(box,cfg){
   box.innerHTML=`<div style="position:absolute;left:0;top:0;transform-origin:0 0;transform:scale(${w/928})">${tplHTML(cfg)}</div>`;
 }
 
+/* ---------- приглашение 4:5 (кабинет организатора, ТЗ 0.8–0.9): коробка 400×500, скачивается 1080×1350 ---------- */
+const MONTHS={kz:['қаңтар','ақпан','наурыз','сәуір','мамыр','маусым','шілде','тамыз','қыркүйек','қазан','қараша','желтоқсан'],
+  ru:['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря']};
+function dparts(d){const m=String(d||'').match(/(\d{1,2})[.\/\- ·]+(\d{1,2})[.\/\- ·]+(\d{2,4})/);
+  return m&&+m[2]>=1&&+m[2]<=12?{d:+m[1],m:+m[2],y:m[3].length===2?'20'+m[3]:m[3]}:null;}
+function longDate(d,lang){const x=dparts(d);if(!x)return String(d||'').trim();return lang==='ru'?`${x.d} ${MONTHS.ru[x.m-1]} ${x.y}`:`${x.d} ${MONTHS.kz[x.m-1]}, ${x.y}`;}
+function shortDate(d){const x=dparts(d);return x?`${String(x.d).padStart(2,'0')}.${String(x.m).padStart(2,'0')}.${x.y.slice(-2)}`:String(d||'').trim();}
+const INV_TXT={
+  kz:w=>({inv:w?'үйлену тойына шақырамыз':'тойымызға шақырамыз',intro:'Құрметті ағайын-туыс,<br>сіздерді тойымызға шақырамыз',
+    arch:'Сіздерді ақ дастарханымыздың қадірлі қонағы болуға шақырамыз',frame:w?'ҮЙЛЕНУ ТОЙЫНА<br>ШАҚЫРАДЫ':'ТОЙҒА<br>ШАҚЫРАДЫ',
+    kraft:'Сіздерді біздің тойымызға<br>шақырамыз',short:'Сіздерді тойымызға шақырамыз',and:'және',AND:'ЖӘНЕ',
+    time:t=>'сағат '+t,host:h=>'Құрметпен, '+h,dear:n=>'Құрметті '+n+'!'}),
+  ru:w=>({inv:w?'приглашаем на свадьбу':'приглашаем на наш праздник',intro:'Дорогие родные и друзья,<br>приглашаем вас на наш той',
+    arch:'Будем рады видеть вас почётными гостями за нашим дастарханом',frame:w?'ПРИГЛАШАЮТ<br>НА СВАДЬБУ':'ПРИГЛАШАЮТ<br>НА ТОЙ',
+    kraft:'Приглашаем вас<br>на наш той',short:'Приглашаем вас на наш той',and:'и',AND:'И',
+    time:t=>'в '+t,host:h=>'С уважением, '+h,dear:n=>'Дорогие '+n+'!'}),
+};
+/* Стиль приглашения: по умолчанию как у экрана, организатор может поменять отдельно */
+function invCfg(cfg){const c=full(cfg),iv=c.inv||{};
+  return {...c,tpl:TPL_BY[iv.tpl]?iv.tpl:c.tpl,palette:PAL[iv.palette]?iv.palette:c.palette,nfont:NFONT[iv.nfont]?iv.nfont:c.nfont,
+    lang:iv.lang==='ru'?'ru':'kz',text:iv.text||''};}
+/* opts.guest — именное приглашение: «Құрметті …!» вместо общего обращения */
+function inviteHTML(cfg,opts){
+  const c=invCfg(cfg),t=c.tpl,p=PAL[c.palette],f=NFONT[c.nfont],L=INV_TXT[c.lang](c.type==='wedding'),guest=String((opts&&opts.guest)||'').trim();
+  let [n1,n2]=splitNames(c.names);const one=!n2;
+  const time=String(c.time||'').trim(),place=String(c.place||'').trim(),addr=String(c.address||'').trim(),host=String(c.host||'').trim();
+  const nd=esc(niceDate(c.date)),dt=nd+(time?' · '+esc(time):''),tl=time?esc(L.time(time)):'';
+  const hostL=(sz,col,mt)=>host?`<div style="font-style:italic;font-size:${sz}px;color:${col};margin-top:${mt}px">${esc(L.host(host))}</div>`:'';
+  /* верхняя строка: именное обращение, свой текст или текст шаблона; длинное — мельче и в 2 строки */
+  const lead=(def,sz,col,w,extra)=>{let h,n;
+    if(guest){const d=L.dear(guest);n=[...d].length;h=`<span style="font-style:normal;font-weight:500">${esc(d)}</span><br>${c.text?esc(c.text):L.short}`;}
+    else if(c.text){h=esc(c.text);n=[...c.text].length;}
+    else{if(!def)return '';h=def;n=0;}
+    const fs=Math.round(n>70?sz*.8:n>44?sz*.9:sz);
+    return `<div style="font-style:italic;font-size:${fs}px;line-height:1.35;color:${col};max-width:${w}px;${extra||''}">${h}</div>`;};
+  const scriptN=(size,width,col)=>{const fs=fitSize(size,[n1,n2],width,.5),st=`font-family:${SCRIPT};font-size:${fs}px;line-height:1.08;color:${col}`;
+    return {a:`<div class="nm" style="${st}">${esc(n1)}</div>`,b:one?'':`<div class="nm" style="${st}">${esc(n2)}</div>`,fs};};
+  const capsN=(size,width,ls,col)=>{const a=up(n1),b=up(n2),fs=fitSize(size,[a,b],width,.72+ls),st=`font-weight:400;letter-spacing:${ls}em;font-size:${fs}px;line-height:1.12;${col?'color:'+col:''}`;
+    return {a:`<div class="nm" style="${st}">${esc(a)}</div>`,b:one?'':`<div class="nm" style="${st}">${esc(b)}</div>`};};
+  const ownN=(size,width)=>{const caps=f.caps,a=caps?up(n1):n1,b=caps?up(n2):n2,em=(caps?.72:.5)+(f.ls.endsWith('em')?parseFloat(f.ls):0);
+    const fs=fitSize(Math.round(size*f.k),[a,b],width,em),st=`font-family:${f.fam};font-weight:${f.w};font-style:${f.it};letter-spacing:${f.ls};font-size:${fs}px;line-height:1.1`;
+    return {a:`<div class="nm" style="${st}">${esc(a)}</div>`,b:b?`<div class="nm" style="${st}">${esc(b)}</div>`:''};};
+  const amp=(size,col)=>one?'':`<div style="font-family:${SCRIPT};font-size:${size}px;color:${col};line-height:.8">&amp;</div>`;
+  const I=n=>'/static/img/'+n+'.png';
+  if(t==='mag'){const n=scriptN(38,180,'#4A4640');
+    return `<div class="inv" style="background:#FBF9F5;color:#4A4640"><img src="${I('magnolia')}" alt="" style="left:-175px;top:-24px;width:370px;transform:rotate(-4deg)"><div style="position:absolute;left:0;top:186px;width:215px;height:96px;background:linear-gradient(to bottom,rgba(251,249,245,0),#FBF9F5 88%)"></div>
+<div style="position:absolute;left:206px;top:0;bottom:0;width:184px;display:flex;flex-direction:column;justify-content:center;gap:9px">${lead(L.intro,15,'#6E665C',184,'letter-spacing:.03em')}<div style="margin-top:6px">${n.a}</div>${one?'':`<div style="font-style:italic;font-size:16px;color:#6E665C">${L.and}</div>`}${n.b}
+<div style="font-size:32px;letter-spacing:.12em;color:#8A6A35;margin-top:12px">${esc(shortDate(c.date))}</div>${tl?`<div style="font-size:16px;color:#6E665C">${tl}</div>`:''}${place||addr?`<div style="font-style:italic;font-size:15px;color:#6E665C;line-height:1.35;margin-top:6px">${esc(place)}${place&&addr?'<br>':''}${esc(addr)}</div>`:''}${hostL(14,'#6E665C',6)}</div></div>`;}
+  if(t==='arch'){const n=capsN(27,236,.14);
+    return `<div class="inv" style="background:#EFE9E1;color:#2A2622"><img src="${I('rose-pink')}" alt="" style="left:-40px;top:-30px;width:190px;transform:rotate(-18deg)"><img src="${I('rose-yellow')}" alt="" style="right:-50px;top:-10px;width:200px;transform:rotate(22deg)"><img src="${I('rose-pink')}" alt="" style="right:-30px;bottom:-60px;width:190px;transform:rotate(160deg)"><img src="${I('rose-yellow')}" alt="" style="left:-60px;bottom:-40px;width:200px;transform:rotate(200deg)">
+<div class="c" style="left:62px;top:56px;width:276px;height:388px;border-radius:138px 138px 18px 18px;background:#FBF9F5;gap:8px;padding:0 18px;box-sizing:border-box;box-shadow:0 0 0 1px rgba(42,38,34,.06)"><div style="font:400 11px Montserrat,sans-serif;letter-spacing:.34em;color:#6E665C">${esc(up(c.kind))}</div><div style="margin-top:4px">${n.a}</div>${amp(26,'#8A6A35')}${n.b}
+${lead(L.arch,14,'#5C564E',220,'margin-top:4px')}<div style="font-size:14px;letter-spacing:.3em;margin-top:4px">${nd}</div><div style="font-size:14px;color:#5C564E">${[esc(time),esc(place)].filter(Boolean).join(' · ')}</div></div></div>`;}
+  if(t==='iris'){const n=scriptN(46,320,'#3E4A5C');
+    return `<div class="inv" style="background:#F7F5F0;color:#2A2622"><img src="${I('iris')}" alt="" style="left:-85px;top:-85px;width:180px;transform:rotate(150deg)"><img src="${I('iris')}" alt="" style="right:-80px;bottom:-105px;width:180px;transform:rotate(-12deg)">
+<div class="c" style="inset:0;gap:7px;padding:0 50px">${lead(L.inv,16,'#6E665C',300)}<div style="margin-top:4px">${n.a}</div>${amp(28,'#8A6A35')}${n.b}<div style="width:44px;height:1px;background:#8A6A35;margin:10px 0 6px"></div>
+<div style="font-size:15px;letter-spacing:.28em">${dt}</div>${place?`<div style="font-size:14px;letter-spacing:.12em;color:#5C564E">${esc(up(place))}</div>`:''}${hostL(15,'#6E665C',8)}</div></div>`;}
+  if(t==='frame'){const n=capsN(42,320,.1);
+    const k='<path d="M26 26 h50 M26 26 v50 M34 34 h30 a10 10 0 0 1 0 20 a6 6 0 0 1 0-12 M34 34 v30 a10 10 0 0 0 20 0 a6 6 0 0 0 -12 0"/>';
+    return `<div class="inv" style="background:#EFE6D6;color:#2A2622"><svg aria-hidden="true" width="400" height="500" viewBox="0 0 400 500" style="position:absolute;inset:0" fill="none" stroke="#7A1F2B" stroke-width="1.4" stroke-linecap="round"><path d="M26 80 V420 M374 80 V420"/>${k}<g transform="translate(400 0) scale(-1 1)">${k}</g><g transform="translate(0 500) scale(1 -1)">${k}</g><g transform="translate(400 500) scale(-1 -1)">${k}</g></svg>
+<div class="c" style="inset:0;gap:9px;padding:0 44px">${lead('',14,'#5C564E',300,'margin-bottom:8px')}${n.a}${one?'':`<div style="font:400 13px Montserrat,sans-serif;letter-spacing:.4em;color:#7A1F2B">${L.AND}</div>`}${n.b}
+<div style="font-size:13px;letter-spacing:.24em;color:#5C564E;margin-top:12px;line-height:1.7">${L.frame}</div><div style="font-size:19px;letter-spacing:.08em;margin-top:10px">${esc(longDate(c.date,c.lang))}</div>${tl?`<div style="font-size:17px;letter-spacing:.08em">${tl}</div>`:''}
+${place||addr?`<div style="font-size:15px;color:#5C564E;line-height:1.4;margin-top:4px">${esc(place)}${place&&addr?'<br>':''}${esc(addr)}</div>`:''}${host?`<div style="font-family:${SCRIPT};font-size:22px;color:#7A1F2B;margin-top:6px">${esc(host)}</div>`:''}</div></div>`;}
+  if(t==='kraft'){const fs=Math.min(fitSize(52,[n1],320,.5),fitSize(52,['& '+n2],290,.5)),st=`font-family:${SCRIPT};font-size:${fs}px;line-height:1.05`;
+    return `<div class="inv" style="background:#E6D8BE;color:#4A2E22"><div style="position:absolute;inset:0;background:radial-gradient(ellipse at 30% 20%,rgba(255,255,255,.35),transparent 60%),radial-gradient(ellipse at 80% 90%,rgba(120,90,50,.12),transparent 60%)"></div><img src="${I('rose-pink')}" alt="" style="right:-110px;top:-70px;width:240px;transform:rotate(-20deg)"><img src="${I('rose-yellow')}" alt="" style="left:-80px;bottom:-90px;width:250px;transform:rotate(15deg)">
+<div style="position:absolute;left:40px;top:0;bottom:30px;width:320px;display:flex;flex-direction:column;justify-content:center;gap:6px">${lead(L.kraft,16,'#4A2E22',260)}<div class="nm" style="${st};margin-top:12px">${esc(n1)}</div>${one?'':`<div class="nm" style="${st};padding-left:30px">&amp; ${esc(n2)}</div>`}
+<div style="align-self:flex-end;margin-top:18px;font-style:italic;font-size:16px;line-height:1.45;text-align:right;max-width:220px">${esc(longDate(c.date,c.lang))}${time?' · '+esc(time):''}${place?'<br>'+esc(place):''}${addr?'<br>'+esc(addr):''}</div>${host?`<div style="align-self:flex-end;font-style:italic;font-size:14px;margin-top:4px">${esc(L.host(host))}</div>`:''}</div></div>`;}
+  const base=`background:${p.bg};color:${p.ink}`,dk=p.dark?' dark':'';
+  if(t==='clean'){const n=ownN(34,320);
+    return `<div class="inv${dk}" style="${base}"><div class="c" style="inset:0;gap:9px;padding:0 40px">${lead(L.inv,17,p.muted,320)}${n.a}${amp(30,p.accent)}${n.b}<div style="width:44px;height:1px;background:${p.accent};margin:10px 0 6px"></div>
+<div style="font-size:15px;letter-spacing:.28em">${dt}</div>${place?`<div style="font-size:14px;letter-spacing:.12em;color:${p.muted}">${esc(up(place))}</div>`:''}${hostL(15,p.muted,10)}</div></div>`;}
+  if(t==='typo'){const n=ownN(40,330);
+    return `<div class="inv${dk}" style="${base}"><div class="c" style="inset:0;gap:9px;padding:0 36px">${lead('',14,p.muted,320,'margin-bottom:8px')}${n.a}${one?'':`<div style="font:400 13px Montserrat,sans-serif;letter-spacing:.4em;color:${p.accent}">${L.AND}</div>`}${n.b}
+<div style="font-size:13px;letter-spacing:.24em;color:${p.muted};margin-top:14px;line-height:1.7">${L.frame}</div><div style="font-size:19px;letter-spacing:.08em;margin-top:10px">${esc(longDate(c.date,c.lang))}</div>${tl?`<div style="font-size:17px;letter-spacing:.08em">${tl}</div>`:''}
+${place||addr?`<div style="font-size:15px;color:${p.muted};line-height:1.4;margin-top:4px">${esc(place)}${place&&addr?'<br>':''}${esc(addr)}</div>`:''}${hostL(15,p.muted,6)}</div></div>`;}
+  if(t==='oval'){const n=ownN(24,180);
+    return `<div class="inv${dk}" style="${base}"><div style="position:absolute;left:70px;top:34px;width:260px;height:432px;padding:12px;box-sizing:border-box;border-radius:50%;background:${p.bg};box-shadow:${p.dark?'0 3px 8px rgba(0,0,0,.55),0 -1px 2px rgba(255,255,255,.06)':'0 3px 8px rgba(120,100,70,.2),0 -2px 3px rgba(255,255,255,.9)'}"><div class="dots c" style="position:relative;width:100%;height:100%;border-radius:50%;border:2.5px dotted ${p.dark?'rgba(201,167,102,.45)':'rgba(120,100,70,.3)'};gap:7px;padding:0 24px">
+<div style="font-style:italic;font-size:15px;color:${p.muted}">${esc(c.kind)}</div>${guest||c.text?lead('',13,p.muted,190):''}${n.a}${amp(24,p.accent)}${n.b}<div style="width:34px;height:1px;background:${p.accent};margin:6px 0"></div>
+<div style="font-size:14px;letter-spacing:.28em">${nd}</div><div style="font-size:14px;color:${p.muted}">${[esc(time),esc(place)].filter(Boolean).join(' · ')}</div>${host?`<div style="font-style:italic;font-size:14px;color:${p.muted};margin-top:4px">${esc(host)}</div>`:''}</div></div></div>`;}
+  /* photo */
+  const n=ownN(24,300),ph=c.couple_url?`background:url('${esc(c.couple_url)}') 50% 22%/cover no-repeat`:`background:${p.accent};opacity:.25`;
+  return `<div class="inv${dk}" style="${base}"><div class="c" style="inset:0;justify-content:flex-start;padding:26px 40px 0">
+<div style="width:250px;height:${guest||c.text?260:285}px;flex:none;border-radius:130px 130px 6px 6px;${ph};box-shadow:0 0 0 1px ${p.accent},0 0 0 7px ${p.bg},0 0 0 8px ${p.accent}"></div>
+${lead(L.inv,15,p.muted,320,'margin-top:16px')}<div style="margin-top:4px">${n.a}</div>${amp(22,p.accent)}${n.b}<div style="font-size:14px;letter-spacing:.28em;margin-top:6px">${dt}</div>${place?`<div style="font-size:13px;letter-spacing:.12em;color:${p.muted};margin-top:2px">${esc(up(place))}</div>`:''}</div></div>`;
+}
+function mountInv(box,cfg,opts){
+  const w=box.clientWidth||400;box.style.position='relative';box.style.overflow='hidden';
+  box.innerHTML=`<div style="position:absolute;left:0;top:0;transform-origin:0 0;transform:scale(${w/400})">${inviteHTML(cfg,opts)}</div>`;
+}
+
 /* ---------- фото: полароид, рамки Premium ---------- */
 const FR={ // проём в процентах: слева, сверху, справа, снизу
   altyn:{name:'Алтын',h:[620,438,15.4,18.1,14.8,18.5],v:[438,620,18.1,14.8,18.5,15.4]},
@@ -212,6 +301,6 @@ const abs=p=>location.origin+p;
 const tm=t=>new Date(t).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit',timeZone:'Asia/Almaty'});
 
 window.TOI={$,fmt,esc,reduce,FONTS_URL,PAL,NFONT,SCRIPT,CAPF,capFont,capStyle,TPLS,TPL_BY,PRESETS,FR,full,preset,palOf,vars,
-  splitNames,niceDate,up,initials,fitSize,tplHTML,mountTpl,stampOf,photoHTML,frameHTML,frameKey,orientOf,
+  splitNames,niceDate,up,initials,fitSize,tplHTML,mountTpl,inviteHTML,mountInv,invCfg,longDate,stampOf,photoHTML,frameHTML,frameKey,orientOf,
   readImg,avatar,photoOf,durOf,drawQR,api,abs,tm};
 })();

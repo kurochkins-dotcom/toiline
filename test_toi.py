@@ -51,6 +51,20 @@ def dev(path="/g/demo"):
     return ""
 
 
+def org_cookie(login, password):
+    """Вход организатора: возвращает cookie toi_org=… или пустую строку."""
+    r = urllib.request.Request(BASE + "/api/o/login", data=json.dumps({"login": login, "password": password}).encode(),
+                               headers={"Content-Type": "application/json"}, method="POST")
+    try:
+        with urllib.request.urlopen(r, timeout=10) as resp:
+            for v in resp.headers.get_all("Set-Cookie") or []:
+                if v.startswith("toi_org="):
+                    return v.split(";")[0]
+    except urllib.error.HTTPError:
+        pass
+    return ""
+
+
 class SSE:
     """Слушаем поток в отдельном потоке и копим события."""
     def __init__(self, path):
@@ -226,6 +240,38 @@ def main():
 
     code, j = req("/api/admin/events", headers={"X-Toi-Admin": KEY})
     ok(any(e["id"] == eid and e["sum"] == 10000 for e in j["events"]), "в списке мероприятий видна сумма конвертов")
+
+    # кабинет организатора (ТЗ 0.8): вход по логину и паролю, без модерации и без ссылок тамады
+    org = next(e["org"] for e in j["events"] if e["id"] == eid)
+    ok(org["login"] == eid and len(org["password"]) == 8, "в админке есть логин и пароль организатора")
+    code, _ = req("/api/o/state")
+    ok(code == 401, "без входа кабинет организатора закрыт")
+    code, _ = req("/api/o/login", {"login": eid, "password": "неверный"})
+    ok(code == 401, "неверный пароль не пускает")
+    code, _ = req("/api/o/login", {"login": "demo", "password": ""})
+    ok(code == 401, "в демо-той организатором не войти")
+    oc = org_cookie(eid, org["password"])
+    ok(oc.startswith("toi_org="), "верный пароль даёт вход")
+    code, j = req("/api/o/state", headers={"Cookie": oc})
+    ok(code == 200 and set(j["links"]) == {"guest", "album"}, "организатор не видит ссылок пульта и экрана")
+    ok(j["totals"]["count"] == 1 and j["totals"]["sum"] == 10000 and j["totals"]["fee"] == 1000
+       and j["totals"]["due"] == 1000 - j["totals"]["deposit"], "конверты и итог одной строкой")
+    before = req(mod + "/state")[1]["cfg"]
+    code, j = req("/api/o/cfg", {"names": "Әділхан & Гүлбаршын", "place": "Grand Ballroom", "time": "18:00",
+                                 "gis": "javascript:alert(1)", "moderation": not before["moderation"], "pct": 0,
+                                 "inv": {"tpl": "oval", "lang": "ru", "palette": "bad", "text": "Дорогие гости"}},
+                  {"Cookie": oc})
+    c = j["cfg"]
+    ok(code == 200 and c["names"] == "Әділхан & Гүлбаршын" and c["place"] == "Grand Ballroom" and c["gis"] == "",
+       "организатор меняет данные праздника, плохая ссылка не сохраняется")
+    ok(c["moderation"] == before["moderation"] and c["pct"] == before["pct"], "модерацию и процент организатор поменять не может")
+    ok(c["inv"] == {"tpl": "oval", "lang": "ru", "palette": "", "text": "Дорогие гости"}, "настройки приглашения сохраняются")
+    code, _ = req(f"/api/admin/events/{eid}/password", {}, {"X-Toi-Admin": KEY})
+    code, _ = req("/api/o/state", headers={"Cookie": oc})
+    ok(code == 401, "после нового пароля старый вход не работает")
+    code, page = req("/o", raw=True)
+    ok(code == 200 and "Кабинет организатора".encode() in page, "страница кабинета организатора открывается")
+
     code, _ = req(f"/api/admin/events/{eid}/delete", {}, {"X-Toi-Admin": KEY})
     code, _ = req(f"/api/e/{eid}")
     ok(code == 404, "удалённое мероприятие закрыто")
