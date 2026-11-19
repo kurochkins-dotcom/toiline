@@ -314,7 +314,7 @@ let libs=null;
 const loadJs=src=>new Promise((ok,no)=>{const s=document.createElement('script');s.src=src;s.onload=ok;s.onerror=()=>no(new Error('Не загрузилось, проверьте интернет'));document.head.appendChild(s);});
 const needLibs=()=>libs||(libs=Promise.all([loadJs('/static/html2canvas.js'),loadJs('/static/jszip.js')]).catch(e=>{libs=null;throw e;}));
 async function fontsReady(){
-  const fams=["400 20px 'Cormorant Garamond'","italic 400 20px 'Cormorant Garamond'","500 20px 'Cormorant Garamond'","20px 'Pinyon Script'","20px 'Toi Great Vibes'","400 20px Montserrat",
+  const fams=["400 20px 'Cormorant Garamond'","italic 400 20px 'Cormorant Garamond'","500 20px 'Cormorant Garamond'","20px 'Pinyon Script'","20px 'Petit Formal Script'","20px 'Toi Great Vibes'","400 20px Montserrat",
     "italic 400 20px 'Playfair Display'","200 20px 'Noto Serif Display'","20px Prata"];
   await Promise.all(fams.map(f=>document.fonts.load(f,'АӘаә Aa').catch(()=>{})));await document.fonts.ready;
 }

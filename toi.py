@@ -51,7 +51,7 @@ HEX = re.compile(r"#[0-9a-fA-F]{6}")
 # Оформление (ТЗ 0.2, 0.10): шаблон-приглашение + общая палитра и шрифт имён на весь сервис
 TPLS = {"mag", "arch", "iris", "frame", "clean", "typo", "oval", "kraft", "photo"}
 PALETTES = {"ivory", "powder", "sage", "bordeaux", "night"}
-NFONTS = {"corm", "play", "noto", "prata", "pinyon"}
+NFONTS = {"corm", "play", "noto", "prata", "vibes", "spencer", "pinyon"}
 FILMS = {"warm", "bw", "none"}              # фильтр на фото гостей: плёнка (тепло), ч/б, без
 CARDS = {"auto", "portrait", "landscape"}  # формат карточки-полароида на экране
 TYPES = {"wedding", "jubilee", "uzatu", "tusau"}
