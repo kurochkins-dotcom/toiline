@@ -14,11 +14,14 @@
 .tl .bgimg{position:absolute;inset:0;background:center/cover no-repeat}
 .tl .bgimg::after{content:"";position:absolute;inset:0;background:color-mix(in srgb,var(--bg) 72%,transparent)}
 /* золотой перелив по именам: цвет текста сохраняется, по нему раз в ~10 сек проходит блик */
-.fx-sheen .nm{background:linear-gradient(100deg,currentColor 40%,var(--accent) 50%,currentColor 60%) 100% 0/320% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:tlSheen 11s ease-in-out infinite}
-@keyframes tlSheen{0%,70%{background-position:100% 0}100%{background-position:0 0}}
+.fx-sheen .nm{--shine:color-mix(in srgb,var(--accent) 35%,#FFF4D6);background:linear-gradient(105deg,currentColor 0 40%,var(--accent) 45%,var(--shine) 50%,var(--accent) 55%,currentColor 60% 100%) 100% 0/300% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:tlSheen 7s ease-in-out infinite}
+@keyframes tlSheen{0%,45%{background-position:100% 0}85%,100%{background-position:0 0}}
+/* мерцание: светлые золотые искорки-звёздочки, на любом фоне */
 .sparks{position:absolute;inset:0;pointer-events:none}
-.sparks i{position:absolute;width:6px;height:6px;border-radius:50%;background:var(--spark,#C9A766);box-shadow:0 0 10px var(--spark,#C9A766);opacity:0;animation:tlTw 5s ease-in-out infinite}
-@keyframes tlTw{0%,100%{opacity:0;transform:scale(.4)}50%{opacity:.85;transform:scale(1)}}
+.sparks i{position:absolute;width:22px;height:22px;margin:-11px 0 0 -11px;opacity:0;animation:tlTw 5s ease-in-out infinite;
+  background:radial-gradient(circle,#fff 0 12%,rgba(255,240,200,.9) 22%,transparent 46%),linear-gradient(90deg,transparent 46%,rgba(255,236,190,.95) 50%,transparent 54%),linear-gradient(0deg,transparent 46%,rgba(255,236,190,.95) 50%,transparent 54%);
+  filter:drop-shadow(0 0 4px var(--spark,#E8C977)) drop-shadow(0 0 10px var(--spark,#E8C977))}
+@keyframes tlTw{0%,100%{opacity:0;transform:scale(.3) rotate(0)}50%{opacity:1;transform:scale(1) rotate(45deg)}}
 @media (prefers-reduced-motion:reduce){.fx-sheen .nm,.sparks i{animation:none}}
 
 /* приглашение 4:5: рисуется в коробке 400×500, скачивается 1080×1350 */
@@ -35,10 +38,10 @@
 
 /* фото гостя: лёгкая плёнка (ТЗ: «лёгкий фильтр под плёнку») */
 .ph{position:relative;background:#d9d2c6 center/cover no-repeat;overflow:hidden}
-.ph.film-warm{filter:sepia(.16) saturate(.9) contrast(1.04) brightness(1.03)}
-.ph.film-vhs{filter:saturate(1.12) contrast(1.08) blur(.25px)}
-.ph.film-warm::after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 50% 42%,transparent 55%,rgba(40,25,10,.32) 100%)}
-.ph.film-vhs::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(0,0,0,.09) 0 1px,transparent 1px 3px),radial-gradient(ellipse at 50% 45%,transparent 60%,rgba(0,0,0,.3) 100%)}
+.ph.film-warm{filter:sepia(.24) saturate(.92) contrast(1.04) brightness(1.03)}
+.ph.film-bw{filter:grayscale(1) contrast(1.08) brightness(1.02)}
+.ph.film-warm::after{content:"";position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 0 0 0 0 .5'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),radial-gradient(ellipse at 50% 42%,transparent 55%,rgba(40,25,10,.3) 100%);background-size:160px 160px,100% 100%;mix-blend-mode:overlay}
+.ph.film-bw::after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 50% 45%,transparent 58%,rgba(0,0,0,.28) 100%)}
 .ph .stamp{position:absolute;right:.6em;bottom:.45em;z-index:1;font-family:ui-monospace,Menlo,monospace;color:#F29A3A;letter-spacing:.08em;text-shadow:0 0 6px rgba(242,154,58,.6)}
 .ph .ini{position:absolute;inset:0;display:grid;place-items:center;font-size:8em;font-family:'Cormorant Garamond',serif;font-weight:300;color:#8a7f70;background:linear-gradient(160deg,#efe8dc,#ded4c3)}
 

@@ -52,7 +52,7 @@ HEX = re.compile(r"#[0-9a-fA-F]{6}")
 TPLS = {"mag", "arch", "iris", "frame", "clean", "typo", "oval", "kraft", "photo"}
 PALETTES = {"ivory", "powder", "sage", "bordeaux", "night"}
 NFONTS = {"corm", "play", "noto", "prata", "pinyon"}
-FILMS = {"warm", "vhs", "none"}             # фильтр на фото гостей: тёплая плёнка, VHS, без
+FILMS = {"warm", "bw", "none"}              # фильтр на фото гостей: плёнка (тепло + зерно), ч/б, без
 CARDS = {"auto", "portrait", "landscape"}  # формат карточки-полароида на экране
 TYPES = {"wedding", "jubilee", "uzatu", "tusau"}
 LANGS = {"kz", "ru"}
@@ -204,7 +204,8 @@ def clean_cfg(j, old=None):
         c.pop(k, None)
     c.setdefault("palette", "ivory")
     c.setdefault("nfont", "corm")
-    c.setdefault("film", "warm")
+    if c.get("film") not in FILMS:  # старый «vhs» и прочее → плёнка
+        c["film"] = "warm"
     c.setdefault("fx_sheen", True)
     c.setdefault("fx_sparkle", True)
     c.setdefault("moderation", True)
