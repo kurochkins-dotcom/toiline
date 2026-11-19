@@ -37,7 +37,7 @@
 .ph{position:relative;background:#d9d2c6 center/cover no-repeat;overflow:hidden}
 .ph.film-warm{filter:sepia(.24) saturate(.92) contrast(1.04) brightness(1.03)}
 .ph.film-bw{filter:grayscale(1) contrast(1.08) brightness(1.02)}
-.ph.film-warm::after{content:"";position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 0 0 0 0 .5'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),radial-gradient(ellipse at 50% 42%,transparent 55%,rgba(40,25,10,.3) 100%);background-size:160px 160px,100% 100%;mix-blend-mode:overlay}
+.ph.film-warm::after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 50% 42%,transparent 55%,rgba(40,25,10,.3) 100%)}
 .ph.film-bw::after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 50% 45%,transparent 58%,rgba(0,0,0,.28) 100%)}
 .ph .stamp{position:absolute;right:.6em;bottom:.45em;z-index:1;font-family:ui-monospace,Menlo,monospace;color:#F29A3A;letter-spacing:.08em;text-shadow:0 0 6px rgba(242,154,58,.6)}
 .ph .ini{position:absolute;inset:0;display:grid;place-items:center;font-size:8em;font-family:'Cormorant Garamond',serif;font-weight:300;color:#8a7f70;background:linear-gradient(160deg,#efe8dc,#ded4c3)}
