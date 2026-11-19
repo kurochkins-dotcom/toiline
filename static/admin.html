@@ -59,7 +59,7 @@ h1{margin:0;font-family:'Cormorant Garamond',serif;font-weight:400;font-size:44p
 </style>
 </head>
 <body>
-<header><div class="logo">Toi Line</div><div class="r"><span>Администратор</span><button id="logout" hidden>Выйти</button></div></header>
+<header><div class="logo">Toi Line</div><div class="r"><a id="toP" href="/p">Презентация</a><span>Администратор</span><button id="logout" hidden>Выйти</button></div></header>
 
 <div class="panel login" id="login" hidden>
   <h1 style="font-size:34px">Вход</h1>
@@ -145,6 +145,8 @@ document.addEventListener('click',async e=>{
     try{await T.api(`/api/admin/events/${pw.dataset.pw}/password`,{},H());load();}catch(er){alert(er.message);}}
   const d=e.target.closest('[data-del]');if(d&&confirm('Удалить мероприятие? Ссылки перестанут работать.')){await T.api(`/api/admin/events/${d.dataset.del}/delete`,{},H()).catch(()=>{});load();}
 });
+try{if(sessionStorage.getItem('toi-present'))$("toP").textContent="← К презентации";}catch(e){}
+if(new URLSearchParams(location.search).get('new')){$('form').hidden=false;history.replaceState(null,'','/');}
 load();
 })();
 </script>
