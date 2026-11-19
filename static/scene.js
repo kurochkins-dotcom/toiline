@@ -18,7 +18,7 @@ window.TOIScene=function(el,opts){
     const box=q('.tplbox');box.innerHTML=`<div style="transform:scale(${W/928});transform-origin:0 0">${T.tplHTML(cfg)}</div>`;
     box.classList.toggle('fx-sheen',c.fx_sheen!==false&&!T.reduce);
     const sp=q('.sparks');sp.innerHTML=c.fx_sparkle!==false?SPARKS.map(([x,y],i)=>`<i style="left:${x}px;top:${y}px;animation-delay:${(i*.7)%5}s"></i>`).join(''):'';
-    sp.style.setProperty('--spark',T.palOf(cfg).dark?'#C9A766':T.palOf(cfg).accent);
+    sp.style.setProperty('--spark',T.palOf(cfg).dark?'#E8C977':'#D4A84A');
     if(cur)show(cur.it,0,true);
   }
   function only(name){['s-idle','s-free','s-vip'].forEach(n=>q('.'+n).classList.toggle('on',n===name));}
