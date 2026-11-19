@@ -7,7 +7,7 @@
 <meta name="theme-color" content="#FFFFFF">
 <title>Кабинет · Toi Line</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Playfair+Display:ital@0;1&family=Noto+Serif+Display:wght@200;300&family=Prata&family=Pinyon+Script&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Playfair+Display:ital@0;1&family=Noto+Serif+Display:wght@200;300&family=Prata&family=Pinyon+Script&family=Petit+Formal+Script&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/static/toi.css">
 <link rel="stylesheet" href="/static/led.css">
 <style>
@@ -400,7 +400,7 @@ function fill(){
   document.querySelectorAll('#fontSet .chip').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.nf===c.nfont)));
   document.querySelectorAll('#filmSet .chip').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.film===c.film)));
   $('ownBox').classList.toggle('locked',!own);
-  const latinWarn=c.nfont==='pinyon'&&/[а-яәғқңөұүһі]/i.test(c.names||'')?' Pinyon — латинский шрифт: имена кириллицей будут другим рукописным шрифтом, лучше написать латиницей (Adilkhan & Gulbarshyn).':'';
+  const latinWarn=T.NFONT[c.nfont]&&T.NFONT[c.nfont].latin&&/[а-яәғқңөұүһі]/i.test(c.names||'')?' '+T.NFONT[c.nfont].name.replace(' (латиница)','')+' — латинский шрифт: имена кириллицей будут другим рукописным шрифтом, лучше написать латиницей (Adilkhan & Gulbarshyn).':'';
   $('ownNote').textContent=(own?'Палитра и шрифт этого шаблона. Они же — на странице гостя и в альбоме.':'У шаблона с гравюрой свои цвета. Цвет и шрифт меняются у «Чистый центр», «Типографика», «Рельефный овал», «С фото пары».')+latinWarn;
   $('fxSheen').checked=c.fx_sheen!==false;$('fxSpark').checked=c.fx_sparkle!==false;
   $('coupleThumb').style.backgroundImage=c.couple_url?`url(${c.couple_url})`:'';

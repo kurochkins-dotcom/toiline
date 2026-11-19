@@ -6,7 +6,7 @@ const $=id=>document.getElementById(id);
 const fmt=n=>Math.round(n||0).toLocaleString('ru-RU').replace(/[   ,]/g,' ')+' ₸';
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
-const FONTS_URL='https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Playfair+Display:ital@0;1&family=Noto+Serif+Display:wght@200;300&family=Prata&family=Pinyon+Script&family=Montserrat:wght@300;400;500;600&display=swap';
+const FONTS_URL='https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Playfair+Display:ital@0;1&family=Noto+Serif+Display:wght@200;300&family=Prata&family=Pinyon+Script&family=Petit+Formal+Script&family=Montserrat:wght@300;400;500;600&display=swap';
 
 /* ---------- палитры и шрифты имён (эскиз «Минимал», ТЗ 0.10) ---------- */
 const PAL={
@@ -22,7 +22,9 @@ const NFONT={
   play:  {name:'Playfair курсив',fam:"'Playfair Display',serif",w:400,it:'italic',caps:false,ls:'.01em',k:1.05},
   noto:  {name:'Noto тонкий',fam:"'Noto Serif Display',serif",w:200,it:'normal',caps:true,ls:'.1em',k:1},
   prata: {name:'Prata',fam:"'Prata',serif",w:400,it:'normal',caps:true,ls:'.1em',k:.88},
-  pinyon:{name:'Pinyon (латиница)',fam:"'Pinyon Script','Toi Great Vibes',cursive",w:400,it:'normal',caps:false,ls:'0',k:1.4,latin:true},
+  vibes: {name:'Great Vibes',fam:"'Toi Great Vibes',cursive",w:400,it:'normal',caps:false,ls:'0',k:1.3},
+  spencer:{name:'Spencerian (латиница)',fam:"'Petit Formal Script','Toi Great Vibes',cursive",w:400,it:'normal',caps:false,ls:'0',k:1.05,latin:true},
+  pinyon:{name:'Copperplate (латиница)',fam:"'Pinyon Script','Toi Great Vibes',cursive",w:400,it:'normal',caps:false,ls:'0',k:1.4,latin:true},
 };
 const SCRIPT="'Pinyon Script','Toi Great Vibes',cursive";
 /* Подписи под фото: 4 рукописных шрифта по кругу, у каждого свой коэффициент размера (ТЗ 0.7) */
