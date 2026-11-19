@@ -52,6 +52,7 @@ h1{margin:0;font-family:'Cormorant Garamond',serif;font-weight:400;font-size:44p
 .muted{color:var(--muted)}
 .org{grid-column:1/-1;display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:13px;padding-top:2px}
 .org b{letter-spacing:.04em}
+.org a{font-weight:600}
 .org button{font-weight:600;font-size:12px;border:1px solid var(--line);background:#fff;border-radius:16px;height:30px;padding:0 12px}
 .err{color:#B3261E;font-size:13px;margin:0}
 .login{max-width:420px;margin:12vh auto 0;padding:28px;display:grid;gap:14px}
@@ -118,8 +119,8 @@ function list(){
     <div>${esc(e.date||'—')}</div><div class="muted">${e.cards} · ${T.fmt(e.sum)}</div>
     <div class="acts"><a class="main" href="${e.links.mod}" target="_blank">Открыть кабинет</a><a href="${e.links.led}" target="_blank">Экран</a><a href="${e.links.guest}" target="_blank">Гость</a><a href="${e.links.album}" target="_blank">Альбом</a>
     <button data-copy="${esc(T.abs(e.links.mod))}" title="Пульт тамады: модерация и эфир. Организатору не отправлять">Ссылка тамады</button><button data-del="${e.id}" aria-label="Удалить">✕</button></div>
-    ${e.org?`<div class="org"><span class="muted">Кабинет организатора:</span> логин <b>${esc(e.org.login)}</b> · пароль <b>${esc(e.org.password)}</b>
-      <button data-access="${e.id}">Скопировать доступ</button><button data-pw="${e.id}">Новый пароль</button></div>`:''}</div>`;}).join('')
+    ${e.org?`<div class="org"><a href="/o?l=${esc(e.org.login)}" target="_blank">Кабинет организатора</a> логин <b>${esc(e.org.login)}</b> · пароль <b>${esc(e.org.password)}</b>
+      <button data-access="${e.id}">Скопировать доступ</button><button data-pw="${e.id}">Новый пароль</button></div>`:`<div class="org muted">У демо-тоя нет кабинета организатора: создайте мероприятие кнопкой «+ Новое мероприятие».</div>`}</div>`;}).join('')
     ||'<div class="row muted">Пока нет мероприятий.</div>';
 }
 $('q').addEventListener('input',list);
