@@ -205,7 +205,7 @@ section.pg{display:flex;flex-direction:column;gap:20px}
         <div class="r"><button class="btn" id="cAlbumCopy" type="button">Скопировать ссылку для гостей</button><a class="btn dark" id="cAlbumOpen" target="_blank" rel="noopener">Открыть альбом</a></div>
       </div>
       <div class="card tbl">
-        <div class="hd"><b>Конверты (платные поздравления)</b><button class="btn sm" id="cCsv" type="button">Скачать таблицу</button></div>
+        <div class="hd"><b>Premium-поздравления</b><button class="btn sm" id="cCsv" type="button">Скачать таблицу</button></div>
         <div class="tr th"><div>От кого</div><div>Стол</div><div class="tm">Время</div><div class="num">Сумма</div></div>
         <div id="cRows"></div>
         <div class="total" id="cTotal"></div>
@@ -217,8 +217,8 @@ section.pg{display:flex;flex-direction:column;gap:20px}
         <div class="card how"><b>Как это работает</b>
           <ol><li>На столах стоят QR-стойки. Гость наводит камеру телефона.</li>
             <li>Пишет пожелание и делает селфи — поздравление появляется на большом экране.</li>
-            <li>Premium-поздравление с конвертом: гость переводит сумму на ваш Kaspi, тамада сверяет и выводит на экран.</li>
-            <li>После тоя здесь появится альбом и список конвертов.</li></ol></div>
+            <li>Premium-поздравление: гость переводит сумму на ваш Kaspi, тамада сверяет и выводит на экран.</li>
+            <li>После тоя здесь появится альбом и список Premium-поздравлений.</li></ol></div>
       </div>
     </section>
 
@@ -355,8 +355,8 @@ function drawCongrats(){
   $('cAlbumS').textContent=al.cards?`${al.cards} поздравлений · ${al.photos} фото · ${albumUrl.replace(/^https?:\/\//,'')}`:'Появится, когда поздравления покажут на экране';
   $('cAlbumOpen').href=S.links.album;
   $('cRows').innerHTML=S.envelopes.length?S.envelopes.map(e=>`<div class="tr"><div>${esc(e.name)}</div><div>${esc(e.table||'—')}</div><div class="tm">${T.tm(e.t)}</div><div class="num">${fmt(e.amount)}</div></div>`).join('')
-    :'<div class="empty">Пока нет подтверждённых конвертов. Здесь появятся все переводы, которые тамада сверил с вашим Kaspi.</div>';
-  $('cTotal').innerHTML=`<span>Конвертов: <b>${t.count}</b></span><span>Сумма: <b>${fmt(t.sum)}</b></span><span>Сервис ${t.pct}%: <b>${fmt(t.fee)}</b></span><span>Депозит: <b>−${fmt(t.deposit)}</b></span>`+
+    :'<div class="empty">Пока нет подтверждённых Premium-поздравлений. Здесь появятся все переводы, которые тамада сверил с вашим Kaspi.</div>';
+  $('cTotal').innerHTML=`<span>Premium: <b>${t.count}</b></span><span>Сумма: <b>${fmt(t.sum)}</b></span><span>Сервис ${t.pct}%: <b>${fmt(t.fee)}</b></span><span>Депозит: <b>−${fmt(t.deposit)}</b></span>`+
     (t.due>=0?`<span class="due">К оплате сервису: <b>${fmt(t.due)}</b></span>`:`<span class="due">Вернём вам из депозита: <b>${fmt(-t.due)}</b></span>`);
   $('cGuest').textContent=guestUrl;T.drawQR($('cQr'),guestUrl,8);
 }
@@ -366,8 +366,8 @@ $('cQrDl').addEventListener('click',async()=>{const cv=document.createElement('c
 $('cRefresh').addEventListener('click',async()=>{try{S=await T.api('/api/o/state');drawCongrats();toast('Обновлено');}catch(e){load();}});
 $('cCsv').addEventListener('click',()=>{const t=S.totals,q=v=>'"'+String(v??'').replace(/"/g,'""')+'"';
   const rows=[['От кого','Стол','Время','Сумма, ₸'],...S.envelopes.map(e=>[e.name,e.table,T.tm(e.t),e.amount]),[],
-    ['Конвертов',t.count],['Сумма',t.sum],['Сервис '+t.pct+'%',t.fee],['Депозит',t.deposit],[t.due>=0?'К оплате сервису':'Вернуть из депозита',Math.abs(t.due)]];
-  saveBlob(new Blob(['﻿'+rows.map(r=>r.map(q).join(';')).join('\r\n')],{type:'text/csv;charset=utf-8'}),fileName('Конверты '+(S.cfg.names||''))+'.csv');});
+    ['Premium',t.count],['Сумма',t.sum],['Сервис '+t.pct+'%',t.fee],['Депозит',t.deposit],[t.due>=0?'К оплате сервису':'Вернуть из депозита',Math.abs(t.due)]];
+  saveBlob(new Blob(['﻿'+rows.map(r=>r.map(q).join(';')).join('\r\n')],{type:'text/csv;charset=utf-8'}),fileName('Premium '+(S.cfg.names||''))+'.csv');});
 
 /* ---------- фото пары ---------- */
 function drawPhoto(){$('phPrev').style.backgroundImage=S.cfg.couple_url?`url('${S.cfg.couple_url}')`:'';$('phDel').hidden=!S.cfg.couple_url;}

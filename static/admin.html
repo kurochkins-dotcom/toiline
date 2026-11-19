@@ -111,7 +111,7 @@ async function load(){
 function list(){
   const q=$('q').value.trim().toLowerCase();
   const evs=events.filter(e=>!q||(e.names||'').toLowerCase().includes(q)||e.id.includes(q));
-  $('sum').textContent=`Всего ${events.length} · поздравлений ${events.reduce((s,e)=>s+e.cards,0)} · в конвертах ${T.fmt(events.reduce((s,e)=>s+e.sum,0))}`;
+  $('sum').textContent=`Всего ${events.length} · поздравлений ${events.reduce((s,e)=>s+e.cards,0)} · Premium ${T.fmt(events.reduce((s,e)=>s+e.sum,0))}`;
   $('list').innerHTML=evs.map(e=>{const p=T.PAL[e.palette]||T.PAL.ivory;
     return `<div class="row${e.id===justMade?' new':''}"><div class="id">${esc(e.id)}</div>
     <div class="ev"><span class="mono" style="background:${p.bg};color:${p.ink}">${esc(T.initials(e.names).replace(' & ','·')||'—')}</span><div><b>${esc(e.names||'Без названия')}</b><small>${esc(TYPE[e.type]||e.kind||'')}${e.tpl?' · '+esc((T.TPL_BY[e.tpl]||{}).name||''):''}</small></div></div>

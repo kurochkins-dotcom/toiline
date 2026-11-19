@@ -426,7 +426,7 @@ def add_card(e, j, ip, dev=""):
         raise ValueError("Добавьте фото или пожелание")
     amount = int(num(j.get("amount")))
     if amount and not MIN_ENV <= amount <= MAX_ENV:
-        raise ValueError(f"Сумма конверта от {MIN_ENV} ₸")
+        raise ValueError(f"Сумма подарка от {MIN_ENV} ₸")
     frame = j.get("frame") if j.get("frame") in FRAMES else "altyn"
     tbl = clean_str(str(j.get("table") or ""), 6)
     # Бесплатное поздравление — одно с устройства в полчаса. Конверт (платный) отправляется сколько угодно.
@@ -727,7 +727,7 @@ def handle_post(h, path):
                 r = add_card(e, j, h.ip(), dev)
             except FreeLimit as fl:
                 return h.send_json(429, {"error": "Бесплатное поздравление можно отправить раз в 30 минут. "
-                                                  f"Следующее — через {free_text(fl.left)}, а конверт можно отправить в любое время.",
+                                                  f"Следующее — через {free_text(fl.left)}, а Premium-поздравление можно отправить в любое время.",
                                          "retry": fl.left}, headers=cookie)
             except ValueError as v:
                 return h.err(400, str(v))

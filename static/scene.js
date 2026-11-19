@@ -49,7 +49,7 @@ window.TOIScene=function(el,opts){
     if(it.amount){
       const wish=it.msg?`<div class="wish" style="${T.capStyle(it,wishSize(it.msg,50))}">${T.esc(it.msg)}</div>`:'';
       q('.s-vip').innerHTML=`<div class="vrow ${o}">${T.frameHTML(it,o,o==='h'?760:450,film)}
-        <div class="vtx"><div class="lbl">КОНВЕРТ</div><div class="who">${T.esc(it.name||'')}</div>${wish}<div class="amt">${T.esc(T.fmt(it.amount))}</div></div></div>`;
+        <div class="vtx"><div class="lbl">PREMIUM</div><div class="who">${T.esc(it.name||'')}</div>${wish}<div class="amt">${T.esc(T.fmt(it.amount))}</div></div></div>`;
       only('s-vip');q('.ticker').classList.add('on');
       if(it.amount>=10000&&!again)confetti();
     }else{
