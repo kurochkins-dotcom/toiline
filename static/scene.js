@@ -2,23 +2,39 @@
    Рисуем на холсте 1600×900 и масштабируем под экран. Используют экран и превью в кабинете. */
 (function(){
 const T=window.TOI,W=1600,H=900;
-const HTML=`<div class="st"><div class="sc s-idle on"><div class="tplbox"></div><div class="sparks"></div></div>
+const HTML=`<div class="st"><div class="sc s-idle on"><div class="tplbox"></div><canvas class="sparks" width="1600" height="900"></canvas></div>
 <div class="sc s-free"></div><div class="sc s-vip"></div>
 <div class="ticker"><div class="tk"></div></div><div class="progress"></div><canvas class="confetti" width="1600" height="900"></canvas></div>`;
-const SPARKS=[[300,200],[860,290],[1180,140],[1340,640],[460,700],[1000,760],[160,420],[1460,320]];
+/* Блики (вариант A2): как золотая пыль, но разных размеров и на несколько тонов светлее фона шаблона */
+function glints(cv,bg){
+  const x=cv.getContext('2d'),m=(bg[0]==='#'?bg.slice(1).match(/../g).map(h=>parseInt(h,16)):(bg.match(/\d+(\.\d+)?/g)||[240,235,225])).map(Number),dark=(m[0]*.3+m[1]*.59+m[2]*.11)<110,K=W/928,P=[];
+  const L=t=>m.slice(0,3).map(v=>Math.round(v+(255-v)*t)).join(',');
+  const nw=any=>{const r=(Math.random()<.2?8+Math.random()*10:1.5+Math.random()*5)*K;
+    return{x:Math.random()*W,y:any?Math.random()*H:H+20,r,v:(.12+Math.random()*.3)*K*(r>10*K?.6:1),ph:Math.random()*6.28,life:0,max:600+Math.random()*700,l:dark?.25+Math.random()*.25:.55+Math.random()*.45};};
+  for(let i=0;i<30;i++)P.push(nw(true));
+  let id=0;
+  const f=()=>{if(!cv.isConnected||cv._stop)return;x.clearRect(0,0,W,H);x.globalCompositeOperation=dark?'lighter':'source-over';
+    for(const p of P){p.life++;p.y-=p.v;p.x+=Math.sin(p.life/90+p.ph)*.25*K;
+      const k=Math.min(1,p.life/90,(p.max-p.life)/140);if(k<=0||p.y<-p.r*3){Object.assign(p,nw(false));continue;}
+      const c=L(p.l),a=(dark?.5:.85)*k,R=p.r*2.2,g=x.createRadialGradient(p.x,p.y,0,p.x,p.y,R);
+      g.addColorStop(0,`rgba(${c},${a})`);g.addColorStop(.4,`rgba(${c},${a*.6})`);g.addColorStop(1,`rgba(${c},0)`);
+      x.fillStyle=g;x.beginPath();x.arc(p.x,p.y,R,0,6.28);x.fill();}
+    id=requestAnimationFrame(f);};
+  f();return()=>{cv._stop=true;cancelAnimationFrame(id);x.clearRect(0,0,W,H);};
+}
 
 window.TOIScene=function(el,opts){
   opts=opts||{};
   el.classList.add('led');el.innerHTML=HTML;
   const q=s=>el.querySelector(s),st=q('.st');
-  let c=null,raw=null,cur=null,token=0;
+  let c=null,raw=null,cur=null,token=0,stopG=null;
   function fit(){const w=el.clientWidth;if(w)st.style.transform=`scale(${w/W})`;}
   function setCfg(cfg){
     raw=cfg;c=T.full(cfg);T.vars(el,cfg);
     const box=q('.tplbox');box.innerHTML=`<div style="transform:scale(${W/928});transform-origin:0 0">${T.tplHTML(cfg)}</div>`;
     box.classList.toggle('fx-sheen',c.fx_sheen!==false&&!T.reduce);
-    const sp=q('.sparks');sp.innerHTML=c.fx_sparkle!==false?SPARKS.map(([x,y],i)=>`<i style="left:${x}px;top:${y}px;animation-delay:${(i*.7)%5}s"></i>`).join(''):'';
-    sp.style.setProperty('--spark',T.palOf(cfg).dark?'#E8C977':'#D4A84A');
+    if(stopG)stopG();stopG=null;const sp=q('.sparks');sp._stop=false;
+    if(c.fx_sparkle!==false&&!T.reduce){const tl=box.querySelector('.tl');let bg=tl?getComputedStyle(tl).backgroundColor:'';if(!bg||/,\s*0\)$/.test(bg)||bg==='transparent')bg=T.palOf(cfg).bg;stopG=glints(sp,bg);}
     if(cur)show(cur.it,0,true);
   }
   function only(name){['s-idle','s-free','s-vip'].forEach(n=>q('.'+n).classList.toggle('on',n===name));}

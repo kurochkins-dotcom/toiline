@@ -13,16 +13,13 @@
 .tl .nm{line-height:1.08;white-space:nowrap}
 .tl .bgimg{position:absolute;inset:0;background:center/cover no-repeat}
 .tl .bgimg::after{content:"";position:absolute;inset:0;background:color-mix(in srgb,var(--bg) 72%,transparent)}
-/* золотой перелив по именам: цвет текста сохраняется, по нему раз в ~10 сек проходит блик */
-.fx-sheen .nm{--shine:color-mix(in srgb,var(--accent) 35%,#FFF4D6);background:linear-gradient(105deg,currentColor 0 40%,var(--accent) 45%,var(--shine) 50%,var(--accent) 55%,currentColor 60% 100%) 100% 0/300% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:tlSheen 7s ease-in-out infinite}
-@keyframes tlSheen{0%,45%{background-position:100% 0}85%,100%{background-position:0 0}}
-/* мерцание: светлые золотые искорки-звёздочки, на любом фоне */
-.sparks{position:absolute;inset:0;pointer-events:none}
-.sparks i{position:absolute;width:22px;height:22px;margin:-11px 0 0 -11px;opacity:0;animation:tlTw 5s ease-in-out infinite;
-  background:radial-gradient(circle,#fff 0 12%,rgba(255,240,200,.9) 22%,transparent 46%),linear-gradient(90deg,transparent 46%,rgba(255,236,190,.95) 50%,transparent 54%),linear-gradient(0deg,transparent 46%,rgba(255,236,190,.95) 50%,transparent 54%);
-  filter:drop-shadow(0 0 4px var(--spark,#E8C977)) drop-shadow(0 0 10px var(--spark,#E8C977))}
-@keyframes tlTw{0%,100%{opacity:0;transform:scale(.3) rotate(0)}50%{opacity:1;transform:scale(1) rotate(45deg)}}
-@media (prefers-reduced-motion:reduce){.fx-sheen .nm,.sparks i{animation:none}}
+/* золотой блик по именам: цвет текста сохраняется, раз в 10 сек по нему проходит яркий блик (вариант A2) */
+.fx-sheen .nm{background:linear-gradient(105deg,currentColor 0 38%,#B8893A 44%,#FFF3CC 50%,#B8893A 56%,currentColor 62% 100%) 100% 0/260% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:tlSheen 10s ease-in-out infinite}
+.fx-sheen .nm~.nm{animation-delay:.5s}
+@keyframes tlSheen{0%,35%{background-position:100% 0}75%,100%{background-position:0 0}}
+/* блики: светлые пятна разных размеров поднимаются снизу вверх (рисует scene.js на холсте) */
+.sparks{position:absolute;left:0;top:0;width:1600px;height:900px;pointer-events:none}
+@media (prefers-reduced-motion:reduce){.fx-sheen .nm{animation:none}}
 
 /* приглашение 4:5: рисуется в коробке 400×500, скачивается 1080×1350 */
 .inv{position:relative;width:400px;height:500px;overflow:hidden;font-family:'Cormorant Garamond',serif;box-sizing:border-box}
