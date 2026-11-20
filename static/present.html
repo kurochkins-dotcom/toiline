@@ -314,9 +314,11 @@ async function photoIn(d,btnSel,inputId,n){
     inp.files=dt.files;inp.dispatchEvent(new W.Event('change',{bubbles:true}));
   }catch(e){}
 }
+let couple=null;fetch('/api/a/demo').then(r=>r.json()).then(r=>{couple=(r.cfg&&r.cfg.couple_url)||'';}).catch(()=>{couple='';});
 function stockAlbum(d){
   // обложка — фото пары, в альбоме заглушки по порядку; у поздравлений без фото тоже ставим заглушку
-  const cp=d.getElementById('cPic');if(cp){cp.style.backgroundImage="url('/static/img/stock-3.jpg')";cp.textContent='';}
+  // если у тоя есть фото пары (как на экране), обложка остаётся с ним
+  const cp=d.getElementById('cPic');if(cp&&couple!==null){cp.style.backgroundImage=`url('${couple||'/static/img/stock-3.jpg'}')`;cp.textContent='';}
   const seq=[2,4,1];
   d.querySelectorAll('.page .ph').forEach((el,i)=>{el.style.backgroundImage=`url('/static/img/stock-${seq[i%seq.length]}.jpg')`;
     const ini=el.querySelector('.ini');if(ini)ini.style.display='none';});
