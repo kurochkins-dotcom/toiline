@@ -186,7 +186,7 @@ h2{font-size:clamp(36px,4vw,50px)}
     <div class="txt">
       <div class="num">03</div>
       <h2 class="a2">Premium-поздравления через Kaspi</h2>
-      <p class="a3">Гость дарит деньги через Kaspi прямо на счёт организатора, а его поздравление выходит на экран в красивой рамке.</p>
+      <p class="a3">За 990 ₸ через Kaspi поздравление гостя минуту стоит на экране в красивой рамке. По желанию гость кладёт конверт, и сумма видна рядом.</p>
       <span class="src a4">Деньги идут организатору напрямую, Toi Line их не держит.</span>
     </div>
     <div class="vis"><div class="phone fit"><div class="scr"><iframe data-src="/g/demo" data-play="prem" title="Premium-поздравление" tabindex="-1"></iframe></div></div></div>
@@ -325,7 +325,7 @@ async function play(f){
     }else{
       click('#vHome [data-go="prem"]');input('pName','Ерлан Агай');await wait(4000);
       click('#pSend');
-      const ks=$$('kSteps');if(ks)ks.innerHTML=['Нажмите «Открыть Kaspi»','Переведите 10 000 ₸','Вернитесь сюда и нажмите «Я перевёл(а)»'].map(x=>`<li>${x}</li>`).join('');
+      const ks=$$('kSteps');if(ks)ks.innerHTML=['Нажмите «Открыть Kaspi»','Переведите 990 ₸','Вернитесь сюда и нажмите «Я перевёл(а)»'].map(x=>`<li>${x}</li>`).join('');
       if($$('kName'))$$('kName').textContent='Диас Е.';
       if($$('kPhone')){$$('kPhone').textContent='+7 701 234 56 78';$$('kPhoneRow').hidden=false;}
       await wait(4500);

@@ -2,6 +2,8 @@
    Рисуем на холсте 1600×900 и масштабируем под экран. Используют экран и превью в кабинете. */
 (function(){
 const T=window.TOI,W=1600,H=900;
+// золотой конвертик рядом с суммой (Premium больше 990 ₸)
+const ENV='<svg class="env" viewBox="0 0 56 40" aria-hidden="true"><defs><linearGradient id="eg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F6E3B0"/><stop offset=".5" stop-color="#C9A25A"/><stop offset="1" stop-color="#F1DDA8"/></linearGradient></defs><rect x="2" y="2" width="52" height="36" rx="4" fill="url(#eg)"/><path d="M3 4l25 19L53 4" fill="none" stroke="#8A6A35" stroke-width="2"/><path d="M3 37l18-15M53 37L35 22" fill="none" stroke="#8A6A35" stroke-width="1.4" opacity=".6"/><circle cx="28" cy="23" r="4" fill="#9C2F2F"/></svg>';
 const HTML=`<div class="st"><div class="sc s-idle on"><div class="tplbox"></div><canvas class="sparks" width="1600" height="900"></canvas></div>
 <div class="sc s-free"></div><div class="sc s-vip"></div>
 <div class="ticker"><div class="tk"></div></div><div class="progress"></div><canvas class="confetti" width="1600" height="900"></canvas></div>`;
@@ -49,7 +51,7 @@ window.TOIScene=function(el,opts){
     if(it.amount){
       const wish=it.msg?`<div class="wish" style="${T.capStyle(it,wishSize(it.msg,50))}">${T.esc(it.msg)}</div>`:'';
       q('.s-vip').innerHTML=`<div class="vrow ${o}">${T.frameHTML(it,o,o==='h'?760:450,film)}
-        <div class="vtx"><div class="lbl">PREMIUM</div><div class="who">${T.esc(it.name||'')}</div>${wish}<div class="amt">${T.esc(T.fmt(it.amount))}</div></div></div>`;
+        <div class="vtx"><div class="lbl">PREMIUM</div><div class="who">${T.esc(it.name||'')}</div>${wish}${it.amount>990?`<div class="amt">${ENV}${T.esc(T.fmt(it.amount))}</div>`:''}</div></div>`;
       only('s-vip');q('.ticker').classList.add('on');
       if(it.amount>=10000&&!again)confetti();
     }else{
