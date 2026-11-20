@@ -36,7 +36,7 @@ def admin_key():
 
 PHOTO_MAX = 3 * 1024 * 1024       # селфи после сжатия в браузере весит 100–300 КБ
 SPLASH_MAX = 6 * 1024 * 1024
-MIN_ENV = 500                     # минимальный конверт, ₸
+MIN_ENV = 990                     # Premium-поздравление: 990 ₸ за минуту в рамке; больше — конверт, сумма на экране
 MAX_ENV = 5_000_000
 GUEST_LIMIT = (60, 600)           # против ботов: 60 открыток с одного адреса за 10 минут (гостя сдерживает FREE_EVERY)
 FREE_EVERY = 30 * 60              # бесплатное поздравление с одного устройства — раз в 30 минут
@@ -419,14 +419,14 @@ class FreeLimit(Exception):
 
 def add_card(e, j, ip, dev=""):
     name = clean_str(j.get("name"), 30)
-    msg = clean_str(j.get("msg"), 140)
+    msg = clean_str(j.get("msg"), 160)
     if not name:
         raise ValueError("Напишите своё имя")
     if not msg and not j.get("photo"):
         raise ValueError("Добавьте фото или пожелание")
     amount = int(num(j.get("amount")))
     if amount and not MIN_ENV <= amount <= MAX_ENV:
-        raise ValueError(f"Сумма конверта от {MIN_ENV} ₸")
+        raise ValueError(f"Сумма подарка от {MIN_ENV} ₸")
     frame = j.get("frame") if j.get("frame") in FRAMES else "altyn"
     tbl = clean_str(str(j.get("table") or ""), 6)
     # Бесплатное поздравление — одно с устройства в полчаса. Конверт (платный) отправляется сколько угодно.
@@ -727,7 +727,7 @@ def handle_post(h, path):
                 r = add_card(e, j, h.ip(), dev)
             except FreeLimit as fl:
                 return h.send_json(429, {"error": "Бесплатное поздравление можно отправить раз в 30 минут. "
-                                                  f"Следующее — через {free_text(fl.left)}, а конверт можно отправить в любое время.",
+                                                  f"Следующее — через {free_text(fl.left)}, а Premium-поздравление можно отправить в любое время.",
                                          "retry": fl.left}, headers=cookie)
             except ValueError as v:
                 return h.err(400, str(v))

@@ -63,7 +63,7 @@ function next(){
 }
 function kick(){if(!current)next();}
 function ticker(){
-  const v=[...cards.values()].filter(c=>c.amount&&(c.status==='shown'||shownLocal.has(c.id))).sort((a,b)=>(b.shown_at||b.t)-(a.shown_at||a.t));
+  const v=[...cards.values()].filter(c=>c.amount>990&&(c.status==='shown'||shownLocal.has(c.id))).sort((a,b)=>(b.shown_at||b.t)-(a.shown_at||a.t));
   scene.ticker(v.slice(0,6).map(c=>`★ ${c.name} · ${T.fmt(c.amount)}`).join('      '));
 }
 

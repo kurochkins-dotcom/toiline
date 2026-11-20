@@ -206,7 +206,7 @@ tfoot td{font-weight:600;border-bottom:0;color:var(--ui-gold)}
       </div>
     </div>
     <div class="card">
-      <h2>Kaspi организатора <small>сюда гости переводят конверты</small></h2>
+      <h2>Kaspi организатора <small>сюда гости переводят подарки к Premium-поздравлениям</small></h2>
       <div class="settings">
         <div class="field"><label for="sKName">Получатель (как в Kaspi)</label><input type="text" id="sKName" maxlength="60" placeholder="Например, Диас Е."></div>
         <div class="field"><label for="sKPhone">Телефон Kaspi</label><input type="tel" id="sKPhone" maxlength="20" placeholder="+7 7__ ___ __ __"></div>
@@ -221,7 +221,7 @@ tfoot td{font-weight:600;border-bottom:0;color:var(--ui-gold)}
     <div class="stats">
       <div class="stat"><span>В очереди</span><b id="sQueue">0</b></div>
       <div class="stat"><span>Показано</span><b id="sShown">0</b></div>
-      <div class="stat g"><span>В конвертах</span><b id="sSum">0 ₸</b></div>
+      <div class="stat g"><span>Premium</span><b id="sSum">0 ₸</b></div>
     </div>
     <div class="card">
       <h2>Ждут проверки <label class="switch"><input type="checkbox" id="modOn"> проверять перед показом</label></h2>
@@ -276,7 +276,7 @@ tfoot td{font-weight:600;border-bottom:0;color:var(--ui-gold)}
         <div class="tablewrap"><table>
           <thead><tr><th>Время</th><th>Гость</th><th>Поздравление</th><th class="num">Сумма</th></tr></thead>
           <tbody id="rRows"></tbody>
-          <tfoot><tr><td colspan="3">Итого в конвертах на Kaspi организатора</td><td class="num" id="rTotal">0 ₸</td></tr></tfoot>
+          <tfoot><tr><td colspan="3">Итого Premium на Kaspi организатора</td><td class="num" id="rTotal">0 ₸</td></tr></tfoot>
         </table></div>
         <div class="calc">
           <div class="field"><label for="rPct">Комиссия Toi Line, %</label><input type="number" id="rPct" min="0" max="50"></div>
@@ -284,7 +284,7 @@ tfoot td{font-weight:600;border-bottom:0;color:var(--ui-gold)}
           <div class="line"><span>Комиссия</span><b id="rCom">0 ₸</b></div>
           <div class="line"><span>Внесён депозит</span><b id="rDepV">0 ₸</b></div>
           <div class="result" id="rRes"></div>
-          <div class="note">Пакет услуги оплачивается отдельно. В отчёт идут конверты, которые модератор подтвердил.</div>
+          <div class="note">Пакет услуги оплачивается отдельно. В отчёт идут Premium-поздравления, которые модератор подтвердил.</div>
           <button class="btn small" id="csv">Скачать таблицу (CSV)</button>
         </div>
       </div>
@@ -343,7 +343,7 @@ function render(){
   $('queue').innerHTML=que.map(c=>row(c,`<button class="btn small" data-act="hide" data-id="${c.id}">Убрать с экрана</button>`)).join('')||'<div class="empty">Очередь пуста, на экране заставка праздника.</div>';
   $('shown').innerHTML=shown.slice(0,30).map(c=>row(c,`<button class="btn small" data-act="requeue" data-id="${c.id}">Показать ещё раз</button><button class="btn small" data-act="hide" data-id="${c.id}">Скрыть из альбома</button>`)).join('')||'<div class="empty">Пока ничего не показано.</div>';
   $('hCount').textContent=hid.length;$('hiddenBox').hidden=!hid.length;
-  $('hidden').innerHTML=hid.map(c=>row(c,`<button class="btn small" data-act="approve" data-id="${c.id}">Вернуть в эфир</button>`,c.amount&&c.paid?'<div class="warn">Конверт был подтверждён: организатор возвращает перевод гостю</div>':'')).join('');
+  $('hidden').innerHTML=hid.map(c=>row(c,`<button class="btn small" data-act="approve" data-id="${c.id}">Вернуть в эфир</button>`,c.amount&&c.paid?'<div class="warn">Premium-поздравление было подтверждено: организатор возвращает перевод гостю</div>':'')).join('');
   report();
   const fresh=pend.filter(c=>!seen.has(c.id));pend.forEach(c=>seen.add(c.id));
   if(fresh.length&&!first){try{navigator.vibrate&&navigator.vibrate(fresh.some(c=>c.amount)?[120,60,120]:80);}catch(e){}}
@@ -351,7 +351,7 @@ function render(){
 }
 document.addEventListener('click',async e=>{
   const b=e.target.closest('[data-act]');if(!b)return;
-  if(b.dataset.act==='hide'){const c=cards.get(+b.dataset.id);if(c&&c.amount&&c.paid&&!confirm('Скрыть подтверждённый конверт? Тогда организатор вернёт перевод гостю.'))return;}
+  if(b.dataset.act==='hide'){const c=cards.get(+b.dataset.id);if(c&&c.amount&&c.paid&&!confirm('Скрыть подтверждённое Premium-поздравление? Тогда организатор вернёт перевод гостю.'))return;}
   b.disabled=true;
   try{const r=await T.api(base+'/act',{id:+b.dataset.id,action:b.dataset.act});cards.set(r.card.id,r.card);render();}
   catch(er){toast(er.message);b.disabled=false;}
@@ -363,7 +363,7 @@ function modNote(){$('modNote').textContent=cfg.moderation!==false?'Тамада
 function paidList(){return [...cards.values()].filter(c=>c.amount&&c.paid&&c.status!=='hidden').sort((a,b)=>a.t-b.t);}
 function report(){
   const paid=paidList(),total=paid.reduce((s,c)=>s+c.amount,0);
-  $('rRows').innerHTML=paid.map(p=>`<tr><td class="num">${T.tm(p.t)}</td><td>${esc(p.name)}${p.table?`<br><span class="note">стол №${esc(p.table)}</span>`:''}</td><td class="msg">${esc(p.msg)}</td><td class="num">${fmt(p.amount)}</td></tr>`).join('')||'<tr><td colspan="4" class="note">Подтверждённых конвертов пока нет.</td></tr>';
+  $('rRows').innerHTML=paid.map(p=>`<tr><td class="num">${T.tm(p.t)}</td><td>${esc(p.name)}${p.table?`<br><span class="note">стол №${esc(p.table)}</span>`:''}</td><td class="msg">${esc(p.msg)}</td><td class="num">${fmt(p.amount)}</td></tr>`).join('')||'<tr><td colspan="4" class="note">Подтверждённых Premium-поздравлений пока нет.</td></tr>';
   $('rTotal').textContent=fmt(total);
   const pct=Math.max(0,+$('rPct').value||0),dep=Math.max(0,+$('rDep').value||0),com=Math.round(total*pct/100);
   $('rCom').textContent=fmt(com);$('rDepV').textContent=fmt(dep);

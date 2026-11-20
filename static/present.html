@@ -93,8 +93,17 @@ h2{font-size:clamp(36px,4vw,50px)}
 .faq div{border-top:1px solid var(--line);padding-top:12px}
 .faq b{display:block;font-size:17px;margin-bottom:6px}
 .faq span{font-size:16px;line-height:1.45;color:#4A443D}
-.qr{width:220px;height:220px;background:#fff;border-radius:20px;padding:14px;box-shadow:0 10px 30px rgba(42,38,34,.12)}
+.qrw{display:flex;gap:18px;align-items:center}.qrw .src{max-width:16em;font-size:15px}
+.in.hero{grid-template-columns:minmax(260px,.75fr) 1.6fr;gap:40px}
+.qr{flex:none;width:200px;height:200px;background:#fff;border-radius:20px;padding:14px;box-shadow:0 10px 30px rgba(42,38,34,.12)}
 .qr img{width:100%;height:100%;image-rendering:pixelated}
+/* преимущества */
+.adv{width:100%;max-width:1100px;display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.adv h2{grid-column:1/-1;margin-bottom:10px}
+.adv div{background:#fff;border:1px solid var(--line);border-radius:24px;padding:30px;display:flex;flex-direction:column;gap:16px}
+.adv b{font-family:'Cormorant Garamond',serif;font-size:56px;font-weight:300;line-height:.8;color:var(--gold)}
+.adv span{font-size:20px;line-height:1.45}
+@media (max-width:960px){.adv{grid-template-columns:1fr;gap:14px}.adv div{flex-direction:row;align-items:center;padding:22px}}
 /* стрелки и чипы */
 .arr{position:fixed;top:50%;z-index:5;width:48px;height:48px;border-radius:50%;border:0;background:#fff;box-shadow:0 4px 14px rgba(0,0,0,.14);font-size:26px;line-height:1;display:grid;place-items:center;transform:translateY(-50%)}
 .arr.l{left:max(16px,env(safe-area-inset-left))}.arr.r{right:max(16px,env(safe-area-inset-right))}
@@ -136,25 +145,24 @@ h2{font-size:clamp(36px,4vw,50px)}
 
 <div class="track" id="track">
 
-<section class="slide" aria-label="Обложка" data-chip="Toi Line">
-  <div class="in wide">
+<section class="slide" aria-label="Toi Line" data-chip="Toi Line">
+  <div class="in wide hero">
     <div class="txt">
-      <span class="tag a1">Для свадеб, ұзату и юбилеев</span>
-      <h1 class="a2">Поздравления гостей на большом экране тоя</h1>
-      <p class="a3">Красивая заставка с именами, пожелания и фото гостей с телефона, конверт через Kaspi и альбом на память. Всё в одном.</p>
+      <h1 class="a1">Toi Line</h1>
+      <p class="a2">Интерактивная заставка тоя с именами. Гости отправляют пожелания с фотографиями на экран через QR-код.</p>
+      <div class="qrw a3"><div class="qr" id="qr"></div><span class="src">Наведите камеру и отправьте поздравление: оно появится на экране.</span></div>
     </div>
-    <div class="vis"><div class="tvw fit"><div class="tv"><iframe data-src="/s/demo/demo" title="Экран тоя" tabindex="-1"></iframe></div><div class="tvleg"></div></div></div>
+    <div class="vis"><div class="tvw fit" data-max="1.6"><div class="tv"><iframe data-src="/s/demo/demo" title="Экран тоя" tabindex="-1"></iframe></div><div class="tvleg"></div></div></div>
   </div>
 </section>
 
-<section class="slide" aria-label="Красивый экран тоя" data-chip="Экран">
+<section class="slide" aria-label="Стиль" data-chip="Стиль">
   <div class="in wide">
     <div class="txt">
       <div class="num">01</div>
-      <span class="tag a1">Вместо <s>заставки от видеографа</s></span>
-      <h2 class="a2">Красивый экран тоя</h2>
-      <p class="a3">Toi Line сам показывает на LED-экране заставку с именами в выбранном стиле, пока гости собираются и между поздравлениями.</p>
-      <span class="src a4">Шаблоны в европейском стиле, своя палитра и шрифт. Казахский орнамент по желанию.</span>
+      <span class="tag a1">Вместо простой картинки</span>
+      <h2 class="a2">Стиль</h2>
+      <p class="a3">Toi Line показывает на LED-экране заставку с именами в выбранном стиле. Шаблоны экрана в красивом стиле, палитра, шрифт и орнамент подбираются индивидуально.</p>
     </div>
     <div class="vis"><div class="tvw fit"><div class="tv"><iframe data-src="/s/demo/demo" title="Экран тоя" tabindex="-1"></iframe></div><div class="tvleg"></div></div></div>
   </div>
@@ -164,145 +172,63 @@ h2{font-size:clamp(36px,4vw,50px)}
   <div class="in">
     <div class="txt">
       <div class="num">02</div>
-      <span class="tag a1">Вместо <s>микрофона по кругу</s></span>
+      <span class="tag a1">Просто и понятно</span>
       <h2 class="a2">Поздравления с телефона</h2>
-      <p class="a3">Гость сканирует QR на столе, пишет пожелание и добавляет фото, и оно выходит на большой экран. Без приложений и регистрации.</p>
+      <p class="a3">Гость сканирует QR на столе, пишет пожелание и добавляет фото — оно выходит на большой экран. Без приложений и регистрации.</p>
       <span class="src a4">Страница гостя на казахском и русском.</span>
     </div>
-    <div class="vis"><div class="phone fit"><div class="scr"><iframe data-src="/g/demo" title="Страница гостя" tabindex="-1"></iframe></div></div></div>
+    <div class="vis"><div class="phone fit"><div class="scr"><iframe data-src="/g/demo" data-play="free" title="Страница гостя" tabindex="-1"></iframe></div></div></div>
   </div>
 </section>
 
-<section class="slide" aria-label="Конверт через Kaspi" data-chip="Конверт">
+<section class="slide" aria-label="Premium-поздравления через Kaspi" data-chip="Premium">
   <div class="in">
     <div class="txt">
       <div class="num">03</div>
-      <span class="tag a1">Вместо <s>бумажного конверта</s></span>
-      <h2 class="a2">Конверт через Kaspi</h2>
-      <p class="a3">Гость дарит деньги через Kaspi прямо на счёт организатора, а его поздравление выходит на экран в золотой рамке.</p>
+      <h2 class="a2">Premium-поздравления через Kaspi</h2>
+      <p class="a3">За 990 ₸ через Kaspi поздравление гостя минуту стоит на экране в красивой рамке. По желанию гость кладёт конверт, и сумма видна рядом.</p>
       <span class="src a4">Деньги идут организатору напрямую, Toi Line их не держит.</span>
     </div>
-    <div class="vis"><div class="phone fit"><div class="scr"><div class="mk">
-      <div class="t">Конверт Premium</div><div class="s">Диас &amp; Диара</div>
-      <div class="area">Құтты болсын! Бақытты болыңдар, шаңырақтарың берік болсын.</div>
-      <div class="amts a2"><span>5 000 ₸</span><span class="on">10 000 ₸</span><span>20 000 ₸</span></div>
-      <div class="kaspi a3">Отправить через Kaspi</div>
-      <div class="gold a4"><b>Асхат Нурланович</b>Поздравление выйдет на экран в золотой рамке</div>
-    </div></div></div></div>
-  </div>
-</section>
-
-<section class="slide rev" aria-label="Всё под контролем" data-chip="Модерация">
-  <div class="in">
-    <div class="txt">
-      <div class="num">04</div>
-      <span class="tag a1">Помощь тамаде</span>
-      <h2 class="a2">Всё под контролем</h2>
-      <p class="a3">Тамада одной кнопкой пропускает или скрывает поздравления, поэтому на экран не попадёт ничего лишнего.</p>
-    </div>
-    <div class="vis"><div class="phone fit"><div class="scr"><div class="mk">
-      <div class="t">Пульт тамады</div><div class="s">Новые поздравления</div>
-      <div class="card a1"><span class="av">А</span><span class="b"><b>Айжан</b>Бақытты болыңдар! Махаббаттарың мәңгі болсын.</span><span class="ok">✓</span><span class="no">✕</span></div>
-      <div class="card a2"><span class="av">Е</span><span class="b"><b>Ерлан и Сауле</b>Желаем крепкой семьи и много детей!</span><span class="ok">✓</span><span class="no">✕</span></div>
-      <div class="card a3"><span class="av">Д</span><span class="b"><b>Дана</b>Самой красивой паре этого вечера ❤</span><span class="ok">✓</span><span class="no">✕</span></div>
-      <div class="card a4"><span class="av">М</span><span class="b"><b>Марат ага</b>Шаңырақтарың биік, отбасыларың берік болсын!</span><span class="ok">✓</span><span class="no">✕</span></div>
-    </div></div></div></div>
-  </div>
-</section>
-
-<section class="slide" aria-label="Именные приглашения" data-chip="Приглашения">
-  <div class="in">
-    <div class="txt">
-      <div class="num">05</div>
-      <span class="tag a1">Вместо <s>дизайнера приглашений</s></span>
-      <h2 class="a2">Именные приглашения</h2>
-      <p class="a3">Организатор выбирает шаблон, а Toi Line сам делает приглашение с именем каждого гостя, все одним архивом.</p>
-      <span class="src a4">В том же стиле, что и экран тоя.</span>
-    </div>
-    <div class="vis"><div class="phone fit"><div class="scr"><div class="mk" style="gap:14px">
-      <div class="invw"><div class="invc"><span class="k">Шақыру</span><span class="g">Құрметті</span><span class="n">Ерлан ага</span><span class="g">Диас &amp; Диара</span><span class="k">12 · 09 · 2026</span></div></div>
-      <div class="zip a2"><div><span>Ерлан ага.jpg</span><span>✓</span></div><div><span>Сауле апай.jpg</span><span>✓</span></div><div><span>Семья Нурлановых.jpg</span><span>✓</span></div></div>
-    </div></div></div></div>
+    <div class="vis"><div class="phone fit"><div class="scr"><iframe data-src="/g/demo" data-play="prem" title="Premium-поздравление" tabindex="-1"></iframe></div></div></div>
   </div>
 </section>
 
 <section class="slide rev" aria-label="Альбом после тоя" data-chip="Альбом">
   <div class="in">
     <div class="txt">
-      <div class="num">06</div>
-      <span class="tag a1">Вместо <s>ожидания фото неделями</s></span>
+      <div class="num">04</div>
+      <span class="tag a1">Финал тоя</span>
       <h2 class="a2">Альбом после тоя</h2>
-      <p class="a3">Гости получают ссылку на альбом: все поздравления и фото, которые можно скачать в красивой рамке для Instagram.</p>
+      <p class="a3">После тоя гости получают ссылку на альбом: обложка с именами, а внутри все поздравления и фото, которые можно скачать в красивой рамке.</p>
     </div>
-    <div class="vis"><div class="phone fit"><div class="scr"><iframe data-src="/a/demo" title="Альбом" tabindex="-1"></iframe></div></div></div>
+    <div class="vis"><div class="phone fit"><div class="scr"><iframe data-src="/a/demo" data-play="album" title="Альбом" tabindex="-1"></iframe></div></div></div>
   </div>
 </section>
 
-<section class="slide" aria-label="Отчёт для организатора" data-chip="Кабинет">
+<section class="slide" aria-label="Стоимость услуги" data-chip="Стоимость">
   <div class="in">
     <div class="txt">
-      <div class="num">07</div>
-      <span class="tag a1">Вместо <s>тетради с подарками</s></span>
-      <h2 class="a2">Отчёт для организатора</h2>
-      <p class="a3">Организатор видит в своём кабинете, кто что пожелал и сколько подарил, и общую сумму конвертов.</p>
-    </div>
-    <div class="vis"><div class="phone fit"><div class="scr"><div class="mk">
-      <div class="t">Конверты</div><div class="s">Диас &amp; Диара · 12.09.2026</div>
-      <div class="row2 a1"><span>Асхат Нурланович</span><b>20 000 ₸</b></div>
-      <div class="row2 a1"><span>Семья Ахметовых</span><b>50 000 ₸</b></div>
-      <div class="row2 a2"><span>Сауле апай</span><b>10 000 ₸</b></div>
-      <div class="row2 a2"><span>Ерлан и Динара</span><b>15 000 ₸</b></div>
-      <div class="row2 a3"><span>Марат ага</span><b>25 000 ₸</b></div>
-      <div class="total a4">Итого в конвертах<b data-count="120000">0 ₸</b></div>
-    </div></div></div></div>
-  </div>
-</section>
-
-<section class="slide" aria-label="Тариф" data-chip="Тариф">
-  <div class="in">
-    <div class="txt">
-      <span class="tag a1">Тариф</span>
-      <h2 class="a2">Один пакет на той</h2>
-      <p class="a3">Заводим той за 10 минут: имена, дата и стиль. В день тоя нужен только экран с интернетом.</p>
-      <a class="pill dark big a4" href="/?new=1">＋ Создать той</a>
+      <span class="tag a1">Стоимость услуги</span>
+      <h2 class="a2">Рассчитывается индивидуально</h2>
+      <p class="a3">Стоимость обсуждается с клиентом и зависит от технической сложности, количества гостей и техники на мероприятии.</p>
     </div>
     <div class="vis"><div class="price a2">
-      <div class="p">50 000 <small>₸ за той</small></div>
-      <ul>
-        <li>Экран тоя в выбранном стиле</li>
-        <li>Поздравления гостей и пульт тамады</li>
-        <li>Конверт через Kaspi, комиссия 10%</li>
-        <li>Именные приглашения</li>
-        <li>Альбом и отчёт организатору</li>
-      </ul>
-      <span class="src">Предоплата при бронировании 20 000 ₸.</span>
+      <span class="src">Хозяин заведения получает</span>
+      <div class="p">10%</div>
+      <p style="margin:0;font-size:19px;line-height:1.5;color:#4A443D">от стоимости услуг с каждого тоя, который проходит в его зале.</p>
     </div></div>
   </div>
 </section>
 
-<section class="slide" aria-label="Вопросы" data-chip="Вопросы">
-  <div class="faq">
-    <h2>Частые вопросы</h2>
-    <div><b>Гостям нужно что-то скачивать?</b><span>Нет. Гость наводит камеру на QR, и страница открывается в браузере.</span></div>
-    <div><b>Куда идут деньги из конвертов?</b><span>Сразу на Kaspi организатора. Наша комиссия 10% считается по итогу тоя.</span></div>
-    <div><b>А если кто-то напишет лишнее?</b><span>Тамада видит каждое поздравление до экрана и скрывает лишнее одной кнопкой.</span></div>
-    <div><b>Что нужно в зале?</b><span>LED-экран или телевизор с браузером и интернет. Если связь пропадёт, экран продолжит показ.</span></div>
-    <div><b>Есть казахский язык?</b><span>Да, страница гостя на казахском и русском, гость выбирает сам.</span></div>
-    <div><b>Сколько готовить той?</b><span>Около 10 минут: имена, дата, шаблон. Ссылки и QR готовы сразу.</span></div>
+<section class="slide" aria-label="Преимущества для клиента" data-chip="Преимущества">
+  <div class="adv">
+    <h2 class="a1">Преимущества для клиента</h2>
+    <div class="a2"><b>01</b><span>Возможность отбить стоимость услуги за счёт платных поздравлений.</span></div>
+    <div class="a3"><b>02</b><span>Красивый фотоальбом с поздравлениями: ссылка после тоя.</span></div>
+    <div class="a4"><b>03</b><span>Необычный новый формат для Казахстана.</span></div>
   </div>
 </section>
 
-<section class="slide" aria-label="Попробуйте сами" data-chip="Попробуйте">
-  <div class="in wide">
-    <div class="txt">
-      <span class="tag a1">Живое демо</span>
-      <h2 class="a2">Попробуйте прямо сейчас</h2>
-      <p class="a3">Наведите камеру телефона на код и напишите поздравление. Через пару секунд оно появится на экране.</p>
-      <div class="qr a4" id="qr"></div>
-    </div>
-    <div class="vis"><div class="tvw fit"><div class="tv"><iframe data-src="/s/demo/demo" title="Демо-экран" tabindex="-1"></iframe></div><div class="tvleg"></div></div></div>
-  </div>
-</section>
 
 </div>
 <nav class="chips" id="chips" aria-label="Слайды"></nav>
@@ -316,7 +242,7 @@ h2{font-size:clamp(36px,4vw,50px)}
 const T=TOI,$=T.$,track=$('track'),slides=[...track.children];
 let key='',cur=-1;
 try{key=localStorage.getItem('toi-admin')||'';}catch(e){}
-try{sessionStorage.setItem('toi-present','1');}catch(e){}
+try{sessionStorage.setItem('toi-present','1');if(!localStorage.getItem('toi-lang'))localStorage.setItem('toi-lang','ru');}catch(e){}
 
 async function enter(){
   try{await T.api('/api/admin/events',undefined,{'X-Toi-Admin':key});$('login').hidden=true;$('app').hidden=false;start();}
@@ -338,7 +264,7 @@ function fit(){
   const H=track.clientHeight-40;
   document.querySelectorAll('.fit').forEach(el=>{
     const col=el.parentElement.clientWidth||el.offsetWidth,w=el.offsetWidth,h=el.offsetHeight;
-    let k=Math.min(1,H/h,col/w);if(innerWidth>600)k=Math.max(.45,k);
+    let k=Math.min(+el.dataset.max||1,H/h,col/w);if(innerWidth>600)k=Math.max(.45,k);
     el.style.transform=`scale(${k})`;el.style.margin=`${-(h*(1-k))/2}px ${-(w*(1-k))/2}px`;
   });
 }
@@ -373,6 +299,40 @@ document.addEventListener('keydown',e=>{
 // поворот iPad: держим текущий слайд на месте
 let rt;addEventListener('resize',()=>{const keep=cur;track.style.scrollSnapType='none';track.scrollLeft=keep*track.clientWidth;fit();
   clearTimeout(rt);rt=setTimeout(()=>{track.scrollLeft=keep*track.clientWidth;track.style.scrollSnapType='';},150);});
+// макеты страницы гостя сами листают экраны: старт → форма → (Premium) перевод в Kaspi
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+async function play(f){
+  const kind=f.dataset.play;
+  if(kind==='album'){   // обложка альбома → разворот с поздравлениями → снова обложка
+    for(;;){
+      await wait(3500);
+      let d;try{d=f.contentDocument;}catch(e){return;}
+      const o=d&&d.getElementById('openBtn');if(!o)continue;
+      o.click();await wait(6000);
+      const b=d.getElementById('toCover');if(b)b.click();
+    }
+  }
+  for(;;){
+    await wait(500);
+    let d;try{d=f.contentDocument;}catch(e){return;}
+    if(!d||!d.getElementById('vHome')||(d.getElementById('vLoad')&&!d.getElementById('vLoad').hidden))continue;
+    const $$=id=>d.getElementById(id),click=sel=>{const b=d.querySelector(sel);if(b)b.click();};
+    const input=(id,v)=>{const el=$$(id);if(el){el.value=v;el.dispatchEvent(new Event('input',{bubbles:true}));}};
+    try{d.defaultView.localStorage.setItem('toi-free-demo','0');}catch(e){}
+    click('[data-go="home"]');await wait(3500);
+    if(kind==='free'){
+      click('#vHome [data-go="free"]');input('fName','Ерлан Агай');await wait(4500);
+    }else{
+      click('#vHome [data-go="prem"]');input('pName','Ерлан Агай');await wait(4000);
+      click('#pSend');
+      const ks=$$('kSteps');if(ks)ks.innerHTML=['Нажмите «Открыть Kaspi»','Переведите 990 ₸','Вернитесь сюда и нажмите «Я перевёл(а)»'].map(x=>`<li>${x}</li>`).join('');
+      if($$('kName'))$$('kName').textContent='Диас Е.';
+      if($$('kPhone')){$$('kPhone').textContent='+7 701 234 56 78';$$('kPhoneRow').hidden=false;}
+      await wait(4500);
+    }
+  }
+}
+document.querySelectorAll('iframe[data-play]').forEach(f=>f.addEventListener('load',()=>{if(!f._p){f._p=1;play(f);}},{once:true}));
 enter();
 })();
 </script>

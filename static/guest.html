@@ -56,6 +56,7 @@ button{cursor:pointer}
 .fld em{font-style:normal;font-weight:400}
 .fld input,.fld textarea{height:48px;border-radius:12px;border:1px solid color-mix(in srgb,var(--muted) 40%,transparent);background:color-mix(in srgb,#fff 80%,var(--bg));padding:0 14px;font:400 16px Montserrat,sans-serif;color:var(--ink)}
 .fld textarea{height:84px;padding:12px 14px;resize:none}
+.fld .cnt{align-self:flex-end;font-size:11px;letter-spacing:0;text-transform:none;font-weight:400;opacity:.7;margin-top:-2px}
 .chips{display:flex;gap:6px;flex-wrap:wrap}
 .chips button{border:1px solid color-mix(in srgb,var(--muted) 35%,transparent);background:transparent;border-radius:99px;padding:6px 11px;font-size:12.5px;color:var(--ink)}
 .go{margin-top:auto;height:58px;border-radius:29px;border:0;background:var(--ink);color:var(--bg);font:600 16px Montserrat,sans-serif;width:100%}
@@ -76,13 +77,14 @@ button{cursor:pointer}
 .two{display:flex;gap:8px;margin-top:12px}
 .two button{flex:1;height:44px;border-radius:12px;border:1px solid #4A433C;background:transparent;color:#F5F1EA;font:500 13px Montserrat,sans-serif}
 .prem-page .fld input,.prem-page .fld textarea{background:#2A2622;border-color:#4A433C;color:#F5F1EA}
-.sums{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.sums{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.sumhint{font-size:12px;line-height:1.4;color:#BDB3A6;letter-spacing:0;text-transform:none;font-weight:400}
 .sums button{height:44px;border-radius:12px;border:1px solid #4A433C;background:transparent;color:#F5F1EA;font:500 13px Montserrat,sans-serif}
 .sums button[aria-pressed="true"]{border-color:#E6CD95;background:rgba(230,205,149,.14);color:#F1DDA8;font-weight:600}
 .go.gold{background:linear-gradient(100deg,#E6CD95,#B08D4E);color:#1E1B19;margin-top:18px}
 /* Kaspi */
 .kbox{margin-top:20px;display:grid;gap:12px;justify-items:center;text-align:center;padding:22px 18px;border-radius:20px;background:#2A2622;border:1px solid #4A433C}
-.kbox .k{width:52px;height:52px;border-radius:14px;background:#F14635;color:#fff;font:700 26px Montserrat,sans-serif;display:grid;place-items:center}
+.kbox .k{width:56px;height:56px;border-radius:14px;display:block}
 .kbox .to{font-size:14px;color:#BDB3A6}
 .kbox .to b{color:#F5F1EA;font-size:16px}
 .kbox .sumv{font-family:'Cormorant Garamond',serif;font-size:44px;line-height:1;background:linear-gradient(100deg,#F1DDA8,#B08D4E);-webkit-background-clip:text;background-clip:text;color:transparent}
@@ -124,7 +126,7 @@ button{cursor:pointer}
   </div>
   <div class="flds">
     <label class="fld"><span data-t="yourName"></span><input type="text" id="fName" maxlength="30" autocomplete="name"></label>
-    <label class="fld"><span><span data-t="wish"></span> <em data-t="optional"></em></span><textarea id="fMsg" maxlength="140"></textarea></label>
+    <label class="fld"><span><span data-t="wish"></span> <em data-t="optional"></em></span><textarea id="fMsg" maxlength="160"></textarea><small class="cnt" data-for="fMsg"></small></label>
     <div class="chips" id="fQuick"></div>
   </div>
   <div class="spacer"></div>
@@ -139,10 +141,11 @@ button{cursor:pointer}
   <div class="two"><button type="button" data-pick="fFile" data-t="upload"></button><button type="button" data-pick="fSelfie" data-t="selfie"></button></div>
   <div class="flds">
     <label class="fld"><span data-t="fromWhom"></span><input type="text" id="pName" maxlength="30" autocomplete="name"></label>
-    <label class="fld"><span data-t="wish"></span><input type="text" id="pMsg" maxlength="140"></label>
+    <label class="fld"><span data-t="wish"></span><textarea id="pMsg" maxlength="150"></textarea><small class="cnt" data-for="pMsg"></small></label>
     <div class="fld"><span data-t="sum"></span>
-      <div class="sums" id="pSums"><button data-s="5000">5 000</button><button data-s="10000" aria-pressed="true">10 000</button><button data-s="20000">20 000</button><button data-s="own" data-t="other"></button></div>
-      <input type="number" id="pOwn" min="500" step="500" inputmode="numeric" hidden></div>
+      <div class="sums" id="pSums"><button data-s="990" aria-pressed="true">990 ₸</button><button data-s="own" data-t="other"></button></div>
+      <input type="number" id="pOwn" min="1000" step="500" inputmode="numeric" hidden>
+      <small class="sumhint" data-t="sumHint"></small></div>
   </div>
   <button class="go gold" id="pSend"></button>
   <p class="err" id="pErr" hidden></p>
@@ -151,7 +154,7 @@ button{cursor:pointer}
 <div class="scr prem-page" id="vPay" hidden>
   <div class="bar"><button class="back" data-go="prem" aria-label="Назад">‹</button><div class="ttl">Kaspi</div></div>
   <div class="kbox">
-    <div class="k">K</div>
+    <img class="k" src="/static/img/kaspi.png" alt="Kaspi">
     <div class="to"><span data-t="payTo"></span><br><b id="kName"></b></div>
     <div class="sumv" id="kSum"></div>
     <div class="phone" id="kPhoneRow"><span id="kPhone"></span><button id="kCopy" type="button" data-t="copy"></button></div>
@@ -175,30 +178,30 @@ const T=TOI,$=T.$;
 const eid=location.pathname.split('/')[2];
 const table=(new URLSearchParams(location.search).get('t')||'').replace(/[^0-9a-zA-Zа-яА-Я-]/g,'').slice(0,6);
 const L={
-  kk:{loading:'Той жүктелуде…',notFound:'Той табылмады. Сілтемені немесе QR-кодты тексеріңіз.',free:'Құттықтау',freeSub:'тегін · селфи және есім',prem:'Премиум құттықтау',premSub:'рамкадағы фото · конверт',sec10:'10с',min1:'1 мин',
+  kk:{loading:'Той жүктелуде…',notFound:'Той табылмады. Сілтемені немесе QR-кодты тексеріңіз.',free:'Құттықтау',freeSub:'тегін · селфи және есім',prem:'Премиум құттықтау',premSub:'рамкадағы фото · Kaspi арқылы сыйлық',sec10:'10с',min1:'1 мин',
     onScreen10:'экранда 10 с',onScreen60:'экранда 1 минут',takeSelfie:'Селфи түсіру',yourName:'Есіміңіз',wish:'Тілек',optional:'(міндетті емес)',toScreen:'Экранға жіберу',upload:'Сурет жүктеу',selfie:'Селфи түсіру',
-    fromWhom:'Кімнен',sum:'Конвертке сома',other:'Басқа',send:'Жіберу',payTo:'Той иесіне аударыңыз',copy:'Көшіру',copied:'Көшірілді',openKaspi:'Kaspi ашу',iPaid:'Аудардым, жіберу',
-    payFine:'Ақша тікелей той иесіне түседі. Модератор аударымды тексеріп, конвертті экранға шығарады.',again:'Тағы жіберу',sending:'Жіберілуде…',
-    needName:'Есіміңізді жазыңыз',needSome:'Фото қосыңыз немесе тілек жазыңыз',minSum:'Ең аз сома 500 ₸',
+    fromWhom:'Кімнен',sum:'Сома',other:'+ конверт',sumHint:'990 ₸: рамкадағы құттықтау экранда 1 минут. Конверт салғыңыз келсе, көбірек сома жазыңыз, ол экранда құттықтаудың жанында шығады.',send:'Жіберу',payTo:'Той иесіне аударыңыз',copy:'Көшіру',copied:'Көшірілді',openKaspi:'Kaspi ашу',iPaid:'Аудардым, жіберу',
+    payFine:'Ақша тікелей той иесіне түседі. Модератор аударымды тексеріп, құттықтауды экранға шығарады.',again:'Тағы жіберу',sending:'Жіберілуде…',
+    needName:'Есіміңізді жазыңыз',needSome:'Фото қосыңыз немесе тілек жазыңыз',minSum:'Ең аз сома 990 ₸',
     stepOpen:'«Kaspi ашу» түймесін басыңыз',stepPhone:'Kaspi → Аударымдар → телефон нөмірі бойынша',stepSum:s=>`${s} аударыңыз`,stepBack:'Осында оралып, «Аудардым» түймесін басыңыз',stepDemo:'Бұл демо: ақша аудару керек емес, төмендегі түймені басыңыз',
-    dSent:'Құттықтау жіберілді',dSentP:'Модератор тексереді, сосын экранға шығады. Экранға қараңыз!',dEnvSent:'Конверт жіберілді',dEnvSentP:'Модератор Kaspi-дегі аударымды тексеріп, конвертті экранға бірінші шығарады.',
-    dQueue:'Сіз кезектесіз',dQueueP:n=>n>1?`Алдыңызда ${n-1}. Экранға қараңыз!`:'Келесі сіз. Экранға қараңыз!',dEnvQueueP:'Конверт кезексіз, алтын рамкада шығады. Экранға қараңыз!',
+    dSent:'Құттықтау жіберілді',dSentP:'Модератор тексереді, сосын экранға шығады. Экранға қараңыз!',dEnvSent:'Премиум құттықтау жіберілді',dEnvSentP:'Модератор Kaspi-дегі аударымды тексеріп, құттықтауды экранға бірінші шығарады.',
+    dQueue:'Сіз кезектесіз',dQueueP:n=>n>1?`Алдыңызда ${n-1}. Экранға қараңыз!`:'Келесі сіз. Экранға қараңыз!',dEnvQueueP:'Премиум құттықтау кезексіз, алтын рамкада шығады. Экранға қараңыз!',
     dShown:'Құттықтауыңыз экранда!',dShownP:'Рақмет! Тойдан кейін ол құттықтаулар альбомына түседі.',dHidden:'Модератор құттықтауды өткізбеді',dHiddenP:'Басқа құттықтау жіберуге болады.',dHiddenEnvP:'Той иесі аударымды қайтарады.',
-    freeWait:m=>`Тегін құттықтау — 30 минутта бір рет. Келесісі ${m} минуттан кейін, ал конвертті қазір жіберуге болады.`,freeIn:m=>`${m} минуттан кейін тегін`},
-  ru:{loading:'Загружаем праздник…',notFound:'Праздник не найден. Проверьте ссылку или QR-код.',free:'Поздравить',freeSub:'бесплатно · селфи и имя',prem:'Премиум-поздравление',premSub:'фото в рамке · конверт',sec10:'10с',min1:'1 мин',
+    freeWait:m=>`Тегін құттықтау — 30 минутта бір рет. Келесісі ${m} минуттан кейін, ал премиум құттықтауды қазір жіберуге болады.`,freeIn:m=>`${m} минуттан кейін тегін`},
+  ru:{loading:'Загружаем праздник…',notFound:'Праздник не найден. Проверьте ссылку или QR-код.',free:'Поздравить',freeSub:'бесплатно · селфи и имя',prem:'Премиум-поздравление',premSub:'фото в рамке · подарок через Kaspi',sec10:'10с',min1:'1 мин',
     onScreen10:'на экране 10 с',onScreen60:'на экране 1 минуту',takeSelfie:'Сделать селфи',yourName:'Ваше имя',wish:'Пожелание',optional:'(необязательно)',toScreen:'Отправить на экран',upload:'Загрузить фото',selfie:'Сделать селфи',
-    fromWhom:'От кого',sum:'Сумма в конверт',other:'Другая',send:'Отправить',payTo:'Переведите организатору тоя',copy:'Скопировать',copied:'Скопировано',openKaspi:'Открыть Kaspi',iPaid:'Я перевёл(а), отправить',
-    payFine:'Деньги идут напрямую организатору. Модератор сверит перевод и выведет конверт на экран.',again:'Отправить ещё',sending:'Отправляем…',
-    needName:'Напишите своё имя',needSome:'Добавьте фото или пожелание',minSum:'Минимальная сумма 500 ₸',
+    fromWhom:'От кого',sum:'Сумма',other:'+ конверт',sumHint:'990 ₸: поздравление в рамке на экране 1 минуту. Хотите положить конверт, укажите сумму больше, она появится на экране рядом с поздравлением.',send:'Отправить',payTo:'Переведите организатору тоя',copy:'Скопировать',copied:'Скопировано',openKaspi:'Открыть Kaspi',iPaid:'Я перевёл(а), отправить',
+    payFine:'Деньги идут напрямую организатору. Модератор сверит перевод и выведет поздравление на экран.',again:'Отправить ещё',sending:'Отправляем…',
+    needName:'Напишите своё имя',needSome:'Добавьте фото или пожелание',minSum:'Минимальная сумма 990 ₸',
     stepOpen:'Нажмите «Открыть Kaspi»',stepPhone:'Kaspi → Переводы → по номеру телефона',stepSum:s=>`Переведите ${s}`,stepBack:'Вернитесь сюда и нажмите «Я перевёл(а)»',stepDemo:'Это демо: переводить деньги не нужно, просто нажмите кнопку ниже',
-    dSent:'Поздравление отправлено',dSentP:'Модератор быстро проверит его, и оно выйдет на экран. Смотрите на экран!',dEnvSent:'Конверт отправлен',dEnvSentP:'Модератор сверит перевод в Kaspi, и конверт выйдет на экран первым.',
-    dQueue:'Вы в очереди на экран',dQueueP:n=>n>1?`Перед вами ${n-1}. Смотрите на экран!`:'Вы следующий. Смотрите на экран!',dEnvQueueP:'Конверт выйдет вне очереди, в золотой рамке. Смотрите на экран!',
+    dSent:'Поздравление отправлено',dSentP:'Модератор быстро проверит его, и оно выйдет на экран. Смотрите на экран!',dEnvSent:'Premium-поздравление отправлено',dEnvSentP:'Модератор сверит перевод в Kaspi, и поздравление выйдет на экран первым.',
+    dQueue:'Вы в очереди на экран',dQueueP:n=>n>1?`Перед вами ${n-1}. Смотрите на экран!`:'Вы следующий. Смотрите на экран!',dEnvQueueP:'Premium-поздравление выйдет вне очереди, в золотой рамке. Смотрите на экран!',
     dShown:'Ваше поздравление на экране!',dShownP:'Спасибо! После тоя оно попадёт в альбом поздравлений.',dHidden:'Модератор не пропустил поздравление',dHiddenP:'Можно отправить другое поздравление.',dHiddenEnvP:'Организатор вернёт ваш перевод.',
-    freeWait:m=>`Бесплатное поздравление — раз в 30 минут. Следующее через ${m} мин, а конверт можно отправить прямо сейчас.`,freeIn:m=>`бесплатно через ${m} мин`},
+    freeWait:m=>`Бесплатное поздравление — раз в 30 минут. Следующее через ${m} мин, а Premium-поздравление можно отправить прямо сейчас.`,freeIn:m=>`бесплатно через ${m} мин`},
 };
 let lang='kk';try{lang=localStorage.getItem('toi-lang')||'kk';}catch(e){}
 const t=k=>(L[lang]||L.kk)[k];
-let c=null,raw=null,photo=null,orient='v',frame='altyn',amount=10000,sending=false,poll=0,view='load',canEnv=false,pickFor='free';
+let c=null,raw=null,photo=null,orient='v',frame='altyn',amount=990,sending=false,poll=0,view='load',canEnv=false,pickFor='free';
 
 function i18n(){
   document.documentElement.lang=lang;
@@ -241,7 +244,10 @@ function updFree(){
   $('fCap').textContent=$('fName').value.trim()||'';
 }
 $('fName').addEventListener('input',updFree);
-$('fQuick').addEventListener('click',e=>{const b=e.target.closest('button');if(b)$('fMsg').value=b.textContent;});
+$('fQuick').addEventListener('click',e=>{const b=e.target.closest('button');if(b){$('fMsg').value=b.textContent;cnt();}});
+/* счётчик символов: длиннее этого пожелание на экране становится мелким (проверено на 1600×900) */
+function cnt(){document.querySelectorAll('.cnt[data-for]').forEach(s=>{const i=$(s.dataset.for);s.textContent=[...i.value].length+' / '+i.maxLength;});}
+['fMsg','pMsg'].forEach(id=>$(id).addEventListener('input',cnt));cnt();
 $('fSend').addEventListener('click',()=>{
   if(!$('fName').value.trim())return err('fErr',t('needName'));
   if(!photo&&!$('fMsg').value.trim())return err('fErr',t('needSome'));
@@ -265,7 +271,7 @@ $('pSums').addEventListener('click',e=>{const b=e.target.closest('button');if(!b
 $('pOwn').addEventListener('input',()=>{amount=Math.round(+$('pOwn').value||0);updPrem();});
 $('pSend').addEventListener('click',()=>{
   if(!$('pName').value.trim())return err('pErr',t('needName'));
-  if(amount<500)return err('pErr',t('minSum'));
+  if(amount<990)return err('pErr',t('minSum'));
   try{localStorage.setItem('toi-name',$('pName').value.trim());}catch(x){}
   $('kSum').textContent=T.fmt(amount);$('kName').textContent=c.kaspi_name||'';
   $('kPhone').textContent=c.kaspi_phone||'';$('kPhoneRow').hidden=!c.kaspi_phone;
@@ -283,7 +289,7 @@ async function submit(body,btn,errId){
   try{
     try{localStorage.setItem('toi-name',body.name);}catch(x){}
     const r=await T.api(`/api/e/${eid}/card`,{...body,table,photo:photo||''});
-    photo=null;orient='v';if(!body.amount){blockFree();$('fMsg').value='';}
+    photo=null;orient='v';if(!body.amount){blockFree();$('fMsg').value='';}cnt();
     done(body.amount,r.status,r.pos);watch(r.id,r.token,body.amount);
   }catch(e){
     if(e.retry)blockFree(Date.now()-(FREE_EVERY-e.retry*1000));
