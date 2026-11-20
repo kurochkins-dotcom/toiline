@@ -419,7 +419,7 @@ class FreeLimit(Exception):
 
 def add_card(e, j, ip, dev=""):
     name = clean_str(j.get("name"), 30)
-    msg = clean_str(j.get("msg"), 140)
+    msg = clean_str(j.get("msg"), 160)
     if not name:
         raise ValueError("Напишите своё имя")
     if not msg and not j.get("photo"):

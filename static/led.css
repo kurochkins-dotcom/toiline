@@ -11,9 +11,9 @@
 .led .s-free.on .pol{animation:polIn .9s cubic-bezier(.2,.8,.2,1)}
 @keyframes polIn{from{transform:rotate(-8deg) translateY(40px) scale(.94);opacity:0}}
 .led .pcap{height:120px;display:flex;align-items:center;justify-content:center;color:#2A2622;line-height:1}
-.led .ftx{position:relative;max-width:620px;display:flex;flex-direction:column;gap:28px}
+.led .ftx{position:relative;max-width:620px;display:flex;flex-direction:column;gap:28px;transform:rotate(-2deg)}
 .led .frow.h .ftx{max-width:560px}
-.led .ftx .wish{line-height:1.25;transform:rotate(-2deg);color:var(--ink);overflow-wrap:anywhere}
+.led .ftx .wish{line-height:1.25;color:var(--ink);overflow-wrap:anywhere}
 .led .ftx .rule{width:120px;height:1px;background:var(--accent)}
 .led .ftx .names{font-family:'Cormorant Garamond',serif;font-size:28px;letter-spacing:.3em;color:var(--muted)}
 

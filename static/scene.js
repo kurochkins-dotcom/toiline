@@ -41,7 +41,7 @@ window.TOIScene=function(el,opts){
   }
   function only(name){['s-idle','s-free','s-vip'].forEach(n=>q('.'+n).classList.toggle('on',n===name));}
   function idle(){cur=null;only('s-idle');q('.ticker').classList.remove('on');bar(0);}
-  const wishSize=(s,base)=>{const n=[...String(s||'')].length;return n<=40?base:n<=80?base*.8:n<=120?base*.66:base*.56;};
+  const wishSize=(s,base)=>{const n=[...String(s||'')].length;return n<=40?base:n<=80?base*.8:base*.66;};
   async function show(it,sec,again){
     cur={it};const my=++token;
     const orient=it.photo?await T.orientOf(it.photo):'v';
