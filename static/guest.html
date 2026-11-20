@@ -26,13 +26,13 @@ button{cursor:pointer}
 .hero .rule{width:56px;height:1px;background:var(--accent)}
 .hero .date{font-size:12px;letter-spacing:.45em;color:var(--muted)}
 .hello{margin:40px 0 0;text-align:center;font-family:'Cormorant Garamond',serif;font-size:21px;line-height:1.35;color:color-mix(in srgb,var(--ink) 85%,var(--bg))}
-.acts{margin-top:auto;padding-top:28px;display:flex;flex-direction:column;gap:12px}
-.act{display:flex;align-items:center;justify-content:space-between;min-height:64px;padding:10px 12px 10px 22px;border-radius:32px;border:1px solid color-mix(in srgb,var(--muted) 35%,transparent);background:color-mix(in srgb,#fff 70%,var(--bg));text-align:left;color:var(--ink)}
+.acts{margin:auto 0;padding:28px 0;display:flex;flex-direction:column;gap:16px}
+.act{display:flex;align-items:center;justify-content:space-between;min-height:104px;padding:16px 18px 16px 28px;border-radius:52px;border:1px solid color-mix(in srgb,var(--muted) 35%,transparent);background:color-mix(in srgb,#fff 70%,var(--bg));text-align:left;color:var(--ink)}
 .dark .act{background:color-mix(in srgb,#fff 6%,var(--bg))}
 .act span.t{display:flex;flex-direction:column;gap:2px}
-.act b{font-weight:600;font-size:16px}
-.act small{font-size:12px;color:var(--muted)}
-.act i{flex:none;display:flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:22px;border:1px solid var(--accent);font:600 12px Montserrat,sans-serif;font-style:normal;color:var(--accent)}
+.act b{font-weight:600;font-size:21px}
+.act small{font-size:14px;color:var(--muted)}
+.act i{flex:none;display:flex;align-items:center;justify-content:center;width:66px;height:66px;border-radius:33px;border:1px solid var(--accent);font:600 14px Montserrat,sans-serif;font-style:normal;color:var(--accent)}
 .act.prem{border:0;background:linear-gradient(100deg,#2A2622,#4A3F33);color:#F5F1EA}
 .act.prem small{color:#E2D3B4}
 .act.prem i{border:0;background:linear-gradient(135deg,#E6CD95,#B08D4E);color:#2A2622}
@@ -178,7 +178,7 @@ const T=TOI,$=T.$;
 const eid=location.pathname.split('/')[2];
 const table=(new URLSearchParams(location.search).get('t')||'').replace(/[^0-9a-zA-Zа-яА-Я-]/g,'').slice(0,6);
 const L={
-  kk:{loading:'Той жүктелуде…',notFound:'Той табылмады. Сілтемені немесе QR-кодты тексеріңіз.',free:'Құттықтау',freeSub:'тегін · селфи және есім',prem:'Премиум құттықтау',premSub:'рамкадағы фото · Kaspi арқылы сыйлық',sec10:'10с',min1:'1 мин',
+  kk:{loading:'Той жүктелуде…',notFound:'Той табылмады. Сілтемені немесе QR-кодты тексеріңіз.',free:'Құттықтау',freeSub:'тегін · селфи және есім',prem:'Премиум құттықтау',premSub:'рамкадағы фото · Kaspi арқылы сыйлық',sec10:'10 сек',min1:'1 мин',
     onScreen10:'экранда 10 с',onScreen60:'экранда 1 минут',takeSelfie:'Селфи түсіру',yourName:'Есіміңіз',wish:'Тілек',optional:'(міндетті емес)',toScreen:'Экранға жіберу',upload:'Сурет жүктеу',selfie:'Селфи түсіру',
     fromWhom:'Кімнен',sum:'Сома',other:'+ конверт',sumHint:'990 ₸: рамкадағы құттықтау экранда 1 минут. Конверт салғыңыз келсе, көбірек сома жазыңыз, ол экранда құттықтаудың жанында шығады.',send:'Жіберу',payTo:'Той иесіне аударыңыз',copy:'Көшіру',copied:'Көшірілді',openKaspi:'Kaspi ашу',iPaid:'Аудардым, жіберу',
     payFine:'Ақша тікелей той иесіне түседі. Модератор аударымды тексеріп, құттықтауды экранға шығарады.',again:'Тағы жіберу',sending:'Жіберілуде…',
@@ -188,7 +188,7 @@ const L={
     dQueue:'Сіз кезектесіз',dQueueP:n=>n>1?`Алдыңызда ${n-1}. Экранға қараңыз!`:'Келесі сіз. Экранға қараңыз!',dEnvQueueP:'Премиум құттықтау кезексіз, алтын рамкада шығады. Экранға қараңыз!',
     dShown:'Құттықтауыңыз экранда!',dShownP:'Рақмет! Тойдан кейін ол құттықтаулар альбомына түседі.',dHidden:'Модератор құттықтауды өткізбеді',dHiddenP:'Басқа құттықтау жіберуге болады.',dHiddenEnvP:'Той иесі аударымды қайтарады.',
     freeWait:m=>`Тегін құттықтау — 30 минутта бір рет. Келесісі ${m} минуттан кейін, ал премиум құттықтауды қазір жіберуге болады.`,freeIn:m=>`${m} минуттан кейін тегін`},
-  ru:{loading:'Загружаем праздник…',notFound:'Праздник не найден. Проверьте ссылку или QR-код.',free:'Поздравить',freeSub:'бесплатно · селфи и имя',prem:'Премиум-поздравление',premSub:'фото в рамке · подарок через Kaspi',sec10:'10с',min1:'1 мин',
+  ru:{loading:'Загружаем праздник…',notFound:'Праздник не найден. Проверьте ссылку или QR-код.',free:'Поздравить',freeSub:'бесплатно · селфи и имя',prem:'Премиум-поздравление',premSub:'фото в рамке · подарок через Kaspi',sec10:'10 сек',min1:'1 мин',
     onScreen10:'на экране 10 с',onScreen60:'на экране 1 минуту',takeSelfie:'Сделать селфи',yourName:'Ваше имя',wish:'Пожелание',optional:'(необязательно)',toScreen:'Отправить на экран',upload:'Загрузить фото',selfie:'Сделать селфи',
     fromWhom:'От кого',sum:'Сумма',other:'+ конверт',sumHint:'990 ₸: поздравление в рамке на экране 1 минуту. Хотите положить конверт, укажите сумму больше, она появится на экране рядом с поздравлением.',send:'Отправить',payTo:'Переведите организатору тоя',copy:'Скопировать',copied:'Скопировано',openKaspi:'Открыть Kaspi',iPaid:'Я перевёл(а), отправить',
     payFine:'Деньги идут напрямую организатору. Модератор сверит перевод и выведет поздравление на экран.',again:'Отправить ещё',sending:'Отправляем…',

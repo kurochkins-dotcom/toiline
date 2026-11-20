@@ -110,9 +110,13 @@ def ensure_demo():
             cfg.update({"tpl": "arch", "palette": "ivory", "nfont": "corm"})
             _db.execute("UPDATE events SET cfg=? WHERE id=?", (json.dumps(clean_cfg({}, cfg), ensure_ascii=False), DEMO["id"]))
             _db.commit()
+        if cfg.get("names") == "Диас & Диара":   # Антон 20.11: в примерах Dias & Diara шрифтом Copperplate
+            cfg.update({"names": "Dias & Diara", "nfont": "pinyon"})
+            _db.execute("UPDATE events SET cfg=? WHERE id=?", (json.dumps(cfg, ensure_ascii=False), DEMO["id"]))
+            _db.commit()
         return
-    cfg = clean_cfg({"type": "wedding", "tpl": "arch", "palette": "ivory", "nfont": "corm", "kind": "Үйлену тойы",
-                     "names": "Диас & Диара", "sub": "Шаңырақтарың биік болсын!", "date": "Toi Line · демо",
+    cfg = clean_cfg({"type": "wedding", "tpl": "arch", "palette": "ivory", "nfont": "pinyon", "kind": "Үйлену тойы",
+                     "names": "Dias & Diara", "sub": "Шаңырақтарың биік болсын!", "date": "Toi Line · демо",
                      "moderation": False, "kaspi_name": "Демо", "kaspi_phone": "+7 700 000 00 00"})
     cfg["demo"] = True
     _db.execute("INSERT INTO events(id,mod_key,led_key,created,cfg) VALUES(?,?,?,?,?)",
