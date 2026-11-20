@@ -301,6 +301,25 @@ let rt;addEventListener('resize',()=>{const keep=cur;track.style.scrollSnapType=
   clearTimeout(rt);rt=setTimeout(()=>{track.scrollLeft=keep*track.clientWidth;track.style.scrollSnapType='';},150);});
 // макеты страницы гостя сами листают экраны: старт → форма → (Premium) перевод в Kaspi
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
+// заглушки вместо фото гостей: в форме гостя (как будто сделал селфи) и в альбоме
+const stock={};
+async function photoIn(d,btnSel,inputId,n){
+  try{
+    if(!stock[n])stock[n]=await fetch(`/static/img/stock-${n}.jpg`).then(r=>r.blob());
+    const btn=btnSel[0]==='['?d.querySelector(btnSel):d.getElementById(btnSel);
+    const id=inputId||(btn&&btn.dataset.pick);const inp=d.getElementById(id);if(!btn||!inp)return;
+    const W=d.defaultView,P=W.HTMLInputElement.prototype,keep=P.click;P.click=function(){};   // без окна выбора файла
+    btn.click();P.click=keep;
+    const dt=new W.DataTransfer();dt.items.add(new W.File([stock[n]],'photo.jpg',{type:'image/jpeg'}));
+    inp.files=dt.files;inp.dispatchEvent(new W.Event('change',{bubbles:true}));
+  }catch(e){}
+}
+function stockAlbum(d){
+  const map=d._stock||(d._stock={});let k=Object.keys(map).length;
+  const pick=u=>map[u]||(map[u]=`/static/img/stock-${(k++%4)+1}.jpg`);
+  d.querySelectorAll('[style*="/p/"]').forEach(el=>{el.style.backgroundImage=el.style.backgroundImage.replace(/\/p\/[^"')]+/g,u=>pick(u));});
+  d.querySelectorAll('img[src*="/p/"]').forEach(el=>{el.src=pick(new URL(el.src).pathname);});
+}
 async function play(f){
   const kind=f.dataset.play;
   if(kind==='album'){   // обложка альбома → разворот с поздравлениями → снова обложка
@@ -308,7 +327,7 @@ async function play(f){
       await wait(3500);
       let d;try{d=f.contentDocument;}catch(e){return;}
       const o=d&&d.getElementById('openBtn');if(!o)continue;
-      o.click();await wait(6000);
+      stockAlbum(d);o.click();stockAlbum(d);await wait(1500);stockAlbum(d);await wait(4500);
       const b=d.getElementById('toCover');if(b)b.click();
     }
   }
@@ -321,12 +340,12 @@ async function play(f){
     try{d.defaultView.localStorage.setItem('toi-free-demo','0');}catch(e){}
     click('[data-go="home"]');await wait(3500);
     if(kind==='free'){
-      click('#vHome [data-go="free"]');input('fName','Ерлан Агай');await wait(4500);
+      click('#vHome [data-go="free"]');input('fName','Айгерим');await photoIn(d,'fPol','fSelfie',4);await wait(4500);
     }else{
-      click('#vHome [data-go="prem"]');input('pName','Ерлан Агай');await wait(4000);
+      click('#vHome [data-go="prem"]');input('pName','Ерболат');await photoIn(d,'[data-pick]',null,3);await wait(4000);
       click('#pSend');
       const ks=$$('kSteps');if(ks)ks.innerHTML=['Нажмите «Открыть Kaspi»','Переведите 990 ₸','Вернитесь сюда и нажмите «Я перевёл(а)»'].map(x=>`<li>${x}</li>`).join('');
-      if($$('kName'))$$('kName').textContent='Диас Е.';
+      if($$('kName'))$$('kName').textContent='Dias E.';
       if($$('kPhone')){$$('kPhone').textContent='+7 701 234 56 78';$$('kPhoneRow').hidden=false;}
       await wait(4500);
     }
