@@ -56,6 +56,7 @@ button{cursor:pointer}
 .fld em{font-style:normal;font-weight:400}
 .fld input,.fld textarea{height:48px;border-radius:12px;border:1px solid color-mix(in srgb,var(--muted) 40%,transparent);background:color-mix(in srgb,#fff 80%,var(--bg));padding:0 14px;font:400 16px Montserrat,sans-serif;color:var(--ink)}
 .fld textarea{height:84px;padding:12px 14px;resize:none}
+.fld .cnt{align-self:flex-end;font-size:11px;letter-spacing:0;text-transform:none;font-weight:400;opacity:.7;margin-top:-2px}
 .chips{display:flex;gap:6px;flex-wrap:wrap}
 .chips button{border:1px solid color-mix(in srgb,var(--muted) 35%,transparent);background:transparent;border-radius:99px;padding:6px 11px;font-size:12.5px;color:var(--ink)}
 .go{margin-top:auto;height:58px;border-radius:29px;border:0;background:var(--ink);color:var(--bg);font:600 16px Montserrat,sans-serif;width:100%}
@@ -125,7 +126,7 @@ button{cursor:pointer}
   </div>
   <div class="flds">
     <label class="fld"><span data-t="yourName"></span><input type="text" id="fName" maxlength="30" autocomplete="name"></label>
-    <label class="fld"><span><span data-t="wish"></span> <em data-t="optional"></em></span><textarea id="fMsg" maxlength="140"></textarea></label>
+    <label class="fld"><span><span data-t="wish"></span> <em data-t="optional"></em></span><textarea id="fMsg" maxlength="120"></textarea><small class="cnt" data-for="fMsg"></small></label>
     <div class="chips" id="fQuick"></div>
   </div>
   <div class="spacer"></div>
@@ -140,7 +141,7 @@ button{cursor:pointer}
   <div class="two"><button type="button" data-pick="fFile" data-t="upload"></button><button type="button" data-pick="fSelfie" data-t="selfie"></button></div>
   <div class="flds">
     <label class="fld"><span data-t="fromWhom"></span><input type="text" id="pName" maxlength="30" autocomplete="name"></label>
-    <label class="fld"><span data-t="wish"></span><input type="text" id="pMsg" maxlength="140"></label>
+    <label class="fld"><span data-t="wish"></span><textarea id="pMsg" maxlength="100"></textarea><small class="cnt" data-for="pMsg"></small></label>
     <div class="fld"><span data-t="sum"></span>
       <div class="sums" id="pSums"><button data-s="990" aria-pressed="true">990 ₸</button><button data-s="own" data-t="other"></button></div>
       <input type="number" id="pOwn" min="1000" step="500" inputmode="numeric" hidden>
@@ -243,7 +244,10 @@ function updFree(){
   $('fCap').textContent=$('fName').value.trim()||'';
 }
 $('fName').addEventListener('input',updFree);
-$('fQuick').addEventListener('click',e=>{const b=e.target.closest('button');if(b)$('fMsg').value=b.textContent;});
+$('fQuick').addEventListener('click',e=>{const b=e.target.closest('button');if(b){$('fMsg').value=b.textContent;cnt();}});
+/* счётчик символов: длиннее этого пожелание на экране становится мелким (проверено на 1600×900) */
+function cnt(){document.querySelectorAll('.cnt[data-for]').forEach(s=>{const i=$(s.dataset.for);s.textContent=[...i.value].length+' / '+i.maxLength;});}
+['fMsg','pMsg'].forEach(id=>$(id).addEventListener('input',cnt));cnt();
 $('fSend').addEventListener('click',()=>{
   if(!$('fName').value.trim())return err('fErr',t('needName'));
   if(!photo&&!$('fMsg').value.trim())return err('fErr',t('needSome'));
@@ -285,7 +289,7 @@ async function submit(body,btn,errId){
   try{
     try{localStorage.setItem('toi-name',body.name);}catch(x){}
     const r=await T.api(`/api/e/${eid}/card`,{...body,table,photo:photo||''});
-    photo=null;orient='v';if(!body.amount){blockFree();$('fMsg').value='';}
+    photo=null;orient='v';if(!body.amount){blockFree();$('fMsg').value='';}cnt();
     done(body.amount,r.status,r.pos);watch(r.id,r.token,body.amount);
   }catch(e){
     if(e.retry)blockFree(Date.now()-(FREE_EVERY-e.retry*1000));
