@@ -23,7 +23,8 @@ button{font:inherit;color:inherit;cursor:pointer}
 .cover .oval .dots{padding:8px}
 .cover .oval .in{width:100%;height:100%;border-radius:50%;background:center 20%/cover no-repeat;display:grid;place-items:center;font-family:'Cormorant Garamond',serif;font-size:64px;font-weight:300;color:var(--muted)}
 .cover .mono{margin-top:26px;line-height:1.15;text-align:center}
-.cover .mono span{display:block}
+.cover .mono span{display:block;color:var(--ink)}
+.cover .mono .amp{color:var(--accent);font-style:inherit}
 .cover .nms{margin-top:10px;font-size:12px;letter-spacing:.4em;color:var(--muted);text-align:center}
 .cover .dt{margin-top:8px;font-size:12px;letter-spacing:.3em;color:var(--muted)}
 .cover .foot{margin-top:auto;padding-top:24px;width:100%;display:flex;flex-direction:column;gap:12px;align-items:center}
@@ -101,7 +102,7 @@ if(coverPic)$('cPic').style.backgroundImage=`url('${coverPic}')`;
 /* имена тем же шрифтом, что на экране (правило двух шрифтов: имена и «&» шрифтом имён), без инициалов */
 const nf=T.NFONT[c.nfont]||T.NFONT.corm,nm=v=>esc(nf.caps?T.up(v):v);
 $('cMono').style.cssText=`font-family:${nf.fam};font-weight:${nf.w};font-style:${nf.it};letter-spacing:${nf.ls};font-size:${Math.round(44*nf.k)}px`;
-$('cMono').innerHTML=n2?`<span>${nm(n1)}</span><span>&amp; ${nm(n2)}</span>`:`<span>${nm(n1||'')}</span>`;
+$('cMono').innerHTML=n2?`<span>${nm(n1)}</span><span><i class="amp">&amp;</i> ${nm(n2)}</span>`:`<span>${nm(n1||'')}</span>`;
 $('cNames').hidden=true;
 $('cDate').textContent=date;$('bMono').textContent='';
 $('cCount').textContent=cards.length?`${cards.length} құттықтау · ${cards.filter(x=>x.photo).length} фото`:'Құттықтаулар әзірге жоқ';

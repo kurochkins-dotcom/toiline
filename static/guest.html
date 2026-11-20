@@ -322,7 +322,7 @@ async function load(){
   T.vars(document.body,raw);
   const f=T.NFONT[c.nfont],[a,b]=T.splitNames(c.names),cap=s=>f.caps?T.up(s):s;
   const h=$('hNames');h.style.cssText=`font-family:${f.fam};font-weight:${f.w===400&&f.caps?300:f.w};font-style:${f.it};letter-spacing:${f.caps?'.12em':f.ls};font-size:${T.fitSize(Math.round(44*f.k),[cap(a),cap(b)],330,f.caps?.8:.5)}px`;
-  h.innerHTML=T.esc(cap(a))+(b?'<br>&amp; '+T.esc(cap(b)):'');
+  h.innerHTML=T.esc(cap(a))+(b?'<br><span style="color:var(--accent)">&amp;</span> '+T.esc(cap(b)):'');   // «&» акцентным цветом, как на экране
   $('hKind').textContent=c.kind||'';$('hDate').textContent=T.niceDate(c.date);
   $('hello').textContent=c.hello||T.PRESETS[c.type].hello;
   document.title=(c.names||'Toi Line')+' · Toi Line';
