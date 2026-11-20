@@ -97,6 +97,13 @@ h2{font-size:clamp(36px,4vw,50px)}
 .in.hero{grid-template-columns:minmax(260px,.75fr) 1.6fr;gap:40px}
 .qr{flex:none;width:200px;height:200px;background:#fff;border-radius:20px;padding:14px;box-shadow:0 10px 30px rgba(42,38,34,.12)}
 .qr img{width:100%;height:100%;image-rendering:pixelated}
+/* преимущества */
+.adv{width:100%;max-width:1100px;display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.adv h2{grid-column:1/-1;margin-bottom:10px}
+.adv div{background:#fff;border:1px solid var(--line);border-radius:24px;padding:30px;display:flex;flex-direction:column;gap:16px}
+.adv b{font-family:'Cormorant Garamond',serif;font-size:56px;font-weight:300;line-height:.8;color:var(--gold)}
+.adv span{font-size:20px;line-height:1.45}
+@media (max-width:960px){.adv{grid-template-columns:1fr;gap:14px}.adv div{flex-direction:row;align-items:center;padding:22px}}
 /* стрелки и чипы */
 .arr{position:fixed;top:50%;z-index:5;width:48px;height:48px;border-radius:50%;border:0;background:#fff;box-shadow:0 4px 14px rgba(0,0,0,.14);font-size:26px;line-height:1;display:grid;place-items:center;transform:translateY(-50%)}
 .arr.l{left:max(16px,env(safe-area-inset-left))}.arr.r{right:max(16px,env(safe-area-inset-right))}
@@ -186,85 +193,39 @@ h2{font-size:clamp(36px,4vw,50px)}
   </div>
 </section>
 
-<section class="slide" aria-label="Именные приглашения" data-chip="Приглашения">
-  <div class="in">
-    <div class="txt">
-      <div class="num">04</div>
-      <span class="tag a1">Вместо дизайнера приглашений</span>
-      <h2 class="a2">Именные приглашения</h2>
-      <p class="a3">Организатор выбирает шаблон, а Toi Line сам делает приглашение с именем каждого гостя, все одним архивом.</p>
-      <span class="src a4">В том же стиле, что и экран тоя.</span>
-    </div>
-    <div class="vis"><div class="phone fit"><div class="scr"><div class="mk" style="gap:14px">
-      <div class="invw"><div class="invc"><span class="k">Шақыру</span><span class="g">Құрметті</span><span class="n">Ерлан ага</span><span class="g">Диас &amp; Диара</span><span class="k">12 · 09 · 2026</span></div></div>
-      <div class="zip a2"><div><span>Ерлан ага.jpg</span><span>✓</span></div><div><span>Сауле апай.jpg</span><span>✓</span></div><div><span>Семья Нурлановых.jpg</span><span>✓</span></div></div>
-    </div></div></div></div>
-  </div>
-</section>
-
 <section class="slide rev" aria-label="Альбом после тоя" data-chip="Альбом">
   <div class="in">
     <div class="txt">
-      <div class="num">05</div>
-      <span class="tag a1">Вместо ожидания фото неделями</span>
+      <div class="num">04</div>
+      <span class="tag a1">Финал тоя</span>
       <h2 class="a2">Альбом после тоя</h2>
-      <p class="a3">Гости получают ссылку на альбом: все поздравления и фото, которые можно скачать в красивой рамке для Instagram.</p>
+      <p class="a3">После тоя гости получают ссылку на альбом: обложка с именами, а внутри все поздравления и фото, которые можно скачать в красивой рамке.</p>
     </div>
-    <div class="vis"><div class="phone fit"><div class="scr"><iframe data-src="/a/demo" title="Альбом" tabindex="-1"></iframe></div></div></div>
+    <div class="vis"><div class="phone fit"><div class="scr"><iframe data-src="/a/demo" data-play="album" title="Альбом" tabindex="-1"></iframe></div></div></div>
   </div>
 </section>
 
-<section class="slide" aria-label="Отчёт для организатора" data-chip="Кабинет">
+<section class="slide" aria-label="Стоимость услуги" data-chip="Стоимость">
   <div class="in">
     <div class="txt">
-      <div class="num">06</div>
-      <span class="tag a1">Вместо тетради с подарками</span>
-      <h2 class="a2">Отчёт для организатора</h2>
-      <p class="a3">Организатор видит в своём кабинете, кто что пожелал и сколько подарил, и общую сумму подарков.</p>
-    </div>
-    <div class="vis"><div class="phone fit"><div class="scr"><div class="mk">
-      <div class="t">Premium-поздравления</div><div class="s">Диас &amp; Диара · 12.09.2026</div>
-      <div class="row2 a1"><span>Асхат Нурланович</span><b>20 000 ₸</b></div>
-      <div class="row2 a1"><span>Семья Ахметовых</span><b>50 000 ₸</b></div>
-      <div class="row2 a2"><span>Сауле апай</span><b>10 000 ₸</b></div>
-      <div class="row2 a2"><span>Ерлан и Динара</span><b>15 000 ₸</b></div>
-      <div class="row2 a3"><span>Марат ага</span><b>25 000 ₸</b></div>
-      <div class="total a4">Итого Premium<b data-count="120000">0 ₸</b></div>
-    </div></div></div></div>
-  </div>
-</section>
-
-<section class="slide" aria-label="Тариф" data-chip="Тариф">
-  <div class="in">
-    <div class="txt">
-      <span class="tag a1">Тариф</span>
-      <h2 class="a2">Один пакет на той</h2>
-      <p class="a3">Заводим той за 10 минут: имена, дата и стиль. В день тоя нужен только экран с интернетом.</p>
-      <a class="pill dark big a4" href="/?new=1">＋ Создать той</a>
+      <span class="tag a1">Стоимость услуги</span>
+      <h2 class="a2">Рассчитывается индивидуально</h2>
+      <p class="a3">Стоимость обсуждается с клиентом и зависит от технической сложности, количества гостей и техники на мероприятии.</p>
     </div>
     <div class="vis"><div class="price a2">
-      <div class="p">50 000 <small>₸ за той</small></div>
-      <ul>
-        <li>Экран тоя в выбранном стиле</li>
-        <li>Поздравления гостей и пульт тамады</li>
-        <li>Premium-поздравления через Kaspi, комиссия 10%</li>
-        <li>Именные приглашения</li>
-        <li>Альбом и отчёт организатору</li>
-      </ul>
-      <span class="src">Предоплата при бронировании 20 000 ₸.</span>
+      <span class="src">Хозяин заведения получает</span>
+      <div class="p">10%</div>
+      <p style="margin:0;font-size:19px;line-height:1.5;color:#4A443D">от стоимости услуг с каждого тоя, который проходит в его зале.</p>
     </div></div>
   </div>
 </section>
 
-<section class="slide" aria-label="Вопросы" data-chip="Вопросы">
-  <div class="faq">
-    <h2>Частые вопросы</h2>
-    <div><b>Гостям нужно что-то скачивать?</b><span>Нет. Гость наводит камеру на QR, и страница открывается в браузере.</span></div>
-    <div><b>Куда идут деньги из Premium-поздравлений?</b><span>Сразу на Kaspi организатора. Наша комиссия 10% считается по итогу тоя.</span></div>
-    <div><b>А если кто-то напишет лишнее?</b><span>Тамада видит каждое поздравление до экрана и скрывает лишнее одной кнопкой.</span></div>
-    <div><b>Что нужно в зале?</b><span>LED-экран или телевизор с браузером и интернет. Если связь пропадёт, экран продолжит показ.</span></div>
-    <div><b>Есть казахский язык?</b><span>Да, страница гостя на казахском и русском, гость выбирает сам.</span></div>
-    <div><b>Сколько готовить той?</b><span>Около 10 минут: имена, дата, шаблон. Ссылки и QR готовы сразу.</span></div>
+<section class="slide" aria-label="Преимущества для клиента" data-chip="Преимущества">
+  <div class="adv">
+    <h2 class="a1">Преимущества для клиента</h2>
+    <div class="a2"><b>01</b><span>Возможность отбить стоимость услуги за счёт платных поздравлений.</span></div>
+    <div class="a3"><b>02</b><span>Красивый фотоальбом с поздравлениями: ссылка после тоя.</span></div>
+    <div class="a4"><b>03</b><span>Необычный новый формат для Казахстана.</span></div>
   </div>
 </section>
 
@@ -342,6 +303,15 @@ let rt;addEventListener('resize',()=>{const keep=cur;track.style.scrollSnapType=
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
 async function play(f){
   const kind=f.dataset.play;
+  if(kind==='album'){   // обложка альбома → разворот с поздравлениями → снова обложка
+    for(;;){
+      await wait(3500);
+      let d;try{d=f.contentDocument;}catch(e){return;}
+      const o=d&&d.getElementById('openBtn');if(!o)continue;
+      o.click();await wait(6000);
+      const b=d.getElementById('toCover');if(b)b.click();
+    }
+  }
   for(;;){
     await wait(500);
     let d;try{d=f.contentDocument;}catch(e){return;}
