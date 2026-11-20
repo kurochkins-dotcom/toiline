@@ -18,12 +18,12 @@ body::before{content:"";position:fixed;inset:0;pointer-events:none;background:re
 button{font:inherit;color:inherit;cursor:pointer}
 /* обложка */
 .cover{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;padding:56px 28px calc(32px + env(safe-area-inset-bottom));max-width:480px;margin:0 auto;overflow:auto}
-.cover .ttl{font-family:'Toi Great Vibes',cursive;font-size:56px;color:var(--accent);line-height:1.1}
+.cover .ttl{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:400;letter-spacing:.32em;text-transform:uppercase;color:var(--accent);line-height:1.2}
 .cover .oval{margin-top:24px;width:230px;height:300px;padding:14px;flex:none}
 .cover .oval .dots{padding:8px}
 .cover .oval .in{width:100%;height:100%;border-radius:50%;background:center 20%/cover no-repeat;display:grid;place-items:center;font-family:'Cormorant Garamond',serif;font-size:64px;font-weight:300;color:var(--muted)}
-.cover .mono{margin-top:28px;font-family:'Cormorant Garamond',serif;font-size:58px;font-weight:300;line-height:1}
-.cover .mono span{font-size:34px;vertical-align:middle;color:var(--accent)}
+.cover .mono{margin-top:26px;line-height:1.15;text-align:center}
+.cover .mono span{display:block}
 .cover .nms{margin-top:10px;font-size:12px;letter-spacing:.4em;color:var(--muted);text-align:center}
 .cover .dt{margin-top:8px;font-size:12px;letter-spacing:.3em;color:var(--muted)}
 .cover .foot{margin-top:auto;padding-top:24px;width:100%;display:flex;flex-direction:column;gap:12px;align-items:center}
@@ -97,10 +97,13 @@ document.title='Альбом · '+(c.names||'Toi Line');
 
 /* обложка */
 const coverPic=c.couple_url||(cards.find(x=>x.photo)||{}).photo||'';
-if(coverPic)$('cPic').style.backgroundImage=`url('${coverPic}')`;else $('cPic').textContent=mono.replace(' & ','·');
-$('cMono').innerHTML=mono.split(' & ').map(esc).join('<span> &amp; </span>');
-$('cNames').textContent=T.up([n1,n2].filter(Boolean).join(' · '));
-$('cDate').textContent=date;$('bMono').textContent=mono;
+if(coverPic)$('cPic').style.backgroundImage=`url('${coverPic}')`;
+/* имена тем же шрифтом, что на экране (правило двух шрифтов: имена и «&» шрифтом имён), без инициалов */
+const nf=T.NFONT[c.nfont]||T.NFONT.corm,nm=v=>esc(nf.caps?T.up(v):v);
+$('cMono').style.cssText=`font-family:${nf.fam};font-weight:${nf.w};font-style:${nf.it};letter-spacing:${nf.ls};font-size:${Math.round(44*nf.k)}px`;
+$('cMono').innerHTML=n2?`<span>${nm(n1)}</span><span>&amp; ${nm(n2)}</span>`:`<span>${nm(n1||'')}</span>`;
+$('cNames').hidden=true;
+$('cDate').textContent=date;$('bMono').textContent='';
 $('cCount').textContent=cards.length?`${cards.length} құттықтау · ${cards.filter(x=>x.photo).length} фото`:'Құттықтаулар әзірге жоқ';
 $('openBtn').addEventListener('click',()=>{$('cover').hidden=true;$('book').hidden=false;pageNo();});
 $('toCover').addEventListener('click',()=>{$('book').hidden=true;$('cover').hidden=false;});

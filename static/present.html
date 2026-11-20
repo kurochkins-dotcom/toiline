@@ -315,19 +315,21 @@ async function photoIn(d,btnSel,inputId,n){
   }catch(e){}
 }
 function stockAlbum(d){
-  const map=d._stock||(d._stock={});let k=Object.keys(map).length;
-  const pick=u=>map[u]||(map[u]=`/static/img/stock-${(k++%4)+1}.jpg`);
-  d.querySelectorAll('[style*="/p/"]').forEach(el=>{el.style.backgroundImage=el.style.backgroundImage.replace(/\/p\/[^"')]+/g,u=>pick(u));});
-  d.querySelectorAll('img[src*="/p/"]').forEach(el=>{el.src=pick(new URL(el.src).pathname);});
+  // обложка — фото пары, в альбоме заглушки по порядку; у поздравлений без фото тоже ставим заглушку
+  const cp=d.getElementById('cPic');if(cp){cp.style.backgroundImage="url('/static/img/stock-3.jpg')";cp.textContent='';}
+  const seq=[2,4,1];
+  d.querySelectorAll('.page .ph').forEach((el,i)=>{el.style.backgroundImage=`url('/static/img/stock-${seq[i%seq.length]}.jpg')`;
+    const ini=el.querySelector('.ini');if(ini)ini.style.display='none';});
 }
 async function play(f){
   const kind=f.dataset.play;
   if(kind==='album'){   // обложка альбома → разворот с поздравлениями → снова обложка
+    setInterval(()=>{try{const d=f.contentDocument;if(d)stockAlbum(d);}catch(e){}},200);   // реальные фото демо не показываем ни на миг
     for(;;){
       await wait(3500);
       let d;try{d=f.contentDocument;}catch(e){return;}
       const o=d&&d.getElementById('openBtn');if(!o)continue;
-      stockAlbum(d);o.click();stockAlbum(d);await wait(1500);stockAlbum(d);await wait(4500);
+      o.click();await wait(6000);
       const b=d.getElementById('toCover');if(b)b.click();
     }
   }
